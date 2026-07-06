@@ -12,22 +12,22 @@
         }
     ],
     "require": {
-        "php": "^8.2",
-        "gp247/core": "~1.2",
-        "gp247/front": "~1.2",
-        "gp247/shop": "~1.2",
-        "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.9"
+        "php": "^8.3",
+        "gp247/core": "^2.0",
+        "gp247/front": "^2.0",
+        "gp247/shop": "^2.0",
+        "laravel/framework": "^13.8",
+        "laravel/tinker": "^3.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.15",
+        "barryvdh/laravel-debugbar": "^4.4",
         "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.1",
-        "laravel/pint": "^1.13",
-        "laravel/sail": "^1.26",
+        "laravel/pail": "^1.2.5",
+        "laravel/pao": "^1.0.6",
+        "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.0.1"
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^12.5.12"
     },
     "autoload": {
         "psr-4": {
@@ -42,6 +42,22 @@
         }
     },
     "scripts": {
+        "setup": [
+            "composer install",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate",
+            "@php artisan migrate --force",
+            "npm install --ignore-scripts",
+            "npm run build"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi @no_additional_args",
+            "@php artisan test"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -57,9 +73,8 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+        "pre-package-uninstall": [
+            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ]
     },
     "extra": {

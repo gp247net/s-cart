@@ -11,6 +11,7 @@
 <a href="https://packagist.org/packages/gp247/s-cart"><img src="https://poser.pugx.org/gp247/s-cart/d/total" alt="Packagist Downloads"></a>
 <a href="https://github.com/gp247net/s-cart/releases"><img src="https://poser.pugx.org/gp247/s-cart/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://github.com/gp247net/s-cart/blob/master/LICENSE"><img src="https://poser.pugx.org/gp247/s-cart/license" alt="License"></a>
+<a href="https://deepwiki.com/gp247net/s-cart"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 </p>
 
 
