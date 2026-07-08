@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://gp247.net"><img src="https://s-cart.org/logo.png" width="150"></a>
+    <a href="https://gp247.net"><img src="https://gp247.net/GP247/Core/logo/logo.png" width="150"></a>
 </p>
 <p align="center">Free, open-source software for e-commerce websites<br>
     <code><b>composer create-project gp247/s-cart</b></code></p>
@@ -35,8 +35,8 @@ Our mission is "Effective and friendly for everyone":
 > UI built with Tailwind CSS 4
 
 ## Screenshots
-<img src="https://static.s-cart.org/guide/use/common/shop.jpg">
-<img src="https://static.s-cart.org/guide/use/common/dashboard.jpg">
+<img src="https://static.gp247.net/page/s-cart/sc-1.jpg">
+<img src="https://static.gp247.net/page/s-cart/sc-2.jpg">
 
 ## S-Cart features
 
