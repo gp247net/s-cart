@@ -13,13 +13,16 @@
 /.vscode
 /.zed
 /auth.json
+/composer.lock
 /node_modules
+/package-lock.json
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/debugbar
 /vendor
 _ide_helper.php
 Homestead.json

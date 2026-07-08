@@ -1,0 +1,173 @@
+# =============================================================================
+# PRODUCTION environment.
+#
+# Remote/managed database (default):
+#   docker compose -f docker-compose.prod.yml up -d --build
+#   -> set DB_HOST/DB_PORT/DB_USERNAME/DB_PASSWORD in .env to your remote DB.
+#
+# Dockerized MySQL instead:
+#   docker compose -f docker-compose.prod.yml --profile db-local up -d --build
+#   -> set DB_HOST=mysql-local in .env (the mysql-local service name).
+#   (or set COMPOSE_PROFILES=db-local in .env so plain `up -d` also starts it)
+#
+# Same bind-mount design as dev (see docker-compose.yml for the full
+# rationale): the project directory is mounted into the containers so
+# `git pull` + `docker compose up -d` picks up new code with no rebuild;
+# only vendor/ and node_modules/ live in named volumes for I/O performance.
+# =============================================================================
+
+name: scart
+
+services:
+  app:
+    build:
+      context: ./docker/php
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.3}
+        WWWUSER: ${WWWUSER:-1000}
+        WWWGROUP: ${WWWGROUP:-1000}
+        INSTALL_XDEBUG: "false"
+    image: scart-app:${PHP_VERSION:-8.3}
+    container_name: scart-app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - scart-vendor:/var/www/html/vendor
+    # Only variables entrypoint.sh's shell logic needs (DB wait-loop) plus
+    # Docker-specific overrides go here. Deliberately NOT `env_file: .env` -
+    # that would inject the whole .env (including APP_KEY etc.) as frozen
+    # container env vars, which phpdotenv then refuses to ever overwrite from
+    # the .env file again (even after `artisan key:generate` updates it).
+    # Laravel reads the rest of .env itself on every request, no forwarding
+    # needed.
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      # "app" has no published port and only ever receives traffic from the
+      # "webserver" container over the internal "scart" bridge network, so
+      # trusting '*' here doesn't expose X-Forwarded-* spoofing to the
+      # internet. Consumed via config/trustedproxy.php (see that file for
+      # the full rationale) - Docker-only setting, bare host installs need
+      # nothing.
+      TRUSTED_PROXIES: "*"
+      DB_CONNECTION: ${DB_CONNECTION:-mysql}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - scart
+
+  webserver:
+    image: nginx:1.27-alpine
+    container_name: scart-nginx
+    depends_on:
+      - app
+    ports:
+      - "${APP_PORT:-80}:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
+    networks:
+      - scart
+
+  queue:
+    build:
+      context: ./docker/php
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.3}
+        WWWUSER: ${WWWUSER:-1000}
+        WWWGROUP: ${WWWGROUP:-1000}
+        INSTALL_XDEBUG: "false"
+    image: scart-app:${PHP_VERSION:-8.3}
+    container_name: scart-queue
+    working_dir: /var/www/html
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    volumes:
+      - ./:/var/www/html
+      - scart-vendor:/var/www/html/vendor
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION:-mysql}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - scart
+
+  scheduler:
+    build:
+      context: ./docker/php
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.3}
+        WWWUSER: ${WWWUSER:-1000}
+        WWWGROUP: ${WWWGROUP:-1000}
+        INSTALL_XDEBUG: "false"
+    image: scart-app:${PHP_VERSION:-8.3}
+    container_name: scart-scheduler
+    working_dir: /var/www/html
+    command: ["sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
+    volumes:
+      - ./:/var/www/html
+      - scart-vendor:/var/www/html/vendor
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION:-mysql}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - scart
+
+  # Optional dockerized MySQL for prod. Only starts with --profile db-local
+  # (or COMPOSE_PROFILES=db-local). Skip entirely to use a remote/managed
+  # database - just point DB_HOST at it in .env.
+  mysql-local:
+    image: mysql:8.4
+    container_name: scart-mysql-local
+    profiles: ["db-local"]
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - scart-mysql-local-data-prod:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    networks:
+      - scart
+
+  # One-off container for building front-end assets. Not started by `up`
+  # (profile "tools"); run manually when you need to rebuild assets:
+  #   docker compose -f docker-compose.prod.yml run --rm node
+  node:
+    image: node:22-alpine
+    container_name: scart-node
+    working_dir: /var/www/html
+    profiles: ["tools"]
+    # npm ci requires an existing package-lock.json; fall back to npm install
+    # (which also generates one) when it's missing, e.g. on a fresh checkout.
+    command: ["sh", "-c", "if [ -f package-lock.json ]; then npm ci; else npm install; fi && npm run build"]
+    volumes:
+      - ./:/var/www/html
+      - scart-node-modules:/var/www/html/node_modules
+    networks:
+      - scart
+
+networks:
+  scart:
+    driver: bridge
+
+volumes:
+  scart-vendor:
+  scart-node-modules:
+  scart-mysql-local-data-prod:

@@ -1,58 +1,348 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+    <a href="https://gp247.net"><img src="https://s-cart.org/logo.png" width="150"></a>
+</p>
+<p align="center">Free, open-source software for e-commerce websites<br>
+    <code><b>composer create-project gp247/s-cart</b></code></p>
+<p align="center">
+ <a href="https://gp247.net">Homepage</a> | <a href="https://demo.s-cart.org">Demo</a> | <a href="https://gp247.net/en/docs/s-cart/s-cart-overview.html">Documentation</a>  | <a href="https://www.facebook.com/groups/scart.opensource">FB Group</a>
 </p>
 
-## About Laravel
+<p align="center">
+<a href="https://packagist.org/packages/gp247/s-cart"><img src="https://poser.pugx.org/gp247/s-cart/d/total" alt="Packagist Downloads"></a>
+<a href="https://github.com/gp247net/s-cart/releases"><img src="https://poser.pugx.org/gp247/s-cart/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://github.com/gp247net/s-cart/blob/master/LICENSE"><img src="https://poser.pugx.org/gp247/s-cart/license" alt="License"></a>
+<a href="https://deepwiki.com/gp247net/s-cart"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+*(Vietnamese version: [README_vi.md](README_vi.md))*
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 1. Overview
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+S-Cart is the best free e-commerce website project for individuals and
+businesses, built on the GP247 ecosystem (the Laravel Framework) and the
+latest technologies.
 
-## Learning Laravel
+Our mission is "Effective and friendly for everyone":
+- Effective: meets even the smallest customer requirements.
+- Friendly: easy to use, easy to maintain, easy to extend.
+- Everyone: businesses, individuals, developers, students.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**S-Cart 2.x:**
+> Backed by the GP247 ecosystem <a href="https://github.com/gp247net">https://github.com/gp247net</a>
+>
+> Core Laravel framework 13.x <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a>
+>
+> UI built with Tailwind CSS 4
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Screenshots
+<img src="https://static.s-cart.org/guide/use/common/shop.jpg">
+<img src="https://static.s-cart.org/guide/use/common/dashboard.jpg">
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## S-Cart features
 
-## Agentic Development
+#### Core capabilities
+- Plugin packages built on the HMVC pattern
+- Command-line upgrades and patches for S-Cart
+- Full documentation for developers and customers
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+#### Professional storefront features
+- **Multi-language**
+- **Multi-currency**
+- **Full e-commerce feature set:**
+  - Shopping cart management
+  - Order management
+  - Product management
+  - Customer management
+- **CMS content management**:
+  - Categories
+  - News
+  - Content pages
+- **Extensions**:
+  - Payment plugins
+  - Shipping methods
+  - Discount system
+  - Tax calculation
+- **Professional plugins for S-Cart**:
+  - Multi-vendor: https://gp247.net/en/docs/s-cart/multi-vendor.html
+  - Multi-store: https://gp247.net/en/docs/s-cart/multi-store.html
+- **Developer resources**:
+  - Online marketplace for plugins and templates
+  - Secured API support for apps and mobile integrations
+
+#### Powerful administration
+- **User management**:
+  - Role-based permissions (admin, manager, marketing, etc.)
+  - Comprehensive security with full audit logging
+  - Access control, authentication, and CAPTCHA
+- **Business tools**:
+  - Product management
+  - Order processing
+  - Customer management
+  - Analytics and reporting
+  - Activity tracking
+
+## Folder structure for a GP247-based website
+
+    Website-folder/
+    |
+    ├── app
+    │     └── GP247
+    │           ├── Core(+) //Override Core controllers
+    │           ├── Helpers(+) //Auto-loads Helpers/*.php into the system
+    │           ├── Front(+) //Override GP247/Front controllers 
+    │           ├── Shop(+) //Override GP247/Shop controllers 
+    │           ├── Plugins(+) //Generated by `php artisan gp247:make-plugin --name=NameOfPlugin`
+    │           └── Templates(+) //Generated by `php artisan gp247:make-template --name=NameOfTempate`
+    ├── public
+    │     └── GP247
+    │           ├── Core(+)
+    │           ├── Plugins(+)
+    │           └── Templates(+)
+    ├── resources
+    │            └── views/vendor
+    │                           |── gp247-core(+) //Core view overrides
+    │                           └── gp247-front(+) //Front view overrides
+    ├── vendor
+    │     ├── gp247/core
+    │     ├── gp247/front
+    │     └── gp247/shop
+    └──...
+
+---
+
+# 2. Quick installation guide
+
+## Method 1: Install with Composer (recommended)
+
+**1. Create the project**
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer create-project gp247/s-cart
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**2. Check your `.env` configuration**
 
-## Contributing
+Make sure the database settings are correct. If `APP_KEY` is not set yet,
+generate it with:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan key:generate
+```
 
-## Code of Conduct
+**3. Install S-Cart**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan sc:install
+```
 
-## Security Vulnerabilities
+**4. Install sample data (optional)**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan sc:sample
+```
 
-## License
+## Method 2: Install with Git Clone
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/gp247net/s-cart.git
+cd s-cart
+```
+
+**2. Create `.env` and install dependencies**
+
+```bash
+cp .env.example .env
+php artisan key:generate
+composer install
+```
+
+**3. Configure the database in `.env`**
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+**4. Install S-Cart**
+
+```bash
+php artisan sc:install
+php artisan sc:sample   # optional, sample data
+```
+
+## Method 3: Install with Docker (supported from S-Cart 2)
+
+No need to install PHP/Composer/MySQL on your machine — Docker is all you
+need. There are **two clearly separate** compose files for dev and prod —
+always use the right one for the environment:
+
+- `docker-compose.yml` — **dev** environment (your local machine)
+- `docker-compose.prod.yml` — **prod** environment (your server)
+
+**DEV setup:**
+
+```bash
+git clone https://github.com/gp247net/s-cart.git
+cd s-cart
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan sc:install
+docker compose exec app php artisan sc:sample   # optional
+```
+
+Open the site: http://localhost:8000
+
+**PROD setup:**
+
+```bash
+git clone https://github.com/gp247net/s-cart.git
+cd s-cart
+cp .env.example .env
+# Configure .env for prod: APP_ENV, DB_*, WWWUSER/WWWGROUP — see DOCKER.md
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan sc:install
+docker compose exec app php artisan sc:sample   # optional
+docker compose run --rm node                    # build CSS/JS assets
+```
+
+⚠️ Always include `-f docker-compose.prod.yml` on prod — forgetting it
+accidentally applies the dev config (debug mode on, runs as root, installs
+Xdebug...). See the Q&A in [DOCKER.md](DOCKER.md) for that failure mode in
+detail.
+
+For the full step-by-step guide and a detailed troubleshooting Q&A
+covering both dev and prod, see [DOCKER.md](DOCKER.md).
+
+## Important note on folder permissions
+
+If you installed with Method 1 or 2 (no Docker), make sure the following
+folders are writable, otherwise installation and various features won't
+work correctly:
+- `app/GP247`
+- `public/GP247`
+- `public/vendor`
+- `resources/views/vendor`
+- `storage`
+- `vendor`
+
+---
+
+# 3. Q&A
+
+### Q: How do I check the installed S-Cart version?
+
+*(Only available when S-Cart is installed directly, not via the component-by-component method)*
+
+```bash
+php artisan sc:info
+```
+
+### Q: How do I update S-Cart?
+
+Update each package with Composer:
+
+```bash
+composer update gp247/core
+composer update gp247/front
+composer update gp247/shop
+```
+
+Then run (only available when S-Cart is installed directly):
+
+```bash
+php artisan sc:update
+```
+
+### Q: How do I create a new plugin?
+
+```bash
+php artisan gp247:make-plugin --name=PluginName
+```
+
+Also generate a zip file for distribution:
+
+```bash
+php artisan gp247:make-plugin --name=PluginName --download=1
+```
+
+### Q: How do I create a new template?
+
+```bash
+php artisan gp247:make-template --name=TemplateName
+```
+
+Also generate a zip file for distribution:
+
+```bash
+php artisan gp247:make-template --name=TemplateName --download=1
+```
+
+### Q: How do I customize the upload (lfm) configuration?
+
+```bash
+php artisan vendor:publish --tag=config-lfm
+```
+
+### Q: How do I customize the core admin UI?
+
+```bash
+php artisan vendor:publish --tag=gp247:view-core
+```
+
+### Q: How do I override the `gp247_*` helper functions?
+
+1. Add the list of functions you want to override to `config/gp247_functions_except.php`
+2. Create new PHP files containing the new functions in `app/GP247/Helpers`, e.g. `app/GP247/Helpers/myfunction.php`
+
+### Q: How do I override controllers in GP247/Core, GP247/Front, or GP247/Shop?
+
+S-Cart lets you override **any** controller (including API controllers) in
+`GP247/Core`, `GP247/Front`, and `GP247/Shop` using the same mechanism:
+create the corresponding controller in `app/GP247/{Core|Front|Shop}`,
+**extend the original controller**, and prepend `App` to the original
+namespace.
+
+Example, overriding a Core controller:
+
+1. Create the matching file under `app/GP247/Core/Controllers/...` (keep
+   the same sub-path and filename as in the original package).
+2. Make the new controller `extend` the original controller from
+   `vendor/gp247/core/...`.
+3. Change the namespace from `GP247\Core\Controllers` to
+   `App\GP247\Core\Controllers` (just prepend `App`, keep the rest as-is).
+
+The same pattern applies to `GP247\Front\*` and `GP247\Shop\*` (becoming
+`App\GP247\Front\*` and `App\GP247\Shop\*`) and to API controllers
+(`GP247\Core\Api\Controllers` becomes `App\GP247\Core\Api\Controllers`).
+
+### Q: How do I add new routes for the admin area?
+
+Use the `GP247_ADMIN_PREFIX` and `GP247_ADMIN_MIDDLEWARE` prefix/middleware
+constants in your route declarations.
+
+Reference: https://github.com/gp247net/core/blob/master/src/routes.php
+
+### Q: What environment variables in `.env` should I know about?
+
+**Disable the API:**
+```env
+GP247_API_MODE=1   // set to 0 to disable
+```
+
+**Database table prefix** (cannot be changed after gp247 is installed):
+```env
+GP247_DB_PREFIX=gp247_
+```
+
+**Admin page path prefix:**
+```env
+GP247_ADMIN_PREFIX=gp247_admin
+```

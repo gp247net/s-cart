@@ -14,34 +14,36 @@
 <a href="https://deepwiki.com/gp247net/s-cart"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 </p>
 
+*(English version: [README.md](README.md))*
 
-## Giới thiệu về S-Cart
-S-Cart là dự án website thương mại điện tử miễn phí tốt nhất dành cho cá nhân và doanh nghiệp, được xây dựng trên nền tảng Laravel Framework và các công nghệ mới nhất.
+# 1. Giới thiệu tổng quan
+
+S-Cart là dự án website thương mại điện tử miễn phí tốt nhất dành cho cá nhân và doanh nghiệp, được xây dựng trên hệ sinh thái GP247 (nền tảng Laravel Framework) và các công nghệ mới nhất.
+
 Mục tiêu của chúng tôi là "Hiệu quả và thân thiện cho tất cả mọi người":
 - Hiệu quả: Đáp ứng ngay cả những yêu cầu nhỏ nhất của khách hàng.
 - Thân thiện: Dễ sử dụng, dễ bảo trì, dễ phát triển.
 - Tất cả mọi người: Doanh nghiệp, cá nhân, lập trình viên, sinh viên.
 
-[Các phiên bản mới của s-cart từ năm  2025 được phát triển bởi GP247 team]
+**S-Cart 2.x:**
+> Được hỗ trợ bởi hệ thống GP247 <a href="https://github.com/gp247net">https://github.com/gp247net</a>
+>
+> Core Laravel framework 13.x <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a>
+>
+> Giao diện xây dựng trên Tailwind CSS 4
 
-Về thành phần:
+## Hình ảnh minh họa
+<img src="https://s3.ap-southeast-1.amazonaws.com/static.gp247.net/page/s-cart/sc-1.jpg">
+<img src="https://s3.ap-southeast-1.amazonaws.com/static.gp247.net/page/s-cart/sc-2.jpg">
 
-> **S-Cart** = `Laravel` + `GP247/Core` + `GP247/Front` + `GP247/Shop`
-
-## HÌNH ẢNH MINH HỌA:
-<img src="https://static.s-cart.org/guide/use/common/shop.jpg">
-<img src="https://static.s-cart.org/guide/use/common/dashboard.jpg">
-
-## Các chức năng của S-Cart:
-
-###  S-Cart - Giải pháp website thương mại điện tử  MIỄN PHÍ cho doanh nghiệp 
+## Các chức năng của S-Cart
 
 #### Tính năng cốt lõi
 - Xây dựng gói plugin theo mô hình HMVC
 - Hỗ trợ nâng cấp và vá lỗi S-Cart qua dòng lệnh
 - Tài liệu đầy đủ cho nhà phát triển và khách hàng
 
-####  Chức năng của website bán hàng chuyên nghiệp
+#### Chức năng của website bán hàng chuyên nghiệp
 - **Đa ngôn ngữ**
 - **Đa tiền tệ**
 - **Đầy đủ tính năng thương mại điện tử:**
@@ -65,7 +67,7 @@ Về thành phần:
   - Thư viện trực tuyến: plugin và template
   - Hỗ trợ API với bảo mật cho ứng dụng và tích hợp di động
 
-####  Tính năng quản trị mạnh mẽ
+#### Tính năng quản trị mạnh mẽ
 - **Quản lý người dùng**:
   - Phân quyền dựa trên vai trò (quản trị viên, quản lý, marketing, v.v.)
   - Bảo mật toàn diện với ghi nhật ký đầy đủ
@@ -76,15 +78,6 @@ Về thành phần:
   - Quản lý khách hàng
   - Phân tích và thống kê
   - Theo dõi hoạt động
-
-
-## S-Cart 1.x:
-
-
-> Được hỗ trợ bởi hệ thống GP247 <a href="https://github.com/gp247net">https://github.com/gp247net</a>
-
-> Core Laravel framework 12.x <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a>
-
 
 ## Cấu trúc thư mục website sử dụng GP247
 
@@ -113,151 +106,122 @@ Về thành phần:
     │     └── gp247/shop
     └──...
 
+---
 
-## Hướng dẫn cài đặt nhanh
+# 2. Hướng dẫn cài đặt nhanh nhất
 
-### Phương pháp 1: Cài đặt bằng Composer (Khuyến nghị)
+## Phương pháp 1: Cài đặt bằng Composer (Khuyến nghị)
 
-- **Bước 1**: 
+**1. Tạo dự án**
 
-  Tham khảo lệnh: 
-  >`composer create-project gp247/s-cart`
+```bash
+composer create-project gp247/s-cart
+```
 
-- **Bước 2**: Kiểm tra cấu hình trong tệp .env
+**2. Kiểm tra cấu hình trong tệp `.env`**
 
-  Đảm bảo rằng cấu hình cơ sở dữ liệu và thông tin APP_KEY trong tệp .env đã hoàn chỉnh.
+Đảm bảo thông tin database đã đúng. Nếu `APP_KEY` chưa có, tạo bằng:
 
-  Nếu APP_KEY chưa được thiết lập, sử dụng lệnh sau để tạo: 
-  >`php artisan key:generate`
+```bash
+php artisan key:generate
+```
 
-- **Bước 3**: Khởi tạo S-Cart
+**3. Khởi tạo S-Cart**
 
-  Chạy lệnh: 
-  >`php artisan sc:install`
+```bash
+php artisan sc:install
+```
 
-- **Bước 4**: Cài đặt dữ liệu mẫu (tùy chọn)
+**4. Cài đặt dữ liệu mẫu (tùy chọn)**
 
-  Nếu bạn muốn cài đặt dữ liệu mẫu, chạy lệnh:
-  >`php artisan sc:sample`
+```bash
+php artisan sc:sample
+```
 
-### Phương pháp 2: Cài đặt bằng Git Clone
+## Phương pháp 2: Cài đặt bằng Git Clone
 
-- **Bước 1**: Clone repository từ GitHub
+**1. Clone repository**
 
-  >`git clone https://github.com/gp247net/s-cart.git`
+```bash
+git clone https://github.com/gp247net/s-cart.git
+cd s-cart
+```
 
-- **Bước 2**: Di chuyển vào thư mục dự án
+**2. Tạo file `.env` và cài dependencies**
 
-  >`cd s-cart`
+```bash
+cp .env.example .env
+php artisan key:generate
+composer install
+```
 
-- **Bước 3**: Tạo file .env từ file mẫu
+**3. Cấu hình database trong `.env`**
 
-  >`cp .env.example .env`
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-- **Bước 4**: Tạo APP_KEY
+**4. Khởi tạo S-Cart**
 
-  >`php artisan key:generate`
+```bash
+php artisan sc:install
+php artisan sc:sample   # tùy chọn, dữ liệu mẫu
+```
 
-- **Bước 5**: Cài đặt dependencies bằng Composer
+## Phương pháp 3: Cài đặt bằng Docker (hỗ trợ từ S-Cart 2)
 
-  >`composer install`
+Không cần cài PHP/Composer/MySQL trên máy — chỉ cần Docker. Có hai file
+cấu hình **tách biệt rõ ràng** cho dev và prod, dùng đúng file cho đúng môi
+trường:
 
-- **Bước 6**: Cấu hình cơ sở dữ liệu trong file .env
+- `docker-compose.yml` — môi trường **dev** (máy cá nhân)
+- `docker-compose.prod.yml` — môi trường **prod** (server)
 
-  Chỉnh sửa các thông tin kết nối database trong file .env:
-  ```
-  DB_CONNECTION=mysql
-  DB_HOST=127.0.0.1
-  DB_PORT=3306
-  DB_DATABASE=your_database_name
-  DB_USERNAME=your_username
-  DB_PASSWORD=your_password
-  ```
+**Cài đặt DEV:**
 
-- **Bước 7**: Khởi tạo S-Cart
+```bash
+git clone https://github.com/gp247net/s-cart.git
+cd s-cart
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan sc:install
+docker compose exec app php artisan sc:sample   # tùy chọn
+```
 
-  >`php artisan sc:install`
+Truy cập website: http://localhost:8000
 
-- **Bước 8**: Cài đặt dữ liệu mẫu (tùy chọn)
+**Cài đặt PROD:**
 
-  >`php artisan sc:sample`
+```bash
+git clone https://github.com/gp247net/s-cart.git
+cd s-cart
+cp .env.example .env
+# Cấu hình .env cho prod: APP_ENV, DB_*, WWWUSER/WWWGROUP — xem DOCKER_vi.md
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan sc:install
+docker compose exec app php artisan sc:sample   # tùy chọn
+docker compose run --rm node                    # build assets CSS/JS
+```
 
-### Phương pháp 3: Cài đặt từng thành phần (Laravel + GP247/Core + GP247/Front + GP247/Shop)
+⚠️ Trên prod luôn nhớ thêm `-f docker-compose.prod.yml`, nếu không sẽ vô
+tình chạy nhầm cấu hình dev (bật debug, chạy root, cài Xdebug...) — xem chi
+tiết sự cố này ở Q&A trong [DOCKER_vi.md](DOCKER_vi.md).
 
-- **Bước 1**: Tạo dự án Laravel 12.x (hoặc sử dụng dự án có sẵn)
+Hướng dẫn đầy đủ, từng bước, cùng phần Q&A xử lý sự cố chi tiết cho cả dev
+lẫn prod, xem tại [DOCKER_vi.md](DOCKER_vi.md).
 
-  >`composer create-project laravel/laravel s-cart`
+## Lưu ý quan trọng về quyền thư mục
 
-- **Bước 2**: Di chuyển vào thư mục s-cart, và cài các thành phần GP247 theo thứ tự
-
-  >`composer require gp247/core`
-
-  >`composer require gp247/front`
-
-  >`composer require gp247/shop`
-
-- **Bước 3**: Đăng ký Service Providers
-
-  Mở file `bootstrap/providers.php`, thêm 2 provider vào cuối mảng trả về:
-
-  ```php
-  GP247\Front\FrontServiceProvider::class,
-  GP247\Shop\ShopServiceProvider::class,
-  ```
-
-- **Bước 4**: Cấu hình routing và exceptions cho GP247
-
-  Mở file `bootstrap/app.php`:
-
-  - Comment dòng cấu hình web routes:
-
-    ```php
-    //GP247 comment
-    //web: __DIR__.'/../routes/web.php',
-    ```
-
-  - Thêm xử lý exceptions (đặt trong phần cấu hình exceptions):
-
-    ```php
-    // GP247 add new
-    $exceptions->report(function (\Throwable $e) {
-        if (function_exists('gp247_handle_exception')) {
-            gp247_handle_exception($e);
-        }
-    });
-    ```
-
-- **Bước 5**: Tạo APP_KEY nếu chưa có
-
-  >`php artisan key:generate`
-
-- **Bước 6**: Cấu hình cơ sở dữ liệu trong file .env
-
-  Chỉnh sửa các thông tin kết nối database trong file .env:
-  ```
-  DB_CONNECTION=mysql
-  DB_HOST=127.0.0.1
-  DB_PORT=3306
-  DB_DATABASE=your_database_name
-  DB_USERNAME=your_username
-  DB_PASSWORD=your_password
-  ```
-
-- **Bước 7**: Lần lượt chạy các lệnh sau để cài đặt:
-
-  >`php artisan gp247:core-install`
-
-  >`php artisan gp247:front-install`
-
-  >`php artisan gp247:shop-install`
-
-- **Bước 8**: Cài đặt dữ liệu mẫu (tùy chọn)
-
-  >`php artisan gp247:shop-sample`
-
-### Lưu ý quan trọng về quyền thư mục
-
-Đảm bảo các thư mục sau có quyền ghi:
+Nếu cài đặt bằng Phương pháp 1 hoặc 2 (không dùng Docker), đảm bảo các thư
+mục sau có quyền ghi, nếu không việc cài đặt và các tính năng khác sẽ không
+hoạt động chính xác:
 - `app/GP247`
 - `public/GP247`
 - `public/vendor`
@@ -265,91 +229,114 @@ Về thành phần:
 - `storage`
 - `vendor`
 
-Nếu không có quyền ghi đúng, việc cài đặt và các tính năng khác nhau sẽ không hoạt động chính xác.
+---
 
-## Thông tin hữu ích:
+# 3. Q&A
 
-**Xem phiên bản S-Cart**
+### Q: Làm sao xem phiên bản S-Cart đang cài?
 
-(Chỉ có sẵn khi cài đặt s-cart trực tiếp)
+*(Chỉ có sẵn khi cài đặt s-cart trực tiếp, không áp dụng cho phương pháp cài từng thành phần)*
 
->`php artisan sc:info`
+```bash
+php artisan sc:info
+```
 
-**Cập nhật S-Cart**
+### Q: Làm sao cập nhật S-Cart?
 
-Cập nhật gói bằng lệnh: 
+Cập nhật từng gói bằng Composer:
 
->`composer update gp247/core`
+```bash
+composer update gp247/core
+composer update gp247/front
+composer update gp247/shop
+```
 
->`composer update gp247/front`
+Sau đó chạy (chỉ có sẵn khi cài đặt s-cart trực tiếp):
 
->`composer update gp247/shop`
+```bash
+php artisan sc:update
+```
 
-Sau đó, chạy lệnh: 
+### Q: Làm sao tạo plugin mới?
 
-(Chỉ có sẵn khi cài đặt s-cart trực tiếp)
+```bash
+php artisan gp247:make-plugin --name=PluginName
+```
 
->`php artisan sc:update`
+Tạo kèm tệp zip để phân phối:
 
-**Tạo plugin:**
+```bash
+php artisan gp247:make-plugin --name=PluginName --download=1
+```
 
->`php artisan gp247:make-plugin  --name=PluginName`
+### Q: Làm sao tạo template mới?
 
-Tạo tệp zip plugin
+```bash
+php artisan gp247:make-template --name=TemplateName
+```
 
->`php artisan gp247:make-plugin  --name=PluginName --download=1`
+Tạo kèm tệp zip để phân phối:
 
-**Tạo template:**
+```bash
+php artisan gp247:make-template --name=TemplateName --download=1
+```
 
->`php artisan gp247:make-template  --name=TemplateName`
+### Q: Làm sao tùy chỉnh cấu hình upload (lfm)?
 
-Tạo tệp zip template:
+```bash
+php artisan vendor:publish --tag=config-lfm
+```
 
->`php artisan gp247:make-template  --name=TemplateName --download=1`
+### Q: Làm sao tùy chỉnh giao diện quản trị core?
 
-## Tùy chỉnh
+```bash
+php artisan vendor:publish --tag=gp247:view-core
+```
 
+### Q: Làm sao ghi đè các hàm helper `gp247_*`?
 
-**Tùy chỉnh cấu hình lfm cho tải lên**
+1. Thêm danh sách các hàm bạn muốn ghi đè vào `config/gp247_functions_except.php`
+2. Tạo các tệp php mới chứa các hàm mới trong thư mục `app/GP247/Helpers`, ví dụ `app/GP247/Helpers/myfunction.php`
 
->`php artisan vendor:publish --tag=config-lfm`
+### Q: Làm sao ghi đè (override) controller của GP247/Core, GP247/Front, GP247/Shop?
 
-**Tùy chỉnh giao diện quản trị core**
+S-Cart cho phép ghi đè **toàn bộ** controller (kể cả controller API) trong
+`GP247/Core`, `GP247/Front`, `GP247/Shop` theo cùng một cơ chế: tạo controller
+tương ứng trong `app/GP247/{Core|Front|Shop}`, **extend lại controller gốc**,
+và thêm `App` vào phía trước namespace gốc.
 
->`php artisan vendor:publish --tag=gp247:view-core`
+Ví dụ ghi đè một controller của Core:
 
-**Ghi đè các hàm helper gp247_***
+1. Tạo file tương ứng trong `app/GP247/Core/Controllers/...` (giữ nguyên
+   đường dẫn con và tên file như trong package gốc).
+2. Cho controller mới extend lại controller gốc trong `vendor/gp247/core/...`
+3. Đổi namespace từ `GP247\Core\Controllers` thành `App\GP247\Core\Controllers`
+   (chỉ thêm `App` vào phía trước, giữ nguyên phần còn lại).
 
->Bước 1: Thêm danh sách các hàm bạn muốn ghi đè vào `config/gp247_functions_except.php`
+Áp dụng tương tự cho `GP247\Front\*`, `GP247\Shop\*` (đổi thành
+`App\GP247\Front\*`, `App\GP247\Shop\*`) và cho controller API (đổi
+`GP247\Core\Api\Controllers` thành `App\GP247\Core\Api\Controllers`).
 
->Bước 2: Tạo các tệp php mới chứa các hàm mới trong thư mục `app/GP247/Helpers`, ví dụ `app/GP247/Helpers/myfunction.php`
+### Q: Làm sao thêm route mới cho khu vực quản trị?
 
-**Ghi đè các tệp controller gp247**
-
->Bước 1: Sao chép các tệp controller bạn muốn ghi đè từ vendor/gp247/core/src/Core/Controllers -> app/GP247/Core/Controllers
-
->Bước 2: Thay đổi `namespace GP247\Core\Controllers` thành `namespace App\GP247\Core\Controllers`
-
-**Ghi đè các tệp controller API gp247**
-
->Bước 1: Sao chép các tệp controller bạn muốn ghi đè từ vendor/gp247/core/src/Api/Controllers -> app/GP247/Core/Api/Controllers
-
->Bước 2: Thay đổi `namespace GP247\Core\Api\Controllers` thành `namespace App\GP247\Core\Api\Controllers`
-
-## Thêm route
-
-Sử dụng các hằng số prefix và middleware `GP247_ADMIN_PREFIX`, `GP247_ADMIN_MIDDLEWARE` trong khai báo route.
+Sử dụng các hằng số prefix và middleware `GP247_ADMIN_PREFIX`,
+`GP247_ADMIN_MIDDLEWARE` trong khai báo route.
 
 Tham khảo: https://github.com/gp247net/core/blob/master/src/routes.php
 
+### Q: Có những biến môi trường nào trong `.env` cần biết?
 
-## Biến môi trường trong tệp .env
+**Tắt API:**
+```env
+GP247_API_MODE=1   // Để tắt, đặt giá trị 0
+```
 
-**Tắt API**
-> `GP247_API_MODE=1` // Để tắt, đặt giá trị 0
+**Tiền tố bảng dữ liệu** (không thể thay đổi sau khi cài đặt gp247):
+```env
+GP247_DB_PREFIX=gp247_
+```
 
-**Tiền tố bảng dữ liệu**
-> `GP247_DB_PREFIX=gp247_` //Không thể thay đổi sau khi cài đặt gp247
-
-**Tiền tố đường dẫn đến trang quản trị**
-> `GP247_ADMIN_PREFIX=gp247_admin` 
+**Tiền tố đường dẫn đến trang quản trị:**
+```env
+GP247_ADMIN_PREFIX=gp247_admin
+```
