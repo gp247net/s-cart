@@ -204,10 +204,10 @@ cd s-cart
 cp .env.example .env
 # Cấu hình .env cho prod: APP_ENV, DB_*, WWWUSER/WWWGROUP — xem DOCKER_vi.md
 docker compose -f docker-compose.prod.yml up -d --build
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # tùy chọn
-docker compose run --rm node                    # build assets CSS/JS
+docker compose -f docker-compose.prod.yml exec app php artisan key:generate
+docker compose -f docker-compose.prod.yml exec app php artisan sc:install
+docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # tùy chọn
+docker compose -f docker-compose.prod.yml run --rm node                    # build assets CSS/JS
 ```
 
 ⚠️ Trên prod luôn nhớ thêm `-f docker-compose.prod.yml`, nếu không sẽ vô

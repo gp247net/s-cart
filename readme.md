@@ -207,10 +207,10 @@ cd s-cart
 cp .env.example .env
 # Configure .env for prod: APP_ENV, DB_*, WWWUSER/WWWGROUP — see DOCKER.md
 docker compose -f docker-compose.prod.yml up -d --build
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # optional
-docker compose run --rm node                    # build CSS/JS assets
+docker compose -f docker-compose.prod.yml exec app php artisan key:generate
+docker compose -f docker-compose.prod.yml exec app php artisan sc:install
+docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # optional
+docker compose -f docker-compose.prod.yml run --rm node                    # build CSS/JS assets
 ```
 
 ⚠️ Always include `-f docker-compose.prod.yml` on prod — forgetting it

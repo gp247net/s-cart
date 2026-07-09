@@ -14,9 +14,18 @@
 # rationale): the project directory is mounted into the containers so
 # `git pull` + `docker compose up -d` picks up new code with no rebuild;
 # only vendor/ and node_modules/ live in named volumes for I/O performance.
+#
+# Project name, image tag and container names below are all suffixed/scoped
+# distinctly from docker-compose.yml (dev) on purpose (RISK-OPS-006,
+# NFR-SEC-005, ADR installer-deploy_docker-dev-prod-safeguards): running the
+# dev compose file by mistake on a host that's already running this prod
+# stack can, at worst, start an unrelated dev stack alongside it (or fail on
+# a port conflict) - it can no longer silently stop/replace a running prod
+# container or overwrite the prod image, which is what happened before this
+# was scoped per-environment (see DOCKER.md).
 # =============================================================================
 
-name: scart
+name: scart-prod
 
 services:
   app:
@@ -27,8 +36,8 @@ services:
         WWWUSER: ${WWWUSER:-1000}
         WWWGROUP: ${WWWGROUP:-1000}
         INSTALL_XDEBUG: "false"
-    image: scart-app:${PHP_VERSION:-8.3}
-    container_name: scart-app
+    image: scart-app:${PHP_VERSION:-8.3}-prod
+    container_name: scart-app-prod
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
@@ -61,7 +70,7 @@ services:
 
   webserver:
     image: nginx:1.27-alpine
-    container_name: scart-nginx
+    container_name: scart-nginx-prod
     depends_on:
       - app
     ports:
@@ -81,8 +90,8 @@ services:
         WWWUSER: ${WWWUSER:-1000}
         WWWGROUP: ${WWWGROUP:-1000}
         INSTALL_XDEBUG: "false"
-    image: scart-app:${PHP_VERSION:-8.3}
-    container_name: scart-queue
+    image: scart-app:${PHP_VERSION:-8.3}-prod
+    container_name: scart-queue-prod
     working_dir: /var/www/html
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     volumes:
@@ -108,8 +117,8 @@ services:
         WWWUSER: ${WWWUSER:-1000}
         WWWGROUP: ${WWWGROUP:-1000}
         INSTALL_XDEBUG: "false"
-    image: scart-app:${PHP_VERSION:-8.3}
-    container_name: scart-scheduler
+    image: scart-app:${PHP_VERSION:-8.3}-prod
+    container_name: scart-scheduler-prod
     working_dir: /var/www/html
     command: ["sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
     volumes:
@@ -132,7 +141,7 @@ services:
   # database - just point DB_HOST at it in .env.
   mysql-local:
     image: mysql:8.4
-    container_name: scart-mysql-local
+    container_name: scart-mysql-local-prod
     profiles: ["db-local"]
     restart: unless-stopped
     environment:
@@ -151,7 +160,7 @@ services:
   #   docker compose -f docker-compose.prod.yml run --rm node
   node:
     image: node:22-alpine
-    container_name: scart-node
+    container_name: scart-node-prod
     working_dir: /var/www/html
     profiles: ["tools"]
     # npm ci requires an existing package-lock.json; fall back to npm install
@@ -168,6 +177,13 @@ networks:
     driver: bridge
 
 volumes:
+  # Explicit `name:` pins below decouple volume identity from the `name:`
+  # project setting above - changing the project name (scart -> scart-prod)
+  # does not rename or orphan these, so any already-running prod deployment
+  # keeps its existing MySQL data / vendor / node_modules volumes untouched.
   scart-vendor:
+    name: scart-vendor
   scart-node-modules:
+    name: scart-node-modules
   scart-mysql-local-data-prod:
+    name: scart-mysql-local-data-prod

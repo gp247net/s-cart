@@ -77,34 +77,24 @@ WWWUSER=1000    # run `id -u` on the server
 WWWGROUP=1000   # run `id -g` on the server
 ```
 
-**2. (Optional) Shorten your commands**
-
-Every command below needs `-f docker-compose.prod.yml`. To avoid typing it
-every time, export it once per shell session:
-
-```bash
-export COMPOSE_FILE=docker-compose.prod.yml   # bash/zsh
-# $env:COMPOSE_FILE = "docker-compose.prod.yml"   # PowerShell
-```
-
-**3. Start the containers**
+**2. Start the containers**
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-**4. Install S-Cart (first time only)**
+**3. Install S-Cart (first time only)**
 
 ```bash
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # optional
+docker compose -f docker-compose.prod.yml exec app php artisan key:generate
+docker compose -f docker-compose.prod.yml exec app php artisan sc:install
+docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # optional
 ```
 
-**5. Build frontend assets**
+**4. Build frontend assets**
 
 ```bash
-docker compose run --rm node
+docker compose -f docker-compose.prod.yml run --rm node
 ```
 
 Assets aren't pre-built into the image, so run this once after install and
@@ -114,9 +104,43 @@ Your site is now live. Two database options and their exact `.env` values
 are detailed in the Q&A below: [Q: What are my two database options in
 prod, and what exact `.env` do they need?](#q-what-are-my-two-database-options-in-prod-and-what-exact-env-do-they-need)
 
+Every command above spells out `-f docker-compose.prod.yml` in full, on
+purpose. A command that's missing it silently falls back to
+`docker-compose.yml` (the DEV file) instead of erroring — see [Q: I
+accidentally ran `docker compose up -d --build` on prod (forgot `-f
+docker-compose.prod.yml`) — what happens
+now?](#q-i-accidentally-ran-docker-compose-up-d---build-on-prod-forgot--f-docker-composeprodyml--what-happens-now)
+for what that actually does. Copy these commands as-is rather than
+retyping them from memory.
+
+**(Optional) Shorten your commands**
+
+If you don't want to type `-f docker-compose.prod.yml` every time, you can
+export it once per shell session:
+
+```bash
+export COMPOSE_FILE=docker-compose.prod.yml   # bash/zsh
+# $env:COMPOSE_FILE = "docker-compose.prod.yml"   # PowerShell
+```
+
+This is a convenience for interactive sessions only — it doesn't persist
+across a new SSH login, a new terminal tab, a cron job, or a deploy script
+run non-interactively. **Don't assume it's already set** just because you
+(or someone else) exported it once before. When in doubt, in a script, or
+in CI, always use the explicit `-f docker-compose.prod.yml` form instead
+of relying on `COMPOSE_FILE`.
+
 ---
 
 ## Part 3 — Everyday commands
+
+The commands below omit `-f` for readability — they apply to whichever
+environment your current shell is already targeting. **On a production
+server, add `-f docker-compose.prod.yml` to every `docker compose` command
+below.** Don't assume `COMPOSE_FILE` is already exported for this shell
+session (see the note in Part 2) — check with `docker compose config
+--services` first if unsure, or just always type `-f docker-compose.prod.yml`
+explicitly.
 
 **Updating code after a `git pull`:**
 
@@ -224,6 +248,23 @@ is fine since you shouldn't hand-edit them anyway.
 MySQL data is likewise stored in its own named volume
 (`scart-mysql-local-data-dev` / `scart-mysql-local-data-prod`), so it also
 survives `docker compose down` (only lost via `docker compose down -v`).
+
+All three prod volumes (`scart-vendor`, `scart-node-modules`,
+`scart-mysql-local-data-prod`) have an explicit `name:` pinned in
+`docker-compose.prod.yml` (since modification `20260709T090000`), matching
+these exact literal strings — this is independent of the compose project
+name, so it doesn't change when the project name does.
+
+> **Upgrading an existing prod deployment that predates this pin?** Run
+> `docker volume ls` *before* pulling the updated `docker-compose.prod.yml`
+> and confirm the actual volume names already match the ones above. If your
+> existing prod install instead has project-prefixed volume names (e.g.
+> `scart_scart-mysql-local-data-prod`), either rename them to match with
+> `docker volume ls` + a one-time data copy, or override the `name:` field
+> in `docker-compose.prod.yml` to match your existing volume before running
+> `up`, so MySQL doesn't get mounted onto a new, empty volume. `vendor`/
+> `node_modules` are safe either way — they rebuild automatically on
+> container start (see `docker/php/entrypoint.sh`).
 
 ### Q: `composer install` fails with "process timeout" on first run — what do I do?
 
@@ -475,51 +516,45 @@ docker volume rm scart-mysql-local-data-dev   # or scart-mysql-local-data-prod
 docker compose up -d
 ```
 
-### Q: I accidentally ran `docker compose up -d --build` on prod (forgot `-f docker-compose.prod.yml`) — what happened, and how do I fix it?
+### Q: I accidentally ran `docker compose up -d --build` on prod (forgot `-f docker-compose.prod.yml`) — what happens now?
 
-This is a dangerous mistake because both compose files share the same
-project name, the same container names, and — critically — **the same
-image tag** (`scart-app:${PHP_VERSION}`). Docker will silently replace your
-running prod containers with dev-configured ones:
+**Since modification `20260709T090000` (RISK-OPS-006 / NFR-SEC-005 / ADR
+`installer-deploy_docker-dev-prod-safeguards`), this is no longer able to
+silently overwrite your running prod containers or image.** Dev
+(`docker-compose.yml`) and prod (`docker-compose.prod.yml`) now use
+distinct project names (`scart` vs `scart-prod`), distinct image tags
+(`scart-app:${PHP_VERSION}` vs `scart-app:${PHP_VERSION}-prod`), and
+distinct container names (prod's all end in `-prod`). Docker's container
+name uniqueness constraint can no longer be tripped across environments.
 
-- **`APP_DEBUG=true` goes live on production** — Laravel's debug error page
-  (stack traces, file paths, env values) becomes publicly visible on any
-  500 error.
-- **The app now runs as root** (dev hardcodes `WWWUSER=0`/`WWWGROUP=0`
-  instead of your prod `WWWUSER`/`WWWGROUP`) — any file created afterward
-  is owned by root, causing permission mismatches once you switch back.
-- **Xdebug gets installed** (`INSTALL_XDEBUG: "true"` in dev) — noticeable
-  performance hit on production.
-- **If you use the dockerized database** (`db-local` profile): dev's
-  `mysql-local` points at a *different* volume
-  (`scart-mysql-local-data-dev` instead of `...-prod`), so the running
-  container gets swapped for an empty one. It looks like your data
-  disappeared — it hasn't; the prod volume is untouched, the app is just
-  pointed at the wrong (empty) one.
-- **The Vite dev server starts automatically**, exposing port 5173 publicly
-  — unnecessary attack surface in production.
-- **The most persistent risk:** because the image tag is shared, this
-  rebuild **overwrites the image your prod containers use**. Even after
-  you correct the command to `docker compose -f docker-compose.prod.yml up
-  -d` (without `--build`), Docker won't rebuild automatically — it reuses
-  the now-dev-flavored image (root + Xdebug) since an image with that tag
-  already exists.
+What actually happens if you run the plain dev command on a host that's
+already running the prod stack:
 
-**Fix — rebuild explicitly with the prod file:**
+- A **separate, independently-named dev stack** (`scart-app`,
+  `scart-nginx`, ... — no `-prod` suffix) starts up alongside the untouched
+  prod stack (`scart-app-prod`, `scart-nginx-prod`, ...). Nothing about the
+  running prod containers or the prod image tag changes.
+- You may hit a **port conflict** instead (e.g. if `APP_PORT`/`DB_PORT`/
+  `VITE_PORT` resolve to the same host ports on both stacks) — Docker will
+  refuse to start the colliding dev service and tell you so loudly, rather
+  than silently replacing anything.
+- The dockerized MySQL volumes are also fully separate
+  (`scart-mysql-local-data-dev` vs `scart-mysql-local-data-prod`, both
+  pinned by explicit `name:` in their respective compose files), so there's
+  no risk of the prod app pointing at an empty dev volume either.
+
+**Fix — just stop the stray dev stack** (nothing needs rebuilding on the
+prod side, it was never touched):
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.yml down
 ```
 
-This rebuilds the correct prod image (non-root, no Xdebug,
-`APP_DEBUG=false`) and recreates `app`/`webserver`/`queue`/`scheduler`/
-`mysql-local` with the right config. Then check for any leftover dev-only
-container — in particular `node`, which auto-starts in dev but is
-profile-gated (`tools`) in prod, so it won't be replaced automatically:
+If you want to double check nothing prod-side was affected:
 
 ```bash
-docker compose ps
-docker stop scart-node 2>/dev/null; docker rm scart-node 2>/dev/null
+docker compose -f docker-compose.prod.yml ps   # prod containers, still -prod, still running
+docker images | grep scart-app                  # scart-app:<ver> (dev) and scart-app:<ver>-prod (prod) are separate images
 ```
 
 ### Q: What services make up this stack?

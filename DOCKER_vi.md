@@ -78,34 +78,24 @@ WWWUSER=1000    # chạy `id -u` trên server
 WWWGROUP=1000   # chạy `id -g` trên server
 ```
 
-**2. (Tùy chọn) Rút gọn lệnh**
-
-Mọi lệnh bên dưới đều cần `-f docker-compose.prod.yml`. Để khỏi gõ mỗi lần,
-export biến này một lần cho phiên shell:
-
-```bash
-export COMPOSE_FILE=docker-compose.prod.yml   # bash/zsh
-# $env:COMPOSE_FILE = "docker-compose.prod.yml"   # PowerShell
-```
-
-**3. Khởi động container**
+**2. Khởi động container**
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-**4. Cài đặt S-Cart (chỉ lần đầu)**
+**3. Cài đặt S-Cart (chỉ lần đầu)**
 
 ```bash
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # tùy chọn
+docker compose -f docker-compose.prod.yml exec app php artisan key:generate
+docker compose -f docker-compose.prod.yml exec app php artisan sc:install
+docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # tùy chọn
 ```
 
-**5. Build assets frontend**
+**4. Build assets frontend**
 
 ```bash
-docker compose run --rm node
+docker compose -f docker-compose.prod.yml run --rm node
 ```
 
 Assets không được build sẵn trong image, nên chạy lệnh này một lần sau khi
@@ -115,9 +105,41 @@ Vậy là website đã chạy. Hai lựa chọn database và giá trị `.env` c
 được nói kỹ ở Q&A: [Q: Prod có 2 lựa chọn database, `.env` mỗi lựa chọn cần
 những gì?](#q-prod-có-2-lựa-chọn-database-env-mỗi-lựa-chọn-cần-những-gì)
 
+Mọi lệnh ở trên đều ghi đầy đủ `-f docker-compose.prod.yml` có chủ đích.
+Lệnh thiếu `-f` sẽ âm thầm rơi về `docker-compose.yml` (file DEV) thay vì
+báo lỗi — xem [Q: Tôi lỡ tay chạy `docker compose up -d --build` trên prod
+(quên `-f docker-compose.prod.yml`) — giờ chuyện gì xảy
+ra?](#q-tôi-lỡ-tay-chạy-docker-compose-up-d---build-trên-prod-quên--f-docker-composeprodyml--giờ-chuyện-gì-xảy-ra)
+để biết cụ thể hậu quả. Hãy copy nguyên các lệnh trên, không gõ lại theo
+trí nhớ.
+
+**(Tùy chọn) Rút gọn lệnh**
+
+Nếu không muốn gõ `-f docker-compose.prod.yml` mỗi lần, có thể export biến
+này một lần cho phiên shell:
+
+```bash
+export COMPOSE_FILE=docker-compose.prod.yml   # bash/zsh
+# $env:COMPOSE_FILE = "docker-compose.prod.yml"   # PowerShell
+```
+
+Đây chỉ là tiện lợi cho phiên làm việc tương tác hiện tại — không tồn tại
+khi đăng nhập SSH mới, mở tab terminal mới, chạy cron job, hoặc chạy script
+deploy không tương tác. **Không được giả định biến này đã được export**
+chỉ vì bạn (hoặc ai khác) đã export nó trước đây. Khi không chắc, khi viết
+script, hoặc trong CI, luôn dùng dạng đầy đủ `-f docker-compose.prod.yml`
+thay vì dựa vào `COMPOSE_FILE`.
+
 ---
 
 ## Phần 3 — Các lệnh dùng hằng ngày
+
+Các lệnh dưới đây không ghi `-f` để ngắn gọn — chúng áp dụng cho môi trường
+mà shell hiện tại của bạn đang nhắm tới. **Trên server production, thêm
+`-f docker-compose.prod.yml` vào mọi lệnh `docker compose` dưới đây.**
+Không giả định `COMPOSE_FILE` đã được export cho phiên shell này (xem lưu ý
+ở Phần 2) — kiểm tra bằng `docker compose config --services` nếu không
+chắc, hoặc cứ luôn gõ rõ `-f docker-compose.prod.yml`.
 
 **Cập nhật code sau khi `git pull`:**
 
@@ -223,6 +245,23 @@ không nên tự sửa tay chúng.
 Dữ liệu MySQL cũng được lưu ở named volume riêng
 (`scart-mysql-local-data-dev` / `scart-mysql-local-data-prod`), nên cũng
 không mất khi `docker compose down` (chỉ mất khi `docker compose down -v`).
+
+Cả 3 volume của prod (`scart-vendor`, `scart-node-modules`,
+`scart-mysql-local-data-prod`) đã được ghim `name:` cố định trong
+`docker-compose.prod.yml` (từ modification `20260709T090000`), đúng y
+nguyên các literal string trên — độc lập với tên project, nên không đổi
+khi tên project đổi.
+
+> **Đang nâng cấp một deployment prod đã chạy từ trước khi có việc ghim
+> tên này?** Chạy `docker volume ls` **trước khi** pull
+> `docker-compose.prod.yml` mới, xác nhận tên volume thực tế đã khớp các
+> tên trên. Nếu deployment hiện tại có tên volume dạng có prefix project
+> (vd `scart_scart-mysql-local-data-prod`), hãy đổi tên volume đó để khớp
+> (hoặc sao chép dữ liệu sang volume mới) hoặc sửa lại `name:` trong
+> `docker-compose.prod.yml` cho khớp với volume hiện có trước khi chạy
+> `up` — để MySQL không bị mount vào một volume mới trống rỗng.
+> `vendor`/`node_modules` thì an toàn trong mọi trường hợp — tự rebuild lại
+> khi container khởi động (xem `docker/php/entrypoint.sh`).
 
 ### Q: `composer install` báo lỗi "process timeout" ở lần chạy đầu — xử lý sao?
 
@@ -473,49 +512,44 @@ docker volume rm scart-mysql-local-data-dev   # hoặc scart-mysql-local-data-pr
 docker compose up -d
 ```
 
-### Q: Tôi lỡ tay chạy `docker compose up -d --build` trên prod (quên `-f docker-compose.prod.yml`) — chuyện gì xảy ra và sửa sao?
+### Q: Tôi lỡ tay chạy `docker compose up -d --build` trên prod (quên `-f docker-compose.prod.yml`) — giờ chuyện gì xảy ra?
 
-Đây là lỗi khá nguy hiểm vì hai file compose dùng chung project name, chung
-tên container, và quan trọng nhất là **chung image tag**
-(`scart-app:${PHP_VERSION}`). Docker sẽ âm thầm thay container prod đang
-chạy bằng cấu hình dev:
+**Từ modification `20260709T090000` (RISK-OPS-006 / NFR-SEC-005 / ADR
+`installer-deploy_docker-dev-prod-safeguards`), lỗi này không còn ghi đè
+âm thầm container/image prod đang chạy nữa.** Dev (`docker-compose.yml`) và
+prod (`docker-compose.prod.yml`) nay dùng project name khác nhau (`scart`
+vs `scart-prod`), image tag khác nhau (`scart-app:${PHP_VERSION}` vs
+`scart-app:${PHP_VERSION}-prod`), và tên container khác nhau (mọi container
+prod đều có hậu tố `-prod`). Ràng buộc tên container duy nhất của Docker
+không còn thể bị "đụng" giữa hai môi trường.
 
-- **`APP_DEBUG=true` bị bật ngay trên production** — trang lỗi debug của
-  Laravel (stack trace, đường dẫn file, giá trị biến môi trường) sẽ hiển
-  thị công khai mỗi khi gặp lỗi 500.
-- **App chạy dưới quyền root** (dev hardcode `WWWUSER=0`/`WWWGROUP=0` thay
-  vì `WWWUSER`/`WWWGROUP` bạn đã cấu hình cho prod) — mọi file tạo ra sau đó
-  thuộc sở hữu root, gây lệch quyền khi bạn quay lại đúng cấu hình prod.
-- **Xdebug được cài vào** (`INSTALL_XDEBUG: "true"` trong dev) — giảm hiệu
-  năng đáng kể trên production.
-- **Nếu bạn dùng database đóng gói** (profile `db-local`): `mysql-local` của
-  dev trỏ vào volume *khác* (`scart-mysql-local-data-dev` thay vì
-  `...-prod`), nên container đang chạy bị thay bằng một container rỗng.
-  Trông như dữ liệu biến mất — thực ra không, volume prod vẫn còn nguyên,
-  chỉ là app đang trỏ nhầm sang volume rỗng khác.
-- **Vite dev server tự khởi động**, mở cổng 5173 ra công khai — thừa bề mặt
-  tấn công không cần thiết trên production.
-- **Rủi ro âm ỉ nguy hiểm nhất:** vì image tag dùng chung, lần build này
-  **ghi đè luôn image mà container prod đang dùng**. Kể cả khi bạn sửa lại
-  đúng lệnh `docker compose -f docker-compose.prod.yml up -d` (không kèm
-  `--build`), Docker cũng không tự build lại — nó tái sử dụng image đã bị
-  "nhiễm" cấu hình dev (root + Xdebug) vì image với tag đó đã tồn tại sẵn.
+Thực tế sẽ xảy ra nếu bạn chạy lệnh dev trên host đang chạy sẵn stack prod:
 
-**Cách sửa — build lại rõ ràng bằng file prod:**
+- Một **stack dev độc lập, tên hoàn toàn khác** (`scart-app`, `scart-nginx`,
+  ... — không có hậu tố `-prod`) khởi động song song với stack prod vẫn
+  đang chạy nguyên vẹn (`scart-app-prod`, `scart-nginx-prod`, ...). Không có
+  gì ở container hay image tag prod bị đổi.
+- Bạn có thể gặp **xung đột cổng** thay vì bị ghi đè (nếu `APP_PORT`/
+  `DB_PORT`/`VITE_PORT` của cả hai stack trùng cổng host) — Docker sẽ báo
+  lỗi rõ ràng và từ chối chạy service dev bị trùng, không âm thầm thay thế
+  bất cứ thứ gì.
+- Volume MySQL đóng gói cũng tách biệt hoàn toàn
+  (`scart-mysql-local-data-dev` vs `scart-mysql-local-data-prod`, cả hai
+  đều được ghim `name:` cố định trong file compose tương ứng), nên cũng
+  không còn rủi ro app prod bị trỏ nhầm vào volume dev rỗng.
+
+**Cách sửa — chỉ cần dừng stack dev lỡ chạy** (phía prod không hề bị động
+tới, không cần build lại gì):
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.yml down
 ```
 
-Lệnh này build lại đúng image prod (non-root, không Xdebug,
-`APP_DEBUG=false`) và tạo lại `app`/`webserver`/`queue`/`scheduler`/
-`mysql-local` theo đúng cấu hình. Sau đó kiểm tra xem còn container nào của
-dev sót lại không — đặc biệt là `node`, vì nó tự chạy trong dev nhưng ở prod
-lại bị chặn bằng profile (`tools`) nên không tự được thay thế:
+Muốn kiểm tra chắc chắn phía prod không bị ảnh hưởng:
 
 ```bash
-docker compose ps
-docker stop scart-node 2>/dev/null; docker rm scart-node 2>/dev/null
+docker compose -f docker-compose.prod.yml ps   # container prod, vẫn -prod, vẫn đang chạy
+docker images | grep scart-app                  # scart-app:<ver> (dev) và scart-app:<ver>-prod (prod) là 2 image khác nhau
 ```
 
 ### Q: Kiến trúc gồm những service nào?
