@@ -33,8 +33,8 @@ Mục tiêu của chúng tôi là "Hiệu quả và thân thiện cho tất cả
 > Giao diện xây dựng trên Tailwind CSS 4
 
 ## Hình ảnh minh họa
-<img src="https://static.gp247.net/page/s-cart/sc-1.jpg">
-<img src="https://static.gp247.net/page/s-cart/sc-2.jpg">
+<img src="https://static.gp247.net/page/sc-1.jpg">
+<img src="https://static.gp247.net/page/sc-2.jpg">
 
 ## Các chức năng của S-Cart
 
