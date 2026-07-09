@@ -98,8 +98,9 @@ Mục tiêu của chúng tôi là "Hiệu quả và thân thiện cho tất cả
     │           └── Templates(+)
     ├── resources
     │            └── views/vendor
-    │                           |── gp247-core(+) //Tùy chỉnh view core
-    │                           └── gp247-front(+) //Tùy chỉnh view front
+    │                           ├── gp247-admin(+) //Tùy chỉnh core admin
+    │                           ├── gp247-shop-admin(+) //Tùy chỉnh Shop admin
+    │                           └── gp247-front-admin(+) //Tùy chỉnh Front admin
     ├── vendor
     │     ├── gp247/core
     │     ├── gp247/front
@@ -287,11 +288,28 @@ php artisan gp247:make-template --name=TemplateName --download=1
 php artisan vendor:publish --tag=config-lfm
 ```
 
-### Q: Làm sao tùy chỉnh giao diện quản trị core?
+### Q: Làm sao tùy chỉnh giao diện quản trị?
+
+Mỗi package publish view quản trị vào riêng một thư mục
+`views/vendor/<namespace>` — chỉ publish đúng tag bạn cần override:
 
 ```bash
-php artisan vendor:publish --tag=gp247:view-core
+php artisan vendor:publish --tag=gp247:core-view        # -> views/vendor/gp247-admin
+php artisan vendor:publish --tag=gp247:front-admin      # -> views/vendor/gp247-front-admin
+php artisan vendor:publish --tag=gp247:shop-view-admin  # -> views/vendor/gp247-shop-admin
 ```
+
+Dùng thêm `--force` nếu cần ghi đè các file đã publish từ trước.
+
+### Q: Làm sao tùy chỉnh template mặc định?
+
+```bash
+php artisan vendor:publish --tag=gp247:front-view       # -> app/GP247/Templates/GP247Front
+php artisan vendor:publish --tag=gp247:front-public     # -> public/GP247/Templates/GP247Front
+php artisan vendor:publish --tag=gp247:shop-view-front  # -> app/GP247/Templates/GP247Front
+```
+
+Dùng thêm `--force` nếu cần ghi đè các file đã publish từ trước.
 
 ### Q: Làm sao ghi đè các hàm helper `gp247_*`?
 

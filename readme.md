@@ -100,8 +100,9 @@ Our mission is "Effective and friendly for everyone":
     │           └── Templates(+)
     ├── resources
     │            └── views/vendor
-    │                           |── gp247-core(+) //Core view overrides
-    │                           └── gp247-front(+) //Front view overrides
+    │                           ├── gp247-admin(+) //Core view overrides
+    │                           ├── gp247-shop-admin(+) //Shop view overrides
+    │                           └── gp247-front-admin(+) //Front view overrides
     ├── vendor
     │     ├── gp247/core
     │     ├── gp247/front
@@ -291,11 +292,28 @@ php artisan gp247:make-template --name=TemplateName --download=1
 php artisan vendor:publish --tag=config-lfm
 ```
 
-### Q: How do I customize the core admin UI?
+### Q: How do I customize the admin UI?
+
+Each package publishes its admin views into its own `views/vendor/<namespace>`
+folder — publish only the tag you actually need to override:
 
 ```bash
-php artisan vendor:publish --tag=gp247:view-core
+php artisan vendor:publish --tag=gp247:core-view        # -> views/vendor/gp247-admin
+php artisan vendor:publish --tag=gp247:front-admin      # -> views/vendor/gp247-front-admin
+php artisan vendor:publish --tag=gp247:shop-view-admin  # -> views/vendor/gp247-shop-admin
 ```
+
+Add `--force` if you need to overwrite files already published there.
+
+### Q: How do I customize the default template?
+
+```bash
+php artisan vendor:publish --tag=gp247:front-view       # -> app/GP247/Templates/GP247Front
+php artisan vendor:publish --tag=gp247:front-public     # -> public/GP247/Templates/GP247Front
+php artisan vendor:publish --tag=gp247:shop-view-front  # -> app/GP247/Templates/GP247Front
+```
+
+Add `--force` if you need to overwrite files already published there.
 
 ### Q: How do I override the `gp247_*` helper functions?
 
