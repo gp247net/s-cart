@@ -35,8 +35,8 @@ Our mission is "Effective and friendly for everyone":
 > UI built with Tailwind CSS 4
 
 ## Screenshots
-<img src="https://static.gp247.net/page/s-cart/sc-1.jpg">
-<img src="https://static.gp247.net/page/s-cart/sc-2.jpg">
+<img src="https://static.gp247.net/page/sc-1.jpg">
+<img src="https://static.gp247.net/page/sc-2.jpg">
 
 ## S-Cart features
 
