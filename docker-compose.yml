@@ -54,13 +54,21 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
-      # "app" has no published port and only ever receives traffic from the
-      # "webserver" container over the internal "scart" bridge network, so
-      # trusting '*' here doesn't expose X-Forwarded-* spoofing to the
-      # internet. Consumed via config/trustedproxy.php (see that file for
-      # the full rationale) - Docker-only setting, bare host installs need
-      # nothing.
-      TRUSTED_PROXIES: "*"
+      # Default REMOTE_ADDR trusts exactly one hop: the "webserver" (nginx)
+      # container this compose file itself ships ("app" has no published
+      # port, nginx is always its only direct peer) - it's a literal
+      # sentinel Illuminate\Http\Middleware\TrustProxies substitutes with
+      # the request's actual immediate peer at runtime, and it makes
+      # X-Forwarded-Proto work (HTTPS URL generation). Deployments that
+      # additionally sit behind an external CDN/LB (Cloudflare, GCP/AWS
+      # LB...) must ALSO trust that edge's IP ranges or request()->ip()
+      # stops at the edge's own hop in X-Forwarded-For and returns the
+      # edge's IP instead of the visitor's: set TRUSTED_PROXIES in .env
+      # (compose interpolates it here - keep REMOTE_ADDR in the list, see
+      # .env.example for ready-made values) and re-run `docker compose up
+      # -d`. Consumed via config/trustedproxy.php (full rationale there) -
+      # Docker-only setting, bare host installs need nothing.
+      TRUSTED_PROXIES: "${TRUSTED_PROXIES:-REMOTE_ADDR}"
       XDEBUG_MODE: ${XDEBUG_MODE:-develop,debug}
       XDEBUG_CONFIG: client_host=host.docker.internal
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
