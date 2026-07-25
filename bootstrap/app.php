@@ -21,8 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
         );
         // GP247 add new
         $exceptions->report(function (\Throwable $e) {
-            if (function_exists('gp247_handle_exception')) {
-                gp247_handle_exception($e);
+            try {
+                if (function_exists('gp247_handle_exception')) {
+                    gp247_handle_exception($e);
+                }
+            } catch (\Throwable $inner) {
+                \Log::error($e->getMessage(), ['exception' => $e]);
             }
         });
     })->create();
