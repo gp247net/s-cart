@@ -203,7 +203,7 @@ Truy cập website: http://localhost:8000
 git clone https://github.com/gp247net/s-cart.git
 cd s-cart
 cp .env.example .env
-# Cấu hình .env cho prod: APP_ENV, DB_*, WWWUSER/WWWGROUP — xem DOCKER_vi.md
+# Cấu hình .env cho prod: APP_ENV, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
 docker compose -f docker-compose.prod.yml exec app php artisan sc:install

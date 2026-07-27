@@ -1,4 +1,9 @@
-name: scart
+# Project name derives from SC_DOCKER_INSTANCE (default "scart" = unchanged from before).
+# Set SC_DOCKER_INSTANCE=<slug> in .env to run several independent S-Cart projects on the
+# same host - it scopes the project name, every container_name, the image tag
+# and (via project prefix) the named volumes, so two instances never collide.
+# See ADR installer-deploy_docker-multi-instance / DOCKER.md "multiple instances".
+name: ${SC_DOCKER_INSTANCE:-scart}
 
 # =============================================================================
 # DEV environment. Run with:  docker compose up -d --build
@@ -29,7 +34,7 @@ services:
     build:
       context: ./docker/php
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
+        PHP_VERSION: ${SC_DOCKER_PHP_VERSION:-8.3}
         # Hardcoded (not from .env): dev always runs the app container as
         # root - sidesteps all host bind-mount permission issues (WSL2
         # DrvFs, Linux UID mismatches...) uniformly, no per-user setup
@@ -38,8 +43,8 @@ services:
         WWWUSER: "0"
         WWWGROUP: "0"
         INSTALL_XDEBUG: "true"
-    image: scart-app:${PHP_VERSION:-8.3}
-    container_name: scart-app
+    image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-app
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
@@ -69,7 +74,7 @@ services:
       # -d`. Consumed via config/trustedproxy.php (full rationale there) -
       # Docker-only setting, bare host installs need nothing.
       TRUSTED_PROXIES: "${TRUSTED_PROXIES:-REMOTE_ADDR}"
-      XDEBUG_MODE: ${XDEBUG_MODE:-develop,debug}
+      XDEBUG_MODE: ${SC_DOCKER_XDEBUG_MODE:-develop,debug}
       XDEBUG_CONFIG: client_host=host.docker.internal
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST:-mysql-local}
@@ -86,11 +91,11 @@ services:
 
   webserver:
     image: nginx:1.27-alpine
-    container_name: scart-nginx
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-nginx
     depends_on:
       - app
     ports:
-      - "${APP_PORT:-8000}:80"
+      - "${SC_DOCKER_APP_PORT:-8000}:80"
     volumes:
       - ./:/var/www/html:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
@@ -101,12 +106,12 @@ services:
     build:
       context: ./docker/php
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
+        PHP_VERSION: ${SC_DOCKER_PHP_VERSION:-8.3}
         WWWUSER: "0"
         WWWGROUP: "0"
         INSTALL_XDEBUG: "true"
-    image: scart-app:${PHP_VERSION:-8.3}
-    container_name: scart-queue
+    image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-queue
     working_dir: /var/www/html
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     volumes:
@@ -128,12 +133,12 @@ services:
     build:
       context: ./docker/php
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
+        PHP_VERSION: ${SC_DOCKER_PHP_VERSION:-8.3}
         WWWUSER: "0"
         WWWGROUP: "0"
         INSTALL_XDEBUG: "true"
-    image: scart-app:${PHP_VERSION:-8.3}
-    container_name: scart-scheduler
+    image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-scheduler
     working_dir: /var/www/html
     command: ["sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
     volumes:
@@ -157,11 +162,11 @@ services:
   # unset COMPOSE_PROFILES and point DB_HOST at that server instead.
   mysql-local:
     image: mysql:8.4
-    container_name: scart-mysql-local
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-mysql-local
     profiles: ["db-local"]
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
+      MYSQL_ROOT_PASSWORD: ${SC_DOCKER_DB_ROOT_PASSWORD:-root_secret}
       MYSQL_DATABASE: ${DB_DATABASE:-scart}
       MYSQL_USER: ${DB_USERNAME:-scart}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
@@ -176,13 +181,13 @@ services:
   # Always-on Vite dev server with HMR for local development.
   node:
     image: node:22-alpine
-    container_name: scart-node
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-node
     working_dir: /var/www/html
     # npm ci requires an existing package-lock.json; fall back to npm install
     # (which also generates one) when it's missing, e.g. on a fresh checkout.
     command: ["sh", "-c", "if [ -f package-lock.json ]; then npm ci; else npm install; fi && npm run dev -- --host 0.0.0.0"]
     ports:
-      - "${VITE_PORT:-5173}:5173"
+      - "${SC_DOCKER_VITE_PORT:-5173}:5173"
     volumes:
       - ./:/var/www/html
       - scart-node-modules:/var/www/html/node_modules

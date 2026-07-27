@@ -46,7 +46,7 @@ docker compose exec app php artisan sc:sample   # optional: adds sample data
 - Vite dev server (asset hot-reload): http://localhost:5173
 
 Both ports and the database credentials can be changed in `.env` before step 2
-— see `APP_PORT`, `DB_*` and `COMPOSE_PROFILES`. If you want to connect to a
+— see `SC_DOCKER_APP_PORT`, `DB_*` and `COMPOSE_PROFILES`. If you want to connect to a
 remote/managed database instead of the built-in one, see [Q: How do I use a
 remote database instead of the built-in one?](#q-how-do-i-use-a-remote-database-instead-of-the-built-in-one)
 
@@ -73,8 +73,8 @@ DB_USERNAME=scar-user
 DB_PASSWORD=********
 
 # Required for prod: match the user Docker runs as on this server
-WWWUSER=1000    # run `id -u` on the server
-WWWGROUP=1000   # run `id -g` on the server
+SC_DOCKER_WWWUSER=1000    # run `id -u` on the server
+SC_DOCKER_WWWGROUP=1000   # run `id -g` on the server
 ```
 
 **2. Start the containers**
@@ -172,7 +172,7 @@ docker compose exec app sh
 docker compose down
 
 # Backup MySQL (when using the built-in database)
-docker compose exec mysql-local mysqldump -u root -p"$DB_ROOT_PASSWORD" scart > backup.sql
+docker compose exec mysql-local mysqldump -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" scart > backup.sql
 
 # Update PHP dependencies
 docker compose exec app composer update --no-interaction --optimize-autoloader
@@ -328,7 +328,7 @@ DB_PORT=3306
 DB_DATABASE=scart-db
 DB_USERNAME=scar-user
 DB_PASSWORD=********
-DB_ROOT_PASSWORD=********
+SC_DOCKER_DB_ROOT_PASSWORD=********
 COMPOSE_PROFILES=db-local
 ```
 
@@ -352,8 +352,8 @@ JS, CSS) needs neither, thanks to the bind mount and
 | `docker/php/Dockerfile` (PHP version, new extension) | **Yes** | Yes | `docker compose build app && docker compose up -d` |
 | `docker/php/php.ini` | **Yes** | Yes | `docker compose build app && docker compose up -d` |
 | `docker/php/entrypoint.sh` | **Yes** | Yes | `docker compose build app && docker compose up -d` |
-| `.env` build args (`PHP_VERSION`, `WWWUSER`, `WWWGROUP`, `INSTALL_XDEBUG`) | **Yes** | Yes | `docker compose up -d --build` |
-| `.env` runtime vars (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `APP_PORT`...) | No | Yes | `docker compose up -d` |
+| `.env` build args (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`, `SC_DOCKER_INSTALL_XDEBUG`) | **Yes** | Yes | `docker compose up -d --build` |
+| `.env` runtime vars (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `SC_DOCKER_APP_PORT`...) | No | Yes | `docker compose up -d` |
 | `docker-compose.yml` / `docker-compose.prod.yml` (new service, volume/command change) | No | Yes | `docker compose up -d` |
 | `docker/nginx/default.conf` | No | Yes | `docker compose restart webserver` |
 | `docker/mysql/my.cnf` | No | Yes | `docker compose restart mysql` |
@@ -412,7 +412,7 @@ file_put_contents(./composer.lock): Failed to open stream: Permission denied
 ```
 
 Cause: in prod, `www-data` inside the container runs as the UID/GID from
-`WWWUSER`/`WWWGROUP` (default `1000`). If you deploy/`git pull` as **root**,
+`SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP` (default `1000`). If you deploy/`git pull` as **root**,
 the project files end up owned by root, and `www-data` can't write to them.
 
 **Recommended fix** — set a default ACL once, so every future file root
@@ -426,7 +426,7 @@ setfacl -R -d -m u:1000:rwx .
 ```
 
 After this, keep deploying as root as usual — no more `chown` needed.
-Replace `1000` with your actual `WWWUSER` if it differs.
+Replace `1000` with your actual `SC_DOCKER_WWWUSER` if it differs.
 
 **Alternative** — change ownership outright (only if you can dedicate a
 UID 1000 user to deployment, since every future write must then use that
@@ -446,7 +446,7 @@ chown -R 1000:1000 /path/to/project
   **Back up `app/GP247` before re-running `sc:install`** if you've
   customized it.
 - On Linux hosts, newly published files carry the container's UID/GID
-  (mapped from `WWWUSER`/`WWWGROUP`) — you may need `chown` to edit them
+  (mapped from `SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP`) — you may need `chown` to edit them
   if that differs from your own user (reading still works, since published
   files are typically world-readable).
 
@@ -480,7 +480,7 @@ From your `.env`, forwarded by Compose into the `mysql-local` container:
 | `DB_DATABASE` | `MYSQL_DATABASE` | `scart` |
 | `DB_USERNAME` | `MYSQL_USER` | `scart` |
 | `DB_PASSWORD` | `MYSQL_PASSWORD` | `secret` |
-| `DB_ROOT_PASSWORD` | `MYSQL_ROOT_PASSWORD` | `root_secret` |
+| `SC_DOCKER_DB_ROOT_PASSWORD` | `MYSQL_ROOT_PASSWORD` | `root_secret` |
 
 (Prod has no defaults — you must set all four.) Since Laravel reads its own
 `DB_*` variables from that same `.env`, they always match automatically.
@@ -495,14 +495,14 @@ inside the container — the old volume still has the old values.
 To check what's actually inside the running container:
 
 ```bash
-docker compose exec mysql-local mysql -u root -p"$DB_ROOT_PASSWORD" -e "SHOW DATABASES;"
+docker compose exec mysql-local mysql -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" -e "SHOW DATABASES;"
 ```
 
 If it doesn't match your `.env`, either add what's missing without
 touching existing data:
 
 ```bash
-docker compose exec mysql-local mysql -u root -p"$DB_ROOT_PASSWORD" -e \
+docker compose exec mysql-local mysql -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" -e \
   "CREATE DATABASE IF NOT EXISTS your_db; \
    CREATE USER IF NOT EXISTS 'your_user'@'%' IDENTIFIED BY 'your_pass'; \
    GRANT ALL ON your_db.* TO 'your_user'@'%';"
@@ -523,7 +523,7 @@ docker compose up -d
 silently overwrite your running prod containers or image.** Dev
 (`docker-compose.yml`) and prod (`docker-compose.prod.yml`) now use
 distinct project names (`scart` vs `scart-prod`), distinct image tags
-(`scart-app:${PHP_VERSION}` vs `scart-app:${PHP_VERSION}-prod`), and
+(`scart-app:${SC_DOCKER_PHP_VERSION}` vs `scart-app:${SC_DOCKER_PHP_VERSION}-prod`), and
 distinct container names (prod's all end in `-prod`). Docker's container
 name uniqueness constraint can no longer be tripped across environments.
 
@@ -534,8 +534,8 @@ already running the prod stack:
   `scart-nginx`, ... — no `-prod` suffix) starts up alongside the untouched
   prod stack (`scart-app-prod`, `scart-nginx-prod`, ...). Nothing about the
   running prod containers or the prod image tag changes.
-- You may hit a **port conflict** instead (e.g. if `APP_PORT`/`DB_PORT`/
-  `VITE_PORT` resolve to the same host ports on both stacks) — Docker will
+- You may hit a **port conflict** instead (e.g. if `SC_DOCKER_APP_PORT`/`DB_PORT`/
+  `SC_DOCKER_VITE_PORT` resolve to the same host ports on both stacks) — Docker will
   refuse to start the colliding dev service and tell you so loudly, rather
   than silently replacing anything.
 - The dockerized MySQL volumes are also fully separate
@@ -556,6 +556,62 @@ If you want to double check nothing prod-side was affected:
 docker compose -f docker-compose.prod.yml ps   # prod containers, still -prod, still running
 docker images | grep scart-app                  # scart-app:<ver> (dev) and scart-app:<ver>-prod (prod) are separate images
 ```
+
+### Q: Can I run several independent S-Cart projects on one host? (multiple instances)
+
+Yes. Docker already isolates stacks by *project name*, and the compose files
+derive every host-global identifier from a single `SC_DOCKER_INSTANCE` variable, so each
+project gets its own containers, image tag and data volumes with no collisions.
+
+**By default (no `SC_DOCKER_INSTANCE` set) nothing changes** — the project is still
+`scart`/`scart-prod`, containers are still `scart-app`…, the volume is still
+`scart-vendor`… So an existing single-project deployment keeps working exactly
+as before, with no rename and no data migration.
+
+To add a second (third, …) project on the same host:
+
+1. Put each project in its **own directory** (each one bind-mounts its own
+   `./` as the app root).
+2. In that project's `.env`, set a **unique** slug and its **own ports**:
+
+   ```env
+   SC_DOCKER_INSTANCE=shopa          # unique per project: shopa, shopb, …
+   SC_DOCKER_APP_PORT=8001           # distinct host ports per project
+   SC_DOCKER_VITE_PORT=5174
+   DB_PORT=3307
+   ```
+
+3. Start it as usual (`docker compose up -d --build`, or with
+   `-f docker-compose.prod.yml` for prod).
+
+`SC_DOCKER_INSTANCE` scopes all of these at once, so two instances never clash:
+
+| Identifier | `SC_DOCKER_INSTANCE` unset (default) | `SC_DOCKER_INSTANCE=shopa` |
+|---|---|---|
+| Project name (dev / prod) | `scart` / `scart-prod` | `shopa` / `shopa-prod` |
+| Container names | `scart-app`, `scart-nginx`, … | `shopa-app`, `shopa-nginx`, … |
+| Image tag (dev / prod) | `scart-app:8.3` / `…-prod` | `scart-app:8.3-shopa` / `…-shopa-prod` |
+| Named volumes (prod) | `scart-vendor`, `scart-mysql-local-data-prod`, … | `shopa-vendor`, `shopa-mysql-local-data-prod`, … |
+
+Each instance therefore has its **own MySQL data volume** — there's no way for
+one project to mount another's database (see RISK-OPS-009). This composes with
+the dev/prod split from the previous Q: identity is always `<instance>-<env>`,
+so `SC_DOCKER_INSTANCE=scart` (the default) reproduces exactly the old names.
+
+**Managing ports at scale — use a reverse proxy.** Handing out distinct ports
+by hand gets tedious past a couple of sites. In production, front the stacks
+with a reverse proxy (Traefik, Caddy, or a plain host Nginx) that publishes
+only `80`/`443` and routes by domain to each instance's internal `webserver`
+container. Then the per-instance stacks don't need to publish `SC_DOCKER_APP_PORT` on the
+host at all (bind to loopback or drop the published port), and you get central
+TLS. This is the recommended layout for hosting many client sites on one box.
+
+**Resource ceiling.** Each instance is ~4–6 containers (app, nginx, queue,
+scheduler, and optionally mysql + node), so RAM/CPU scales with the number of
+instances — a small VPS holds only a handful. To pack more per host, point the
+instances at a **shared/managed database** (each with its own `DB_DATABASE`,
+`COMPOSE_PROFILES=` so no per-stack `mysql-local`) instead of one MySQL
+container per project. See NFR-SCAL-003 / NFR-SCAL-001.
 
 ### Q: What services make up this stack?
 

@@ -25,19 +25,27 @@
 # was scoped per-environment (see DOCKER.md).
 # =============================================================================
 
-name: scart-prod
+# Project name derives from SC_DOCKER_INSTANCE (default "scart" -> "scart-prod", unchanged
+# from before). Set SC_DOCKER_INSTANCE=<slug> in .env to run several independent S-Cart
+# projects on the same host: it scopes the project name (<slug>-prod), every
+# container_name (<slug>-<svc>-prod), the image tag and the named volumes below,
+# so two production instances never collide or share a MySQL data volume. This
+# composes with the dev/prod suffix (ADR-017): identity is <instance>-<env>, and
+# the default SC_DOCKER_INSTANCE=scart reproduces exactly the previous scart-prod names.
+# See ADR installer-deploy_docker-multi-instance / DOCKER.md "multiple instances".
+name: ${SC_DOCKER_INSTANCE:-scart}-prod
 
 services:
   app:
     build:
       context: ./docker/php
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
-        WWWUSER: ${WWWUSER:-1000}
-        WWWGROUP: ${WWWGROUP:-1000}
+        PHP_VERSION: ${SC_DOCKER_PHP_VERSION:-8.3}
+        WWWUSER: ${SC_DOCKER_WWWUSER:-1000}
+        WWWGROUP: ${SC_DOCKER_WWWGROUP:-1000}
         INSTALL_XDEBUG: "false"
-    image: scart-app:${PHP_VERSION:-8.3}-prod
-    container_name: scart-app-prod
+    image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}-prod
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-app-prod
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
@@ -78,11 +86,11 @@ services:
 
   webserver:
     image: nginx:1.27-alpine
-    container_name: scart-nginx-prod
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-nginx-prod
     depends_on:
       - app
     ports:
-      - "${APP_PORT:-80}:80"
+      - "${SC_DOCKER_APP_PORT:-80}:80"
     volumes:
       - ./:/var/www/html:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
@@ -94,12 +102,12 @@ services:
     build:
       context: ./docker/php
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
-        WWWUSER: ${WWWUSER:-1000}
-        WWWGROUP: ${WWWGROUP:-1000}
+        PHP_VERSION: ${SC_DOCKER_PHP_VERSION:-8.3}
+        WWWUSER: ${SC_DOCKER_WWWUSER:-1000}
+        WWWGROUP: ${SC_DOCKER_WWWGROUP:-1000}
         INSTALL_XDEBUG: "false"
-    image: scart-app:${PHP_VERSION:-8.3}-prod
-    container_name: scart-queue-prod
+    image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}-prod
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-queue-prod
     working_dir: /var/www/html
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     volumes:
@@ -121,12 +129,12 @@ services:
     build:
       context: ./docker/php
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
-        WWWUSER: ${WWWUSER:-1000}
-        WWWGROUP: ${WWWGROUP:-1000}
+        PHP_VERSION: ${SC_DOCKER_PHP_VERSION:-8.3}
+        WWWUSER: ${SC_DOCKER_WWWUSER:-1000}
+        WWWGROUP: ${SC_DOCKER_WWWGROUP:-1000}
         INSTALL_XDEBUG: "false"
-    image: scart-app:${PHP_VERSION:-8.3}-prod
-    container_name: scart-scheduler-prod
+    image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}-prod
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-scheduler-prod
     working_dir: /var/www/html
     command: ["sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
     volumes:
@@ -149,11 +157,11 @@ services:
   # database - just point DB_HOST at it in .env.
   mysql-local:
     image: mysql:8.4
-    container_name: scart-mysql-local-prod
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-mysql-local-prod
     profiles: ["db-local"]
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${SC_DOCKER_DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
@@ -168,7 +176,7 @@ services:
   #   docker compose -f docker-compose.prod.yml run --rm node
   node:
     image: node:22-alpine
-    container_name: scart-node-prod
+    container_name: ${SC_DOCKER_INSTANCE:-scart}-node-prod
     working_dir: /var/www/html
     profiles: ["tools"]
     # npm ci requires an existing package-lock.json; fall back to npm install
@@ -185,13 +193,21 @@ networks:
     driver: bridge
 
 volumes:
-  # Explicit `name:` pins below decouple volume identity from the `name:`
-  # project setting above - changing the project name (scart -> scart-prod)
-  # does not rename or orphan these, so any already-running prod deployment
-  # keeps its existing MySQL data / vendor / node_modules volumes untouched.
+  # Explicit `name:` pins below decouple volume identity from the compose
+  # `name:` project setting above - changing the project name (scart ->
+  # scart-prod) does not rename or orphan these, so any already-running prod
+  # deployment keeps its existing MySQL data / vendor / node_modules volumes
+  # untouched.
+  #
+  # The ${SC_DOCKER_INSTANCE:-scart} prefix keeps the DEFAULT names byte-for-byte
+  # identical to before (SC_DOCKER_INSTANCE unset -> "scart-vendor" etc.), so existing
+  # single-instance prod deployments are unaffected; only when you set
+  # SC_DOCKER_INSTANCE=<slug> for a second project do the volumes become
+  # "<slug>-vendor" / "<slug>-mysql-local-data-prod", giving each instance its
+  # OWN MySQL data volume (no cross-instance data mixing - see RISK-OPS-009).
   scart-vendor:
-    name: scart-vendor
+    name: ${SC_DOCKER_INSTANCE:-scart}-vendor
   scart-node-modules:
-    name: scart-node-modules
+    name: ${SC_DOCKER_INSTANCE:-scart}-node-modules
   scart-mysql-local-data-prod:
-    name: scart-mysql-local-data-prod
+    name: ${SC_DOCKER_INSTANCE:-scart}-mysql-local-data-prod
