@@ -1,18 +1,15 @@
-<p align="center">
-    <a href="https://gp247.net"><img src="https://gp247.net/GP247/Core/logo/logo.png" width="150"></a>
-</p>
-<p align="center">Free, open-source software for e-commerce websites<br>
-    <code><b>composer create-project gp247/s-cart</b></code></p>
-<p align="center">
- <a href="https://gp247.net">Homepage</a> | <a href="https://demo.s-cart.org">Demo</a> | <a href="https://gp247.net/en/docs/s-cart/s-cart-overview.html">Documentation</a>  | <a href="https://www.facebook.com/groups/scart.opensource">FB Group</a>
-</p>
+[![S-Cart](https://gp247.net/GP247/Core/logo/logo.png)](https://gp247.net)
 
-<p align="center">
-<a href="https://packagist.org/packages/gp247/s-cart"><img src="https://poser.pugx.org/gp247/s-cart/d/total" alt="Packagist Downloads"></a>
-<a href="https://github.com/gp247net/s-cart/releases"><img src="https://poser.pugx.org/gp247/s-cart/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://github.com/gp247net/s-cart/blob/master/LICENSE"><img src="https://poser.pugx.org/gp247/s-cart/license" alt="License"></a>
-<a href="https://deepwiki.com/gp247net/s-cart"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-</p>
+Free, open-source software for e-commerce websites
+
+`composer create-project gp247/s-cart`
+
+[Homepage](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Documentation](https://gp247.net/en/docs/s-cart/s-cart-overview.html) | [FB Group](https://www.facebook.com/groups/scart.opensource)
+
+[![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart)
+[![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases)
+[![License](https://poser.pugx.org/gp247/s-cart/license)](https://github.com/gp247net/s-cart/blob/master/LICENSE)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
 
 *(Vietnamese version: [README_vi.md](README_vi.md))*
 
@@ -28,15 +25,17 @@ Our mission is "Effective and friendly for everyone":
 - Everyone: businesses, individuals, developers, students.
 
 **S-Cart 2.x:**
-> Backed by the GP247 ecosystem <a href="https://github.com/gp247net">https://github.com/gp247net</a>
+> Backed by the GP247 ecosystem <https://github.com/gp247net>
 >
-> Core Laravel framework 13.x <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a>
+> Core Laravel framework 13.x <https://github.com/laravel/laravel>
 >
 > UI built with Tailwind CSS 4
 
 ## Screenshots
-<img src="https://static.gp247.net/page/sc-1.jpg">
-<img src="https://static.gp247.net/page/sc-2.jpg">
+
+![S-Cart screenshot 1](https://static.gp247.net/page/sc-1.jpg)
+
+![S-Cart screenshot 2](https://static.gp247.net/page/sc-2.jpg)
 
 ## S-Cart features
 

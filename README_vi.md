@@ -1,18 +1,15 @@
-<p align="center">
-    <a href="https://gp247.net"><img src="https://gp247.net/GP247/Core/logo/logo.png" width="150"></a>
-</p>
-<p align="center">Mã nguồn mở miễn phí cho website thương mại điện tử<br>
-    <code><b>composer create-project gp247/s-cart</b></code></p>
-<p align="center">
- <a href="https://gp247.net">Trang chủ</a> | <a href="https://demo.s-cart.org">Demo</a> | <a href="https://gp247.net/en/docs/s-cart/s-cart-overview.html">Tài liệu</a>  | <a href="https://www.facebook.com/groups/scart.opensource">Nhóm FB</a>
-</p>
+[![S-Cart](https://gp247.net/GP247/Core/logo/logo.png)](https://gp247.net)
 
-<p align="center">
-<a href="https://packagist.org/packages/gp247/s-cart"><img src="https://poser.pugx.org/gp247/s-cart/d/total" alt="Packagist Downloads"></a>
-<a href="https://github.com/gp247net/s-cart/releases"><img src="https://poser.pugx.org/gp247/s-cart/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://github.com/gp247net/s-cart/blob/master/LICENSE"><img src="https://poser.pugx.org/gp247/s-cart/license" alt="License"></a>
-<a href="https://deepwiki.com/gp247net/s-cart"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-</p>
+Mã nguồn mở miễn phí cho website thương mại điện tử
+
+`composer create-project gp247/s-cart`
+
+[Trang chủ](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Tài liệu](https://gp247.net/en/docs/s-cart/s-cart-overview.html) | [Nhóm FB](https://www.facebook.com/groups/scart.opensource)
+
+[![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart)
+[![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases)
+[![License](https://poser.pugx.org/gp247/s-cart/license)](https://github.com/gp247net/s-cart/blob/master/LICENSE)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
 
 *(English version: [README.md](README.md))*
 
@@ -26,15 +23,17 @@ Mục tiêu của chúng tôi là "Hiệu quả và thân thiện cho tất cả
 - Tất cả mọi người: Doanh nghiệp, cá nhân, lập trình viên, sinh viên.
 
 **S-Cart 2.x:**
-> Được hỗ trợ bởi hệ thống GP247 <a href="https://github.com/gp247net">https://github.com/gp247net</a>
+> Được hỗ trợ bởi hệ thống GP247 <https://github.com/gp247net>
 >
-> Core Laravel framework 13.x <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a>
+> Core Laravel framework 13.x <https://github.com/laravel/laravel>
 >
 > Giao diện xây dựng trên Tailwind CSS 4
 
 ## Hình ảnh minh họa
-<img src="https://static.gp247.net/page/sc-1.jpg">
-<img src="https://static.gp247.net/page/sc-2.jpg">
+
+![Ảnh minh họa S-Cart 1](https://static.gp247.net/page/sc-1.jpg)
+
+![Ảnh minh họa S-Cart 2](https://static.gp247.net/page/sc-2.jpg)
 
 ## Các chức năng của S-Cart
 
