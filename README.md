@@ -262,6 +262,23 @@ Then run (only available when S-Cart is installed directly):
 php artisan sc:update
 ```
 
+**Optional — refresh published assets/views to the latest version.**
+`composer update` and `sc:update` only refresh the code under `vendor/`; the
+files already copied to `public/GP247` and `app/GP247` are **not** overwritten
+automatically. If a new release ships updated compiled CSS/JS or default
+template/views and you want them on your site, re-publish with `--force`:
+
+```bash
+php artisan vendor:publish --tag=gp247:core-public --force    # -> public/GP247 (admin build: CSS/JS, ...)
+php artisan vendor:publish --tag=gp247:front-public --force   # -> public/GP247/Templates/GP247Front (storefront CSS/JS)
+php artisan vendor:publish --tag=gp247:front-view --force     # -> app/GP247/Templates/GP247Front (default template views)
+```
+
+> ⚠️ `--force` **overwrites** the destination files — including any local
+> customizations you made there (custom logo/images, edited template Blade
+> files, etc.). **Back up `public/GP247` and `app/GP247` first**, and publish
+> only the tag you actually need.
+
 ### Q: How do I create a new plugin?
 
 ```bash

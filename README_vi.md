@@ -258,6 +258,23 @@ Sau đó chạy (chỉ có sẵn khi cài đặt s-cart trực tiếp):
 php artisan sc:update
 ```
 
+**Tùy chọn — cập nhật lại asset/view đã publish lên bản mới nhất.**
+`composer update` và `sc:update` chỉ cập nhật code trong `vendor/`; các file đã
+được copy ra `public/GP247` và `app/GP247` **không** tự động được ghi đè. Nếu
+bản phát hành mới có thay đổi CSS/JS đã build sẵn hoặc template/view mặc định và
+bạn muốn áp dụng lên site, hãy publish lại kèm `--force`:
+
+```bash
+php artisan vendor:publish --tag=gp247:core-public --force    # -> public/GP247 (build admin: CSS/JS, ...)
+php artisan vendor:publish --tag=gp247:front-public --force   # -> public/GP247/Templates/GP247Front (CSS/JS storefront)
+php artisan vendor:publish --tag=gp247:front-view --force     # -> app/GP247/Templates/GP247Front (view template mặc định)
+```
+
+> ⚠️ `--force` sẽ **ghi đè** các file ở thư mục đích — bao gồm cả những tùy
+> chỉnh cục bộ bạn đã sửa ở đó (logo/ảnh tùy biến, file Blade template đã chỉnh,
+> v.v.). **Hãy backup `public/GP247` và `app/GP247` trước**, và chỉ publish đúng
+> tag bạn thực sự cần.
+
 ### Q: Làm sao tạo plugin mới?
 
 ```bash
