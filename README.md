@@ -1,17 +1,17 @@
 [![S-Cart](https://gp247.net/GP247/Core/logo/logo.png)](https://gp247.net)
 
-Free, open-source software for e-commerce websites
+> 🌐 **Language:** 🇬🇧 English (current) · [🇻🇳 Tiếng Việt](README_vi.md)
 
-`composer create-project gp247/s-cart`
+S-Cart is a free e-commerce website project for businesses
 
-[Homepage](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Documentation](https://gp247.net/en/docs/s-cart/s-cart-overview.html) | [FB Group](https://www.facebook.com/groups/scart.opensource)
+> **composer create-project gp247/s-cart**
+
+[Homepage](https://gp247.net) | [Demo](https://demo.s-cart.org) | [GP247 documentation](https://github.com/gp247net/gp247-docs) | [GP247 agent skills](https://github.com/gp247net/gp247-skills) | [FB Group](https://www.facebook.com/groups/scart.opensource)
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart)
 [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases)
 [![License](https://poser.pugx.org/gp247/s-cart/license)](https://github.com/gp247net/s-cart/blob/master/LICENSE)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
-
-*(Vietnamese version: [README_vi.md](README_vi.md))*
 
 # 1. Overview
 
@@ -23,6 +23,7 @@ Our mission is "Effective and friendly for everyone":
 - Effective: meets even the smallest customer requirements.
 - Friendly: easy to use, easy to maintain, easy to extend.
 - Everyone: businesses, individuals, developers, students.
+- AI-agent-friendly: a clear structure and standardized docs/skills so AI agents can understand the project and assist development.
 
 **S-Cart 2.x:**
 > Backed by the GP247 ecosystem <https://github.com/gp247net>

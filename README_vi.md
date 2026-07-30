@@ -1,17 +1,17 @@
 [![S-Cart](https://gp247.net/GP247/Core/logo/logo.png)](https://gp247.net)
 
-Mã nguồn mở miễn phí cho website thương mại điện tử
+> 🌐 **Ngôn ngữ:** 🇻🇳 Tiếng Việt (hiện tại) · [🇬🇧 English](README.md)
 
-`composer create-project gp247/s-cart`
+S-Cart là dự án website thương mại điện tử miễn phí dành cho doanh nghiệp
 
-[Trang chủ](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Tài liệu](https://gp247.net/en/docs/s-cart/s-cart-overview.html) | [Nhóm FB](https://www.facebook.com/groups/scart.opensource)
+> **composer create-project gp247/s-cart**
+
+[Trang chủ](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Tài liệu](https://gp247.net/en/docs/s-cart/s-cart-overview.html) | [Tài liệu GP247](https://github.com/gp247net/gp247-docs) | [Skill agent GP247](https://github.com/gp247net/gp247-skills) | [Nhóm FB](https://www.facebook.com/groups/scart.opensource)
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart)
 [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases)
 [![License](https://poser.pugx.org/gp247/s-cart/license)](https://github.com/gp247net/s-cart/blob/master/LICENSE)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
-
-*(English version: [README.md](README.md))*
 
 # 1. Giới thiệu tổng quan
 
@@ -21,6 +21,7 @@ Mục tiêu của chúng tôi là "Hiệu quả và thân thiện cho tất cả
 - Hiệu quả: Đáp ứng ngay cả những yêu cầu nhỏ nhất của khách hàng.
 - Thân thiện: Dễ sử dụng, dễ bảo trì, dễ phát triển.
 - Tất cả mọi người: Doanh nghiệp, cá nhân, lập trình viên, sinh viên.
+- Thân thiện với AI agent: Cấu trúc rõ ràng, tài liệu và skill chuẩn hoá để AI agent dễ hiểu dự án và hỗ trợ phát triển.
 
 **S-Cart 2.x:**
 > Được hỗ trợ bởi hệ thống GP247 <https://github.com/gp247net>
