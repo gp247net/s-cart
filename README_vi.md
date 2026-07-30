@@ -1,4 +1,11 @@
-[![S-Cart](https://gp247.net/GP247/Core/logo/logo.png)](https://gp247.net)
+```
+  _____  _____     ___  _  _   _____ 
+ / ____|  __ \   |__ \| || | |___  |
+| |  __| |__) |     ) | || |_   / / 
+| | |_ |  ___/     / /|__   _| / /  
+| |__| | |        / /_   | |  / /   
+ \_____|_|       |____|  |_| /_/    
+```
 
 > 🌐 **Ngôn ngữ:** 🇻🇳 Tiếng Việt (hiện tại) · [🇬🇧 English](README.md)
 
@@ -6,7 +13,7 @@ S-Cart là dự án website thương mại điện tử miễn phí dành cho do
 
 > **composer create-project gp247/s-cart**
 
-[Trang chủ](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Tài liệu](https://gp247.net/en/docs/s-cart/s-cart-overview.html) | [Tài liệu GP247](https://github.com/gp247net/gp247-docs) | [Skill agent GP247](https://github.com/gp247net/gp247-skills) | [Nhóm FB](https://www.facebook.com/groups/scart.opensource)
+[Trang chủ](https://gp247.net) | [Demo](https://demo.s-cart.org) | [Tài liệu GP247](https://github.com/gp247net/gp247-docs) | [Skill agent GP247](https://github.com/gp247net/gp247-skills) | [Nhóm FB](https://www.facebook.com/groups/scart.opensource)
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart)
 [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases)
