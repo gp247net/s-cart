@@ -118,10 +118,10 @@ composer create-project gp247/s-cart
 php artisan key:generate
 
 # 3. Install S-Cart
-php artisan sc:install
+php artisan gp247:install
 
 # 4. (Optional) Install sample data
-php artisan sc:sample
+php artisan gp247:shop-sample
 ```
 
 ### Method 2 — Git clone
@@ -151,8 +151,8 @@ DB_PASSWORD=your_password
 Then install:
 
 ```bash
-php artisan sc:install
-php artisan sc:sample   # optional, sample data
+php artisan gp247:install
+php artisan gp247:shop-sample   # optional, sample data
 ```
 
 ### Method 3 — Docker
@@ -174,8 +174,8 @@ cd s-cart
 cp .env.example .env
 docker compose up -d --build
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # optional
+docker compose exec app php artisan gp247:install --force=1
+docker compose exec app php artisan gp247:shop-sample   # optional
 ```
 
 Open the site: <http://localhost:8000>
@@ -189,8 +189,8 @@ cp .env.example .env
 # Configure .env for prod: APP_ENV, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
-docker compose -f docker-compose.prod.yml exec app php artisan sc:install
-docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # optional
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:install --force=1
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:shop-sample   # optional
 docker compose -f docker-compose.prod.yml run --rm node                    # build CSS/JS assets
 ```
 
@@ -248,12 +248,15 @@ Website-folder/
 
 ## ❓ FAQ
 
+> 📖 **Full command-line reference.** The commands below cover the common cases.
+> For every GP247 artisan command, its options and examples, see the official
+> reference: [English](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference.md)
+> · [Tiếng Việt](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference_vi.md).
+
 ### How do I check the installed S-Cart version?
 
-*(Only available when S-Cart is installed directly, not via the component-by-component method.)*
-
 ```bash
-php artisan sc:info
+php artisan gp247:info
 ```
 
 ### How do I update S-Cart?
@@ -266,14 +269,24 @@ composer update gp247/front
 composer update gp247/shop
 ```
 
-Then run (only available when S-Cart is installed directly):
+Then run the safe, non-destructive refresh (updates core, updates the shop
+schema when the shop module is installed, and rebuilds the caches):
 
 ```bash
-php artisan sc:update
+php artisan gp247:update
+```
+
+**Optional — refresh language files.** By default `gp247:update` leaves your
+translations untouched. Add `--overwrite-lang` to also run
+`gp247:language-update`, which pulls the latest translations and **overwrites
+any language strings you edited**:
+
+```bash
+php artisan gp247:update --overwrite-lang
 ```
 
 **Optional — refresh published assets/views to the latest version.**
-`composer update` and `sc:update` only refresh the code under `vendor/`; the
+`composer update` and `gp247:update` only refresh the code under `vendor/`; the
 files already copied to `public/GP247` and `app/GP247` are **not** overwritten
 automatically. If a new release ships updated compiled CSS/JS or default
 template/views and you want them on your site, re-publish with `--force`:
@@ -288,6 +301,21 @@ php artisan vendor:publish --tag=gp247:front-view --force     # -> app/GP247/Tem
 > customizations you made there (custom logo/images, edited template Blade
 > files, etc.). **Back up `public/GP247` and `app/GP247` first**, and publish
 > only the tag you actually need.
+
+You can also fold the re-publish into the refresh itself with the **opt-in**
+`--publish=<tokens>` option (default publishes nothing). Only `core-public` is
+safe (compiled admin assets); the view/template tokens overwrite your
+customizations, so back up first:
+
+```bash
+php artisan gp247:update --publish=core-public          # safe: refresh admin CSS/JS
+php artisan gp247:update --publish=core-public,front-view # also overwrite storefront templates (DESTRUCTIVE)
+```
+
+There is no `--force` flag on `gp247:update` — typing a destructive token is
+the consent, and an interactive run still warns and asks to confirm. See the
+[CLI reference](gp247-docs/system/command-line-reference.md) for the full
+token → destination → impact table.
 
 ### How do I create a new plugin?
 

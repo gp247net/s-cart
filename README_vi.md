@@ -120,10 +120,10 @@ composer create-project gp247/s-cart
 php artisan key:generate
 
 # 3. Khởi tạo S-Cart
-php artisan sc:install
+php artisan gp247:install
 
 # 4. (Tùy chọn) Cài dữ liệu mẫu
-php artisan sc:sample
+php artisan gp247:shop-sample
 ```
 
 ### Phương pháp 2 — Git clone
@@ -153,8 +153,8 @@ DB_PASSWORD=your_password
 Sau đó khởi tạo:
 
 ```bash
-php artisan sc:install
-php artisan sc:sample   # tùy chọn, dữ liệu mẫu
+php artisan gp247:install
+php artisan gp247:shop-sample   # tùy chọn, dữ liệu mẫu
 ```
 
 ### Phương pháp 3 — Docker
@@ -176,8 +176,8 @@ cd s-cart
 cp .env.example .env
 docker compose up -d --build
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # tùy chọn
+docker compose exec app php artisan gp247:install --force=1
+docker compose exec app php artisan gp247:shop-sample   # tùy chọn
 ```
 
 Truy cập website: <http://localhost:8000>
@@ -191,8 +191,8 @@ cp .env.example .env
 # Cấu hình .env cho prod: APP_ENV, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
-docker compose -f docker-compose.prod.yml exec app php artisan sc:install
-docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # tùy chọn
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:install --force=1
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:shop-sample   # tùy chọn
 docker compose -f docker-compose.prod.yml run --rm node                    # build assets CSS/JS
 ```
 
@@ -249,12 +249,15 @@ Website-folder/
 
 ## ❓ Câu hỏi thường gặp
 
+> 📖 **Tham chiếu dòng lệnh đầy đủ.** Các lệnh bên dưới chỉ bao các trường hợp
+> thông dụng. Xem tất cả lệnh artisan của GP247 cùng tùy chọn và ví dụ trong tài
+> liệu chính thức: [Tiếng Việt](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference_vi.md)
+> · [English](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference.md).
+
 ### Làm sao xem phiên bản S-Cart đang cài?
 
-*(Chỉ có sẵn khi cài đặt s-cart trực tiếp, không áp dụng cho phương pháp cài từng thành phần.)*
-
 ```bash
-php artisan sc:info
+php artisan gp247:info
 ```
 
 ### Làm sao cập nhật S-Cart?
@@ -267,14 +270,23 @@ composer update gp247/front
 composer update gp247/shop
 ```
 
-Sau đó chạy (chỉ có sẵn khi cài đặt s-cart trực tiếp):
+Sau đó chạy lệnh refresh an toàn, không phá dữ liệu (cập nhật core, cập nhật
+schema shop nếu có module shop, và rebuild cache):
 
 ```bash
-php artisan sc:update
+php artisan gp247:update
+```
+
+**Tùy chọn — cập nhật lại file ngôn ngữ.** Mặc định `gp247:update` giữ nguyên
+bản dịch của bạn. Thêm `--overwrite-lang` để chạy thêm `gp247:language-update`,
+lệnh này kéo bản dịch mới nhất và **ghi đè mọi chuỗi ngôn ngữ bạn đã sửa**:
+
+```bash
+php artisan gp247:update --overwrite-lang
 ```
 
 **Tùy chọn — cập nhật lại asset/view đã publish lên bản mới nhất.**
-`composer update` và `sc:update` chỉ cập nhật code trong `vendor/`; các file đã
+`composer update` và `gp247:update` chỉ cập nhật code trong `vendor/`; các file đã
 được copy ra `public/GP247` và `app/GP247` **không** tự động được ghi đè. Nếu
 bản phát hành mới có thay đổi CSS/JS đã build sẵn hoặc template/view mặc định và
 bạn muốn áp dụng lên site, hãy publish lại kèm `--force`:
@@ -289,6 +301,21 @@ php artisan vendor:publish --tag=gp247:front-view --force     # -> app/GP247/Tem
 > chỉnh cục bộ bạn đã sửa ở đó (logo/ảnh tùy biến, file Blade template đã chỉnh,
 > v.v.). **Hãy backup `public/GP247` và `app/GP247` trước**, và chỉ publish đúng
 > tag bạn thực sự cần.
+
+Bạn cũng có thể gộp bước re-publish vào ngay lệnh refresh bằng option **tùy chọn**
+`--publish=<tokens>` (mặc định không publish gì). Chỉ `core-public` là an toàn
+(asset admin đã build); các token view/template sẽ ghi đè tùy biến của bạn, nên
+hãy backup trước:
+
+```bash
+php artisan gp247:update --publish=core-public          # an toàn: làm mới CSS/JS admin
+php artisan gp247:update --publish=core-public,front-view # đồng thời ghi đè template storefront (PHÁ DỮ LIỆU)
+```
+
+`gp247:update` **không** có cờ `--force` — tự gõ token phá-dữ-liệu chính là đồng
+thuận, và chạy tương tác vẫn cảnh báo và hỏi xác nhận. Xem
+[tài liệu CLI](gp247-docs/system/command-line-reference_vi.md) để biết bảng đầy đủ
+token → đích → mức độ ảnh hưởng.
 
 ### Làm sao tạo plugin mới?
 
