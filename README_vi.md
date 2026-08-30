@@ -58,7 +58,7 @@ Mục tiêu của chúng tôi là **"Hiệu quả và thân thiện cho tất c�
 | **Tất cả mọi người** | Doanh nghiệp, cá nhân, lập trình viên, sinh viên. |
 | **Thân thiện với AI agent** | Cấu trúc rõ ràng, tài liệu và skill chuẩn hoá để AI agent dễ hiểu dự án và hỗ trợ phát triển. |
 
-**Công nghệ S-Cart 2.x**
+**Công nghệ S-Cart 3.x**
 
 | Tầng | Công nghệ |
 |---|---|

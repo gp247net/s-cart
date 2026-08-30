@@ -56,7 +56,7 @@ Our mission is **"Effective and friendly for everyone"**:
 | **Everyone** | Businesses, individuals, developers, students. |
 | **AI-agent-friendly** | Clear structure and standardized docs/skills so AI agents can understand the project and assist development. |
 
-**S-Cart 2.x tech stack**
+**S-Cart 3.x tech stack**
 
 | Layer | Technology |
 |---|---|
