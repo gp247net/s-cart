@@ -37,8 +37,8 @@ worker, và scheduler.
 
 ```bash
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # tùy chọn: thêm dữ liệu mẫu
+docker compose exec app php artisan gp247:install
+docker compose exec app php artisan gp247:shop-sample   # tùy chọn: thêm dữ liệu mẫu
 ```
 
 **4. Truy cập website**
@@ -88,8 +88,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ```bash
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
-docker compose -f docker-compose.prod.yml exec app php artisan sc:install
-docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # tùy chọn
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:shop-sample   # tùy chọn
 ```
 
 **4. Build assets frontend**
@@ -432,14 +432,13 @@ này):
 chown -R 1000:1000 /path/to/project
 ```
 
-### Q: Chạy lại `sc:install` có ghi đè các file tôi đã tùy chỉnh không?
+### Q: Chạy lại `gp247:install` có ghi đè các file tôi đã tùy chỉnh không?
 
 - Nếu file đích chưa tồn tại: được tạo mới bình thường.
 - Nếu đã tồn tại: có bị ghi đè hay không tùy lệnh publish bên dưới có dùng
-  `--force` hay không (chỉ `gp247:core-install` dùng — xem
-  [Install.php](app/Console/Commands/Install.php:33)). Đây là hành vi vốn
+  `--force` hay không (chỉ `gp247:core-install` dùng). Đây là hành vi vốn
   có của S-Cart, giống hệt khi không dùng Docker.
-  **Hãy backup `app/GP247` trước khi chạy lại `sc:install`** nếu bạn đã
+  **Hãy backup `app/GP247` trước khi chạy lại `gp247:install`** nếu bạn đã
   tùy chỉnh nó.
 - Trên Linux host, file mới publish mang UID/GID của container (map theo
   `SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP`) — có thể cần `chown` để sửa nếu khác user của bạn

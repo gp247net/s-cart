@@ -56,7 +56,7 @@ mkdir -p storage/framework/cache storage/framework/sessions storage/framework/te
 chown -R www-data:www-data storage/framework storage/logs bootstrap/cache
 
 # app/GP247, public/GP247, resources/views/vendor and storage/app are created
-# by `sc:install`/`sc:sample` and live on the bind-mounted host filesystem, so
+# by `gp247:install`/`gp247:shop-sample` and live on the bind-mounted host filesystem, so
 # they survive image rebuilds automatically. We only fix ownership on the
 # framework/cache dirs above to avoid an expensive recursive chown over
 # potentially large product-image uploads on every container start.

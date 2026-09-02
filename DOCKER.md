@@ -36,8 +36,8 @@ the queue worker, and the scheduler.
 
 ```bash
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan sc:install
-docker compose exec app php artisan sc:sample   # optional: adds sample data
+docker compose exec app php artisan gp247:install
+docker compose exec app php artisan gp247:shop-sample   # optional: adds sample data
 ```
 
 **4. Open the site**
@@ -87,8 +87,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ```bash
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
-docker compose -f docker-compose.prod.yml exec app php artisan sc:install
-docker compose -f docker-compose.prod.yml exec app php artisan sc:sample   # optional
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:shop-sample   # optional
 ```
 
 **4. Build frontend assets**
@@ -436,14 +436,13 @@ same user):
 chown -R 1000:1000 /path/to/project
 ```
 
-### Q: Does re-running `sc:install` overwrite my customized files?
+### Q: Does re-running `gp247:install` overwrite my customized files?
 
 - If the destination file doesn't exist yet: it's just created.
 - If it already exists: whether it's overwritten depends on whether the
   underlying publish command uses `--force` (only `gp247:core-install`
-  does — see [Install.php](app/Console/Commands/Install.php:33)). This is
-  standard S-Cart behavior, identical with or without Docker.
-  **Back up `app/GP247` before re-running `sc:install`** if you've
+  does). This is standard S-Cart behavior, identical with or without Docker.
+  **Back up `app/GP247` before re-running `gp247:install`** if you've
   customized it.
 - On Linux hosts, newly published files carry the container's UID/GID
   (mapped from `SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP`) — you may need `chown` to edit them
