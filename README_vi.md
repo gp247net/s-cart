@@ -94,7 +94,7 @@ Mục tiêu của chúng tôi là **"Hiệu quả và thân thiện cho tất c�
 | **Bản địa hoá** | Đa ngôn ngữ, đa tiền tệ |
 | **Nội dung (CMS)** | Danh mục, tin tức, trang nội dung |
 | **Tiện ích mở rộng** | Plugin thanh toán, phương thức vận chuyển, hệ thống giảm giá, tính thuế |
-| **Plugin chuyên nghiệp** | [Multi-vendor](https://gp247.net/vi/docs/s-cart/multi-vendor.html), [Multi-store](https://gp247.net/vi/docs/s-cart/multi-store.html) |
+| **Plugin chuyên nghiệp** | [Multi-vendor](https://gp247.net/vi/product/multi-vendor-pro.html), [Multi-store](https://gp247.net/vi/product/multi-store-pro.html) |
 
 ### 🛠️ Quản trị
 

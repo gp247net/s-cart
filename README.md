@@ -92,7 +92,7 @@ Our mission is **"Effective and friendly for everyone"**:
 | **Localization** | Multi-language, multi-currency |
 | **Content (CMS)** | Categories, news, content pages |
 | **Extensions** | Payment plugins, shipping methods, discount system, tax calculation |
-| **Pro plugins** | [Multi-vendor](https://gp247.net/en/docs/s-cart/multi-vendor.html), [Multi-store](https://gp247.net/en/docs/s-cart/multi-store.html) |
+| **Pro plugins** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html), [Multi-store](https://gp247.net/en/product/multi-store-pro.html) |
 
 ### 🛠️ Administration
 
