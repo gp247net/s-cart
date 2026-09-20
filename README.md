@@ -314,7 +314,7 @@ php artisan gp247:update --publish=core-public,front-view # also overwrite store
 
 There is no `--force` flag on `gp247:update` — typing a destructive token is
 the consent, and an interactive run still warns and asks to confirm. See the
-[CLI reference](gp247-docs/system/command-line-reference.md) for the full
+[CLI reference](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference.md) for the full
 token → destination → impact table.
 
 ### How do I create a new plugin?

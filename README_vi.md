@@ -314,7 +314,7 @@ php artisan gp247:update --publish=core-public,front-view # đồng thời ghi �
 
 `gp247:update` **không** có cờ `--force` — tự gõ token phá-dữ-liệu chính là đồng
 thuận, và chạy tương tác vẫn cảnh báo và hỏi xác nhận. Xem
-[tài liệu CLI](gp247-docs/system/command-line-reference_vi.md) để biết bảng đầy đủ
+[tài liệu CLI](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference_vi.md) để biết bảng đầy đủ
 token → đích → mức độ ảnh hưởng.
 
 ### Làm sao tạo plugin mới?
