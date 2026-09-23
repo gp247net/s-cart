@@ -16,7 +16,7 @@ doanh nghiệp, cá nhân, lập trình viên và sinh viên. Xây dựng trên 
 GP247 (Laravel) với cấu trúc rõ ràng, thân thiện với AI agent.
 
 ```bash
-composer create-project gp247/s-cart
+composer create-project gp247/s-cart my-shop "^3.0"   # cần PHP ≥ 8.3
 ```
 
 [🏠 Trang chủ](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Tài liệu GP247](https://github.com/gp247net/gp247-docs) · [🤖 Skill agent GP247](https://github.com/gp247net/gp247-skills) · [💬 Nhóm Facebook](https://www.facebook.com/groups/scart.opensource)
@@ -112,11 +112,21 @@ Mục tiêu của chúng tôi là **"Hiệu quả và thân thiện cho tất c�
 
 ### Phương pháp 1 — Composer (khuyến nghị)
 
+> ⚠️ **S-Cart 3.x cần PHP ≥ 8.3.** Nếu Composer đang chạy bằng PHP cũ hơn, nó
+> sẽ **không báo lỗi** mà lặng lẽ cài bản S-Cart 1.x rất cũ (dấu hiệu: sau khi
+> tạo dự án tự chạy `migrate` và báo `Access denied for user 'root'`). Kiểm tra
+> PHP mà Composer đang dùng bằng `composer diagnose` trước khi cài, và luôn ghim
+> phiên bản `"^3.0"` như lệnh dưới để Composer báo lỗi rõ ràng thay vì cài nhầm.
+
 ```bash
 # 1. Tạo dự án
-composer create-project gp247/s-cart
+composer create-project gp247/s-cart my-shop "^3.0"
+cd my-shop
 
-# 2. Kiểm tra .env (thông tin database). Nếu chưa có APP_KEY, tạo bằng:
+# 2. Sửa .env cho khớp database của bạn. Mặc định DB_HOST=mysql-local là dành
+#    cho Docker — khi cài trực tiếp (Laragon, XAMPP, VPS...) đổi thành 127.0.0.1
+#    và điền DB_DATABASE / DB_USERNAME / DB_PASSWORD thật (tạo database trước).
+#    Nếu chưa có APP_KEY, tạo bằng:
 php artisan key:generate
 
 # 3. Khởi tạo S-Cart
@@ -188,7 +198,9 @@ Truy cập website: <http://localhost:8000>
 git clone https://github.com/gp247net/s-cart.git
 cd s-cart
 cp .env.example .env
-# Cấu hình .env cho prod: APP_ENV, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
+# Chuyển sang môi trường production (.env.example mặc định là APP_ENV=local)
+sed -i 's/^APP_ENV=local/APP_ENV=production/' .env
+# Cấu hình tiếp .env cho prod: APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
 docker compose -f docker-compose.prod.yml exec app php artisan gp247:install --force=1

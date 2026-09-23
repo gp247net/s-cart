@@ -14,7 +14,7 @@
 **The free, open-source e-commerce platform for everyone** — businesses, individuals, developers, and students. Built on the GP247 ecosystem (Laravel) with a clean, AI-agent-friendly structure.
 
 ```bash
-composer create-project gp247/s-cart
+composer create-project gp247/s-cart my-shop "^3.0"   # requires PHP ≥ 8.3
 ```
 
 [🏠 Homepage](https://gp247.net) · [🚀 Live demo](https://demo.s-cart.org) · [📚 Documentation](https://github.com/gp247net/gp247-docs) · [🤖 Agent skills](https://github.com/gp247net/gp247-skills) · [💬 Facebook group](https://www.facebook.com/groups/scart.opensource)
@@ -110,11 +110,22 @@ Our mission is **"Effective and friendly for everyone"**:
 
 ### Method 1 — Composer (recommended)
 
+> ⚠️ **S-Cart 3.x requires PHP ≥ 8.3.** If Composer runs on an older PHP, it
+> does **not** fail — it silently installs a very old S-Cart 1.x instead (the
+> telltale sign: it runs `migrate` right after creating the project and reports
+> `Access denied for user 'root'`). Check which PHP Composer uses with
+> `composer diagnose` before installing, and always pin `"^3.0"` as below so
+> Composer fails loudly instead of installing the wrong version.
+
 ```bash
 # 1. Create the project
-composer create-project gp247/s-cart
+composer create-project gp247/s-cart my-shop "^3.0"
+cd my-shop
 
-# 2. Check .env (DB settings). Generate the app key if missing:
+# 2. Edit .env to match your database. The default DB_HOST=mysql-local is meant
+#    for Docker — for a direct install (Laragon, XAMPP, VPS...) change it to
+#    127.0.0.1 and fill in the real DB_DATABASE / DB_USERNAME / DB_PASSWORD
+#    (create the database first). Generate the app key if missing:
 php artisan key:generate
 
 # 3. Install S-Cart
@@ -186,7 +197,9 @@ Open the site: <http://localhost:8000>
 git clone https://github.com/gp247net/s-cart.git
 cd s-cart
 cp .env.example .env
-# Configure .env for prod: APP_ENV, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
+# Switch to the production environment (.env.example defaults to APP_ENV=local)
+sed -i 's/^APP_ENV=local/APP_ENV=production/' .env
+# Finish configuring .env for prod: APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
 docker compose -f docker-compose.prod.yml exec app php artisan gp247:install --force=1
