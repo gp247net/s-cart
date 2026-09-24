@@ -170,8 +170,12 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE:-scart}
       MYSQL_USER: ${DB_USERNAME:-scart}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    # Host side = SC_DOCKER_DB_PORT (for DB tools on the host), NOT DB_PORT:
+    # DB_PORT is what Laravel dials on the internal network, where MySQL
+    # always listens on 3306 - reusing it here made a 2nd instance with
+    # DB_PORT=3307 unable to reach its own database.
     ports:
-      - "${DB_PORT:-3306}:3306"
+      - "${SC_DOCKER_DB_PORT:-3306}:3306"
     volumes:
       - scart-mysql-local-data-dev:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
