@@ -46,7 +46,9 @@ docker compose exec app php artisan gp247:shop-sample   # optional: adds sample 
 - Vite dev server (asset hot-reload): http://localhost:5173
 
 Both ports and the database credentials can be changed in `.env` before step 2
-— see `SC_DOCKER_APP_PORT`, `DB_*` and `COMPOSE_PROFILES`. If you want to connect to a
+— see `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `DB_*` and `COMPOSE_PROFILES`. Every
+Docker variable is explained (role, default, when a change takes effect) right in
+the `#========DOCKER=========` section of `.env.example`. If you want to connect to a
 remote/managed database instead of the built-in one, see [Q: How do I use a
 remote database instead of the built-in one?](#q-how-do-i-use-a-remote-database-instead-of-the-built-in-one)
 
@@ -245,9 +247,15 @@ recreation and image rebuilds (only lost via `docker compose down -v`). The
 trade-off is you can't browse these folders directly from the host, which
 is fine since you shouldn't hand-edit them anyway.
 
-MySQL data is likewise stored in its own named volume
-(`scart-mysql-local-data-dev` / `scart-mysql-local-data-prod`), so it also
-survives `docker compose down` (only lost via `docker compose down -v`).
+MySQL data is likewise stored in its own named volume, so it also survives
+`docker compose down` (only lost via `docker compose down -v`). The actual
+volume names (check with `docker volume ls`):
+
+- Dev: `scart_scart-mysql-local-data-dev`, `scart_scart-vendor`,
+  `scart_scart-node-modules` — `docker-compose.yml` doesn't pin `name:`, so
+  Docker prefixes them with `<project name>_`.
+- Prod: `scart-mysql-local-data-prod`, `scart-vendor`, `scart-node-modules` —
+  pinned with `name:` (see below).
 
 All three prod volumes (`scart-vendor`, `scart-node-modules`,
 `scart-mysql-local-data-prod`) have an explicit `name:` pinned in
@@ -352,8 +360,8 @@ JS, CSS) needs neither, thanks to the bind mount and
 | `docker/php/Dockerfile` (PHP version, new extension) | **Yes** | Yes | `docker compose build app && docker compose up -d` |
 | `docker/php/php.ini` | **Yes** | Yes | `docker compose build app && docker compose up -d` |
 | `docker/php/entrypoint.sh` | **Yes** | Yes | `docker compose build app && docker compose up -d` |
-| `.env` build args (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`, `SC_DOCKER_INSTALL_XDEBUG`) | **Yes** | Yes | `docker compose up -d --build` |
-| `.env` runtime vars (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `SC_DOCKER_APP_PORT`...) | No | Yes | `docker compose up -d` |
+| `.env` build args (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`) | **Yes** | Yes | `docker compose up -d --build` |
+| `.env` runtime vars (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`...) | No | Yes | `docker compose up -d` |
 | `docker-compose.yml` / `docker-compose.prod.yml` (new service, volume/command change) | No | Yes | `docker compose up -d` |
 | `docker/nginx/default.conf` | No | Yes | `docker compose restart webserver` |
 | `docker/mysql/my.cnf` | No | Yes | `docker compose restart mysql` |
@@ -511,7 +519,8 @@ or reset entirely (⚠️ deletes all data in that volume):
 
 ```bash
 docker compose down
-docker volume rm scart-mysql-local-data-dev   # or scart-mysql-local-data-prod
+docker volume ls | grep mysql-local-data            # check the real name before deleting
+docker volume rm scart_scart-mysql-local-data-dev   # dev; prod: scart-mysql-local-data-prod
 docker compose up -d
 ```
 
@@ -533,14 +542,14 @@ already running the prod stack:
   `scart-nginx`, ... — no `-prod` suffix) starts up alongside the untouched
   prod stack (`scart-app-prod`, `scart-nginx-prod`, ...). Nothing about the
   running prod containers or the prod image tag changes.
-- You may hit a **port conflict** instead (e.g. if `SC_DOCKER_APP_PORT`/`DB_PORT`/
+- You may hit a **port conflict** instead (e.g. if `SC_DOCKER_APP_PORT`/`SC_DOCKER_DB_PORT`/
   `SC_DOCKER_VITE_PORT` resolve to the same host ports on both stacks) — Docker will
   refuse to start the colliding dev service and tell you so loudly, rather
   than silently replacing anything.
-- The dockerized MySQL volumes are also fully separate
-  (`scart-mysql-local-data-dev` vs `scart-mysql-local-data-prod`, both
-  pinned by explicit `name:` in their respective compose files), so there's
-  no risk of the prod app pointing at an empty dev volume either.
+- The dockerized MySQL volumes are also fully separate (dev's
+  `scart_scart-mysql-local-data-dev` vs prod's `name:`-pinned
+  `scart-mysql-local-data-prod`), so there's no risk of the prod app pointing
+  at an empty dev volume either.
 
 **Fix — just stop the stray dev stack** (nothing needs rebuilding on the
 prod side, it was never touched):
@@ -560,28 +569,64 @@ docker images | grep scart-app                  # scart-app:<ver> (dev) and scar
 
 Yes. Docker already isolates stacks by *project name*, and the compose files
 derive every host-global identifier from a single `SC_DOCKER_INSTANCE` variable, so each
-project gets its own containers, image tag and data volumes with no collisions.
+project gets its own containers, image tag, data volumes and network with no collisions.
 
-**By default (no `SC_DOCKER_INSTANCE` set) nothing changes** — the project is still
-`scart`/`scart-prod`, containers are still `scart-app`…, the volume is still
-`scart-vendor`… So an existing single-project deployment keeps working exactly
-as before, with no rename and no data migration.
+**Why is `SC_DOCKER_INSTANCE` mandatory here?** Docker tells stacks apart by
+*project name*, **not** by directory. Two directories that both leave
+`SC_DOCKER_INSTANCE` unset both resolve to project `scart` → to Docker they are
+**the same stack**: running `up` in the second directory **replaces** the first
+project's containers with the second project's code and **mounts the first
+project's data volumes** (its MySQL database included). Nothing warns you.
+
+**By default (no `SC_DOCKER_INSTANCE` set) nothing changes** — the slug is `scart`,
+the project is still `scart`/`scart-prod`, containers are still `scart-app`…, the
+volume is still `scart_scart-vendor` (dev) / `scart-vendor` (prod)… So an existing
+single-project deployment keeps working exactly as before, with no rename and no
+data migration.
 
 To add a second (third, …) project on the same host:
 
 1. Put each project in its **own directory** (each one bind-mounts its own
    `./` as the app root).
-2. In that project's `.env`, set a **unique** slug and its **own ports**:
+2. In that project's `.env`, set a **unique** slug and its **own host ports**:
 
    ```env
    SC_DOCKER_INSTANCE=shopa          # unique per project: shopa, shopb, …
    SC_DOCKER_APP_PORT=8001           # distinct host ports per project
-   SC_DOCKER_VITE_PORT=5174
-   DB_PORT=3307
+   SC_DOCKER_VITE_PORT=5174          # dev only
+   SC_DOCKER_DB_PORT=3307            # dev only, with COMPOSE_PROFILES=db-local
+
+   # KEEP AS-IS in every project — these do not change per instance:
+   DB_HOST=mysql-local
+   DB_PORT=3306
    ```
 
 3. Start it as usual (`docker compose up -d --build`, or with
    `-f docker-compose.prod.yml` for prod).
+
+**What each variable does when several stacks share one host:**
+
+| Variable | What it does | With several stacks on one host |
+|---|---|---|
+| `SC_DOCKER_INSTANCE` | Slug that names the project, containers, image tag, volumes, network | **Must differ** — a shared slug means two projects trample each other (see above) |
+| `SC_DOCKER_APP_PORT` | Host port of the website (nginx). Unset: dev `8000`, prod `80` | **Must differ**, or don't publish it and put a reverse proxy in front |
+| `SC_DOCKER_VITE_PORT` | Host port of the Vite dev server (dev only) | **Must differ** if several dev stacks run at once |
+| `SC_DOCKER_DB_PORT` | Host port of `mysql-local`, for HeidiSQL/DBeaver… (dev only; prod never publishes MySQL) | **Must differ** if several dev stacks enable `db-local` |
+| `DB_HOST` / `DB_PORT` | Where Laravel connects, **inside** the Docker network | **Keep** `mysql-local` / `3306` — each stack has its own network, so `mysql-local` always resolves to that stack's own MySQL |
+| `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | The project's database | May be identical if each stack has its own `mysql-local`; **must differ** if several stacks share one MySQL server |
+| `COMPOSE_PROFILES` | `db-local` = a private MySQL for this stack; empty = external DB | Per stack; leave empty to let several stacks share one MySQL (saves RAM) |
+| `SC_DOCKER_PHP_VERSION` | PHP version of the image | May differ freely — it's part of the image tag, so stacks coexist |
+| `SC_DOCKER_WWWUSER` / `SC_DOCKER_WWWGROUP` | UID/GID of `www-data` in the prod containers | Follows the owner of **each** project's directory on the server |
+| `SC_DOCKER_XDEBUG_MODE`, `SC_DOCKER_DB_ROOT_PASSWORD` | Xdebug mode (dev) / root password of `mysql-local` | Per stack, no effect on other stacks |
+
+> ⚠️ **Don't change `DB_PORT` per instance.** The old guidance of `DB_PORT=3307`
+> for the second project was **wrong**: `DB_PORT` is the port Laravel dials to
+> reach `mysql-local` inside the Docker network, where MySQL always listens on
+> `3306` — the app can't reach its database (the entrypoint waits ~60 seconds,
+> gives up, and the site then fails with a DB error). The host-side port now has
+> its own variable, `SC_DOCKER_DB_PORT`. If you followed the old guidance: set
+> `DB_PORT=3306` back, move `3307` to `SC_DOCKER_DB_PORT`, then run
+> `docker compose up -d`.
 
 `SC_DOCKER_INSTANCE` scopes all of these at once, so two instances never clash:
 
@@ -590,12 +635,21 @@ To add a second (third, …) project on the same host:
 | Project name (dev / prod) | `scart` / `scart-prod` | `shopa` / `shopa-prod` |
 | Container names | `scart-app`, `scart-nginx`, … | `shopa-app`, `shopa-nginx`, … |
 | Image tag (dev / prod) | `scart-app:8.3` / `…-prod` | `scart-app:8.3-shopa` / `…-shopa-prod` |
+| Dev volumes (project-prefixed) | `scart_scart-vendor`, `scart_scart-mysql-local-data-dev`, … | `shopa_scart-vendor`, `shopa_scart-mysql-local-data-dev`, … |
 | Named volumes (prod) | `scart-vendor`, `scart-mysql-local-data-prod`, … | `shopa-vendor`, `shopa-mysql-local-data-prod`, … |
+| Network (dev / prod) | `scart_scart` / `scart-prod_scart` | `shopa_scart` / `shopa-prod_scart` |
 
 Each instance therefore has its **own MySQL data volume** — there's no way for
 one project to mount another's database (see RISK-OPS-009). This composes with
 the dev/prod split from the previous Q: identity is always `<instance>-<env>`,
 so `SC_DOCKER_INSTANCE=scart` (the default) reproduces exactly the old names.
+
+**Pick the slug before the first `up`.** Use only lowercase letters, digits,
+`-` and `_`, starting with a letter or digit (Docker's project-name rule). To
+change it later: run `docker compose down` **before** editing `.env` (otherwise
+the old containers keep running and keep holding the ports), then `up -d`. The
+stack then starts on **new, empty volumes** — the old MySQL data isn't lost, it
+just stays in the old-named volume (`docker volume ls`).
 
 **Managing ports at scale — use a reverse proxy.** Handing out distinct ports
 by hand gets tedious past a couple of sites. In production, front the stacks

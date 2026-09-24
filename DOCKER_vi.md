@@ -47,7 +47,9 @@ docker compose exec app php artisan gp247:shop-sample   # tùy chọn: thêm d�
 - Vite dev server (hot-reload assets): http://localhost:5173
 
 Có thể đổi cổng và thông tin database trong `.env` trước bước 2 — xem
-`SC_DOCKER_APP_PORT`, `DB_*`, `COMPOSE_PROFILES`. Nếu muốn dùng database từ xa thay vì
+`SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `DB_*`, `COMPOSE_PROFILES`. Mỗi biến Docker
+đều có comment giải thích (vai trò, giá trị mặc định, khi nào có hiệu lực) ngay
+trong mục `#========DOCKER=========` của `.env.example`. Nếu muốn dùng database từ xa thay vì
 database có sẵn, xem [Q: Làm sao để dùng database từ xa thay vì database có
 sẵn?](#q-làm-sao-để-dùng-database-từ-xa-thay-vì-database-có-sẵn)
 
@@ -242,9 +244,15 @@ image (chỉ mất khi chạy `docker compose down -v`). Đánh đổi là bạn
 duyệt trực tiếp được hai thư mục này từ host, nhưng không sao vì vốn dĩ
 không nên tự sửa tay chúng.
 
-Dữ liệu MySQL cũng được lưu ở named volume riêng
-(`scart-mysql-local-data-dev` / `scart-mysql-local-data-prod`), nên cũng
-không mất khi `docker compose down` (chỉ mất khi `docker compose down -v`).
+Dữ liệu MySQL cũng được lưu ở named volume riêng, nên cũng không mất khi
+`docker compose down` (chỉ mất khi `docker compose down -v`). Tên thật của
+volume (xem bằng `docker volume ls`):
+
+- Dev: `scart_scart-mysql-local-data-dev`, `scart_scart-vendor`,
+  `scart_scart-node-modules` — `docker-compose.yml` không ghim `name:`, nên
+  Docker tự thêm tiền tố `<tên project>_`.
+- Prod: `scart-mysql-local-data-prod`, `scart-vendor`, `scart-node-modules` —
+  được ghim `name:` (xem đoạn dưới).
 
 Cả 3 volume của prod (`scart-vendor`, `scart-node-modules`,
 `scart-mysql-local-data-prod`) đã được ghim `name:` cố định trong
@@ -348,8 +356,8 @@ Code ứng dụng (PHP, blade, JS, CSS) không cần cái nào cả, nhờ bind-
 | `docker/php/Dockerfile` (đổi PHP version, thêm extension) | **Có** | Có | `docker compose build app && docker compose up -d` |
 | `docker/php/php.ini` | **Có** | Có | `docker compose build app && docker compose up -d` |
 | `docker/php/entrypoint.sh` | **Có** | Có | `docker compose build app && docker compose up -d` |
-| Biến `.env` dùng làm build arg (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`, `SC_DOCKER_INSTALL_XDEBUG`) | **Có** | Có | `docker compose up -d --build` |
-| Biến `.env` chỉ dùng runtime (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `SC_DOCKER_APP_PORT`...) | Không | Có | `docker compose up -d` |
+| Biến `.env` dùng làm build arg (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`) | **Có** | Có | `docker compose up -d --build` |
+| Biến `.env` chỉ dùng runtime (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`...) | Không | Có | `docker compose up -d` |
 | `docker-compose.yml` / `docker-compose.prod.yml` (thêm service, đổi volume/command) | Không | Có | `docker compose up -d` |
 | `docker/nginx/default.conf` | Không | Có | `docker compose restart webserver` |
 | `docker/mysql/my.cnf` | Không | Có | `docker compose restart mysql` |
@@ -507,7 +515,8 @@ hoặc reset toàn bộ (⚠️ mất hết dữ liệu trong volume đó):
 
 ```bash
 docker compose down
-docker volume rm scart-mysql-local-data-dev   # hoặc scart-mysql-local-data-prod
+docker volume ls | grep mysql-local-data            # xem tên thật trước khi xoá
+docker volume rm scart_scart-mysql-local-data-dev   # dev; prod: scart-mysql-local-data-prod
 docker compose up -d
 ```
 
@@ -529,13 +538,13 @@ Thực tế sẽ xảy ra nếu bạn chạy lệnh dev trên host đang chạy 
   đang chạy nguyên vẹn (`scart-app-prod`, `scart-nginx-prod`, ...). Không có
   gì ở container hay image tag prod bị đổi.
 - Bạn có thể gặp **xung đột cổng** thay vì bị ghi đè (nếu `SC_DOCKER_APP_PORT`/
-  `DB_PORT`/`SC_DOCKER_VITE_PORT` của cả hai stack trùng cổng host) — Docker sẽ báo
+  `SC_DOCKER_DB_PORT`/`SC_DOCKER_VITE_PORT` của cả hai stack trùng cổng host) — Docker sẽ báo
   lỗi rõ ràng và từ chối chạy service dev bị trùng, không âm thầm thay thế
   bất cứ thứ gì.
 - Volume MySQL đóng gói cũng tách biệt hoàn toàn
-  (`scart-mysql-local-data-dev` vs `scart-mysql-local-data-prod`, cả hai
-  đều được ghim `name:` cố định trong file compose tương ứng), nên cũng
-  không còn rủi ro app prod bị trỏ nhầm vào volume dev rỗng.
+  (`scart_scart-mysql-local-data-dev` của dev vs `scart-mysql-local-data-prod`
+  được ghim `name:` của prod), nên cũng không còn rủi ro app prod bị trỏ nhầm
+  vào volume dev rỗng.
 
 **Cách sửa — chỉ cần dừng stack dev lỡ chạy** (phía prod không hề bị động
 tới, không cần build lại gì):
@@ -553,29 +562,64 @@ docker images | grep scart-app                  # scart-app:<ver> (dev) và scar
 
 ### Q: Tôi có thể chạy nhiều dự án S-Cart độc lập trên cùng một host không? (multi-instance)
 
-Có. Docker vốn cô lập các stack theo *project name*, và các file compose nay
-sinh mọi định danh phạm vi-host từ **một biến `SC_DOCKER_INSTANCE`**, nên mỗi dự án có
-container/image tag/volume dữ liệu riêng, không đụng nhau.
+Có. Docker vốn cô lập các stack theo *project name*, và các file compose
+sinh mọi định danh phạm vi-host từ **một biến `SC_DOCKER_INSTANCE`**, nên mỗi dự
+án có container/image tag/volume dữ liệu/network riêng, không đụng nhau.
 
-**Mặc định (không set `SC_DOCKER_INSTANCE`) mọi thứ y như cũ** — project vẫn là
-`scart`/`scart-prod`, container vẫn `scart-app`…, volume vẫn `scart-vendor`…
-Deployment single-instance đang chạy **không đổi tên, không phải migrate dữ liệu**.
+**Vì sao bắt buộc phải đặt `SC_DOCKER_INSTANCE`?** Docker phân biệt stack theo
+*project name*, **không** theo thư mục. Hai thư mục cùng bỏ trống
+`SC_DOCKER_INSTANCE` đều ra project `scart` → với Docker đó là **cùng một stack**:
+chạy `up` ở thư mục thứ 2 sẽ **thay** container của dự án thứ 1 bằng code của dự
+án thứ 2 và **mount luôn volume dữ liệu** của dự án thứ 1 (kể cả database MySQL).
+Không có lỗi nào báo cho bạn biết.
+
+**Mặc định (không set `SC_DOCKER_INSTANCE`) mọi thứ y như cũ** — slug là `scart`,
+project vẫn là `scart`/`scart-prod`, container vẫn `scart-app`…, volume vẫn
+`scart_scart-vendor` (dev) / `scart-vendor` (prod)… Deployment single-instance
+đang chạy **không đổi tên, không phải migrate dữ liệu**.
 
 Để thêm dự án thứ 2 (thứ 3, …) trên cùng host:
 
 1. Đặt mỗi dự án trong **thư mục riêng** (mỗi thư mục bind-mount `./` là app root
    của chính nó).
-2. Trong `.env` của dự án đó, đặt slug **duy nhất** và **cổng riêng**:
+2. Trong `.env` của dự án đó, đặt slug **duy nhất** và **cổng host riêng**:
 
    ```env
    SC_DOCKER_INSTANCE=shopa          # duy nhất mỗi dự án: shopa, shopb, …
    SC_DOCKER_APP_PORT=8001           # cổng host khác nhau mỗi dự án
-   SC_DOCKER_VITE_PORT=5174
-   DB_PORT=3307
+   SC_DOCKER_VITE_PORT=5174          # chỉ dev
+   SC_DOCKER_DB_PORT=3307            # chỉ dev, khi COMPOSE_PROFILES=db-local
+
+   # GIỮ NGUYÊN ở mọi dự án — không đổi theo instance:
+   DB_HOST=mysql-local
+   DB_PORT=3306
    ```
 
 3. Khởi động như thường (`docker compose up -d --build`, hoặc thêm
    `-f docker-compose.prod.yml` cho prod).
+
+**Vai trò của từng biến khi nhiều stack chạy chung một host:**
+
+| Biến | Tác dụng | Khi nhiều stack trên 1 host |
+|---|---|---|
+| `SC_DOCKER_INSTANCE` | Slug đặt tên project, container, image tag, volume, network | **Bắt buộc khác nhau** — trùng là 2 dự án giẫm lên nhau (xem trên) |
+| `SC_DOCKER_APP_PORT` | Cổng host của website (nginx). Bỏ trống: dev `8000`, prod `80` | **Khác nhau**, hoặc không publish và đặt reverse proxy phía trước |
+| `SC_DOCKER_VITE_PORT` | Cổng host của Vite dev server (chỉ dev) | **Khác nhau** nếu chạy nhiều stack dev cùng lúc |
+| `SC_DOCKER_DB_PORT` | Cổng host của `mysql-local` để dùng HeidiSQL/DBeaver… (chỉ dev; prod không publish MySQL) | **Khác nhau** nếu nhiều stack dev cùng bật `db-local` |
+| `DB_HOST` / `DB_PORT` | Nơi Laravel kết nối, **bên trong** network Docker | **Giữ nguyên** `mysql-local` / `3306` — mỗi stack có network riêng, tên `mysql-local` luôn trỏ về MySQL của chính stack đó |
+| `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | Database của dự án | Tự do trùng nếu mỗi stack có `mysql-local` riêng; **phải khác nhau** nếu nhiều stack dùng chung một MySQL server |
+| `COMPOSE_PROFILES` | `db-local` = bật MySQL riêng cho stack; bỏ trống = dùng DB ngoài | Tuỳ từng stack; bỏ trống để nhiều stack dùng chung một MySQL (tiết kiệm RAM) |
+| `SC_DOCKER_PHP_VERSION` | Phiên bản PHP của image | Tự do khác nhau — nằm trong image tag nên các stack cùng tồn tại được |
+| `SC_DOCKER_WWWUSER` / `SC_DOCKER_WWWGROUP` | UID/GID của `www-data` trong container prod | Theo chủ sở hữu thư mục của **từng** dự án trên server |
+| `SC_DOCKER_XDEBUG_MODE`, `SC_DOCKER_DB_ROOT_PASSWORD` | Chế độ Xdebug (dev) / mật khẩu root của `mysql-local` | Riêng từng stack, không ảnh hưởng stack khác |
+
+> ⚠️ **Đừng đổi `DB_PORT` theo instance.** Hướng dẫn cũ ghi `DB_PORT=3307` cho dự
+> án thứ 2 là **sai**: `DB_PORT` là cổng Laravel kết nối tới `mysql-local` bên
+> trong network Docker, nơi MySQL luôn lắng nghe ở `3306` — app sẽ không kết nối
+> được database (entrypoint chờ ~60 giây rồi bỏ qua, sau đó site báo lỗi DB). Cổng
+> phía host nay tách ra biến riêng `SC_DOCKER_DB_PORT`. Nếu đã làm theo hướng dẫn
+> cũ: đặt lại `DB_PORT=3306`, chuyển `3307` sang `SC_DOCKER_DB_PORT`, rồi chạy
+> `docker compose up -d`.
 
 `SC_DOCKER_INSTANCE` scope tất cả cùng lúc nên 2 instance không bao giờ đụng nhau:
 
@@ -584,12 +628,20 @@ Deployment single-instance đang chạy **không đổi tên, không phải migr
 | Project name (dev / prod) | `scart` / `scart-prod` | `shopa` / `shopa-prod` |
 | Tên container | `scart-app`, `scart-nginx`, … | `shopa-app`, `shopa-nginx`, … |
 | Image tag (dev / prod) | `scart-app:8.3` / `…-prod` | `scart-app:8.3-shopa` / `…-shopa-prod` |
+| Volume dev (tiền tố project) | `scart_scart-vendor`, `scart_scart-mysql-local-data-dev`, … | `shopa_scart-vendor`, `shopa_scart-mysql-local-data-dev`, … |
 | Volume ghim tên (prod) | `scart-vendor`, `scart-mysql-local-data-prod`, … | `shopa-vendor`, `shopa-mysql-local-data-prod`, … |
+| Network (dev / prod) | `scart_scart` / `scart-prod_scart` | `shopa_scart` / `shopa-prod_scart` |
 
 Nhờ vậy mỗi instance có **volume MySQL riêng** — không có cách nào để dự án này
 mount trúng database của dự án kia (xem RISK-OPS-009). Cơ chế này kết hợp với việc
 tách dev/prod ở câu hỏi trước: định danh luôn là `<instance>-<env>`, và
 `SC_DOCKER_INSTANCE=scart` (mặc định) tái tạo đúng tên cũ.
+
+**Chọn slug trước lần `up` đầu tiên.** Slug chỉ gồm chữ thường, số, `-`, `_`, bắt
+đầu bằng chữ hoặc số (quy tắc project name của Docker). Muốn đổi slug về sau: chạy
+`docker compose down` **trước** khi sửa `.env` (nếu không, container cũ vẫn chạy và
+giữ cổng), rồi `up -d`. Stack khi đó khởi động trên **volume mới, rỗng** — dữ liệu
+MySQL cũ không mất, chỉ nằm lại trong volume mang tên cũ (`docker volume ls`).
 
 **Quản cổng khi nhiều site — dùng reverse proxy.** Cấp cổng thủ công sẽ mệt khi
 có nhiều site. Ở prod, đặt trước các stack một reverse proxy (Traefik, Caddy, hoặc
