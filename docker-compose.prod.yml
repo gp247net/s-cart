@@ -114,6 +114,15 @@ services:
       - ./:/var/www/html
       - scart-vendor:/var/www/html/vendor
     environment:
+      # Mirror of the "app" service pins above (kept in sync by
+      # DockerComposeEnvConsistencyTest). Laravel loads .env through an
+      # immutable repository - a real process env var always wins - so a
+      # pin on "app" alone leaves this container reading APP_ENV/APP_DEBUG
+      # from the host's .env; with the .env.example default (APP_ENV=local)
+      # background jobs would run in local/debug while the web tier runs in
+      # production, on the same site.
+      APP_ENV: production
+      APP_DEBUG: "false"
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT:-3306}
@@ -141,6 +150,15 @@ services:
       - ./:/var/www/html
       - scart-vendor:/var/www/html/vendor
     environment:
+      # Mirror of the "app" service pins above (kept in sync by
+      # DockerComposeEnvConsistencyTest). Laravel loads .env through an
+      # immutable repository - a real process env var always wins - so a
+      # pin on "app" alone leaves this container reading APP_ENV/APP_DEBUG
+      # from the host's .env; with the .env.example default (APP_ENV=local)
+      # background jobs would run in local/debug while the web tier runs in
+      # production, on the same site.
+      APP_ENV: production
+      APP_DEBUG: "false"
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT:-3306}

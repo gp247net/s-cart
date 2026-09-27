@@ -9,6 +9,12 @@ if [ ! -f .env ] && [ -f .env.example ]; then
     cp .env.example .env
 fi
 
+# ---- Production guard: never serve traffic with .env.example sample secrets --
+# Exits non-zero (and so does this container) when APP_ENV=production and
+# DB_PASSWORD / SC_DOCKER_DB_ROOT_PASSWORD still hold the sample values. Only
+# literal sample values are checked - see docker/php/prod-guard.sh.
+/usr/local/bin/prod-guard.sh
+
 # ---- Wait for the database to accept connections (mysql only) --------------
 if [ "${DB_CONNECTION:-mysql}" = "mysql" ] && [ -n "${DB_HOST}" ]; then
     echo "[entrypoint] Waiting for database at ${DB_HOST}:${DB_PORT:-3306}..."

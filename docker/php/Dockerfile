@@ -71,7 +71,8 @@ COPY php.ini /usr/local/etc/php/conf.d/99-scart.ini
 
 # ---- Entrypoint ---------------------------------------------------------------
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY prod-guard.sh /usr/local/bin/prod-guard.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/prod-guard.sh
 
 # ---- Match container user to host user (avoids bind-mount permission issues
 #      on Linux hosts; harmless on Docker Desktop for Windows/Mac) -----------

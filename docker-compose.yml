@@ -118,6 +118,13 @@ services:
       - ./:/var/www/html
       - scart-vendor:/var/www/html/vendor
     environment:
+      # Mirror of the "app" service pins above (kept in sync by
+      # DockerComposeEnvConsistencyTest): every PHP service of one compose
+      # file must run in the same environment, or web requests and
+      # background jobs of the same site behave differently. See the
+      # matching note in docker-compose.prod.yml.
+      APP_ENV: local
+      APP_DEBUG: "true"
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST:-mysql-local}
       DB_PORT: ${DB_PORT:-3306}
@@ -145,6 +152,13 @@ services:
       - ./:/var/www/html
       - scart-vendor:/var/www/html/vendor
     environment:
+      # Mirror of the "app" service pins above (kept in sync by
+      # DockerComposeEnvConsistencyTest): every PHP service of one compose
+      # file must run in the same environment, or web requests and
+      # background jobs of the same site behave differently. See the
+      # matching note in docker-compose.prod.yml.
+      APP_ENV: local
+      APP_DEBUG: "true"
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST:-mysql-local}
       DB_PORT: ${DB_PORT:-3306}
@@ -169,7 +183,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${SC_DOCKER_DB_ROOT_PASSWORD:-root_secret}
       MYSQL_DATABASE: ${DB_DATABASE:-scart}
       MYSQL_USER: ${DB_USERNAME:-scart}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      # Same fallback as the PHP services above (scart): a .env missing
+      # DB_PASSWORD must not create the MySQL user with one password while
+      # app/queue/scheduler connect with another.
+      MYSQL_PASSWORD: ${DB_PASSWORD:-scart}
     # Host side = SC_DOCKER_DB_PORT (for DB tools on the host), NOT DB_PORT:
     # DB_PORT is what Laravel dials on the internal network, where MySQL
     # always listens on 3306 - reusing it here made a 2nd instance with

@@ -44,6 +44,8 @@ docker compose exec app php artisan gp247:shop-sample   # tùy chọn: thêm d�
 **4. Truy cập website**
 
 - Website: http://localhost:8000
+  (đặt `APP_URL=http://localhost:8000` trong `.env` để link sinh từ queue/CLI — ví dụ trong e-mail — có đúng cổng;
+  request web tự lấy host từ trình duyệt nên không cần cho việc duyệt trang)
 - Vite dev server (hot-reload assets): http://localhost:5173
 
 Có thể đổi cổng và thông tin database trong `.env` trước bước 2 — xem
@@ -73,12 +75,28 @@ DB_HOST=your-remote-mysql-host   # hoặc "mysql-local" nếu dùng DB đóng g�
 DB_PORT=3306
 DB_DATABASE=scart-db-prod
 DB_USERNAME=scar-user
-DB_PASSWORD=********
+DB_PASSWORD=********              # BẮT BUỘC đổi — container prod từ chối khởi động nếu còn giá trị mẫu "password"
+COMPOSE_PROFILES=                 # rỗng = dùng DB từ xa (không tạo mysql-local); "db-local" = dùng MySQL đóng gói (xem 4.2)
+# SC_DOCKER_DB_ROOT_PASSWORD=****  # chỉ khi COMPOSE_PROFILES=db-local — BẮT BUỘC đổi khỏi "change_me_root"
 
 # Bắt buộc với prod: khớp với user thật mà Docker chạy trên server này
 SC_DOCKER_WWWUSER=1000    # chạy `id -u` trên server
 SC_DOCKER_WWWGROUP=1000   # chạy `id -g` trên server
+
+# Cổng web: KHÔNG đặt SC_DOCKER_APP_PORT trừ khi cần cổng khác 80 (ví dụ sau reverse proxy).
+# .env.example để dòng này dạng comment có chủ đích — file compose prod tự mặc định 80.
 ```
+
+> **Guard bí mật mẫu**: khi `APP_ENV=production`, `docker/php/prod-guard.sh` (chạy lúc container khởi động) **từ chối
+> khởi động** nếu `DB_PASSWORD` vẫn là `password`, hoặc `COMPOSE_PROFILES=db-local` mà `SC_DOCKER_DB_ROOT_PASSWORD` vẫn là
+> `change_me_root`. Chỉ so đúng giá trị mẫu, không đánh giá "mật khẩu yếu" — mật khẩu thật của DB từ xa không bao giờ bị
+> chặn nhầm. Xem Q&A "Container prod từ chối khởi động với thông điệp `[prod-guard] Refusing to start`" bên dưới.
+
+> **Lưu ý về `APP_ENV`/`APP_DEBUG`**: `docker-compose.prod.yml` đã **ghim cứng** `APP_ENV=production` và `APP_DEBUG=false`
+> cho **cả 3 service PHP** (`app`, `queue`, `scheduler`), và biến của container luôn thắng `.env` — nên dù `.env` có sai,
+> web lẫn job nền vẫn chạy production/debug-off. Hai dòng trên trong `.env` vẫn cần cho lệnh chạy **ngoài** container
+> (PHP trên host) và để `.env` mô tả đúng môi trường. `.env` **vẫn bắt buộc**: `APP_KEY`, `GP247_*`, `MAIL_*` chỉ được đọc
+> từ đó, và chính Compose nội suy `DB_*`/`SC_DOCKER_*` từ `.env`.
 
 **2. Khởi động container**
 
@@ -355,9 +373,10 @@ Code ứng dụng (PHP, blade, JS, CSS) không cần cái nào cả, nhờ bind-
 |---|---|---|---|
 | `docker/php/Dockerfile` (đổi PHP version, thêm extension) | **Có** | Có | `docker compose build app && docker compose up -d` |
 | `docker/php/php.ini` | **Có** | Có | `docker compose build app && docker compose up -d` |
-| `docker/php/entrypoint.sh` | **Có** | Có | `docker compose build app && docker compose up -d` |
+| `docker/php/entrypoint.sh` / `docker/php/prod-guard.sh` | **Có** | Có | `docker compose build app && docker compose up -d` |
 | Biến `.env` dùng làm build arg (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`) | **Có** | Có | `docker compose up -d --build` |
-| Biến `.env` chỉ dùng runtime (`APP_ENV`, `APP_DEBUG`, `DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`...) | Không | Có | `docker compose up -d` |
+| Biến `.env` chỉ dùng runtime (`DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`...) | Không | Có | `docker compose up -d` |
+| `APP_ENV` / `APP_DEBUG` trong `.env` | Không | Không (chỉ cho lệnh chạy **ngoài** container) | Bên trong container **3 service PHP** (`app`, `queue`, `scheduler`) đều được file compose **ghim cứng** giá trị này (`production`/`false` ở prod, `local`/`true` ở dev) — biến của container thắng `.env`, nên đổi trong `.env` không ảnh hưởng chúng. Muốn đổi thật phải sửa file compose rồi `docker compose up -d` |
 | `docker-compose.yml` / `docker-compose.prod.yml` (thêm service, đổi volume/command) | Không | Có | `docker compose up -d` |
 | `docker/nginx/default.conf` | Không | Có | `docker compose restart webserver` |
 | `docker/mysql/my.cnf` | Không | Có | `docker compose restart mysql` |
@@ -482,7 +501,7 @@ Từ `.env` của bạn, Compose chuyển các giá trị này vào container
 |---|---|---|
 | `DB_DATABASE` | `MYSQL_DATABASE` | `scart` |
 | `DB_USERNAME` | `MYSQL_USER` | `scart` |
-| `DB_PASSWORD` | `MYSQL_PASSWORD` | `secret` |
+| `DB_PASSWORD` | `MYSQL_PASSWORD` | `scart` (khớp mặc định của `app`/`queue`/`scheduler`) |
 | `SC_DOCKER_DB_ROOT_PASSWORD` | `MYSQL_ROOT_PASSWORD` | `root_secret` |
 
 (Prod không có mặc định — bắt buộc set đủ cả 4 biến.) Vì Laravel cũng đọc
@@ -519,6 +538,19 @@ docker volume ls | grep mysql-local-data            # xem tên thật trước k
 docker volume rm scart_scart-mysql-local-data-dev   # dev; prod: scart-mysql-local-data-prod
 docker compose up -d
 ```
+
+### Q: Container prod từ chối khởi động với thông điệp `[prod-guard] Refusing to start` — sửa sao?
+
+`.env` trên server vẫn còn **giá trị bí mật mẫu** của `.env.example`. `docker compose -f docker-compose.prod.yml logs app`
+sẽ nêu đúng biến: `DB_PASSWORD` còn là `password`, hoặc `COMPOSE_PROFILES=db-local` mà `SC_DOCKER_DB_ROOT_PASSWORD` còn là
+`change_me_root`. Sửa `.env` (đặt mật khẩu thật; hoặc `COMPOSE_PROFILES=` nếu dùng DB từ xa) rồi
+`docker compose -f docker-compose.prod.yml up -d`. Container đang `restart: unless-stopped` nên sẽ tự lên khi `.env` đã đúng.
+
+Lưu ý: mật khẩu root của `mysql-local` chỉ được áp ở **lần khởi động đầu** (volume dữ liệu rỗng). Nếu volume đã tồn tại với
+mật khẩu mẫu, đổi trong `.env` là chưa đủ — phải đổi cả trong MySQL (`ALTER USER`), xem Q&A về MySQL đóng gói.
+
+Guard **chỉ** chạy khi `APP_ENV=production` (file compose prod ghim cho cả 3 service PHP) và **chỉ** so đúng giá trị mẫu —
+không bao giờ chặn dev, không đánh giá độ mạnh mật khẩu thật.
 
 ### Q: Tôi lỡ tay chạy `docker compose up -d --build` trên prod (quên `-f docker-compose.prod.yml`) — giờ chuyện gì xảy ra?
 
