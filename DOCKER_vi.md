@@ -1,445 +1,397 @@
-# Hướng dẫn dùng Docker cho S-Cart (GP247 / Laravel 13)
+> 🌐 **Ngôn ngữ:** 🇻🇳 Tiếng Việt (hiện tại) · [🇬🇧 English](./DOCKER.md)
 
-*(English version: [DOCKER.md](DOCKER.md))*
+<div align="center">
 
-Hướng dẫn này giúp bạn dựng S-Cart bằng Docker từ đầu, cả cho môi trường dev
-trên máy cá nhân lẫn môi trường prod trên server. Làm theo đúng thứ tự các
-bước bên dưới.
+# 🐳 S-Cart với Docker
 
-## Yêu cầu
+**Chạy S-Cart (GP247 / Laravel 13) bằng Docker — cho máy cá nhân (dev) lẫn server thật (prod)**
 
-- Docker Desktop (Windows/Mac) hoặc Docker Engine + Compose plugin (Linux)
-- Đã có sẵn source code repo này trên máy (hoặc server)
+[⬅️ Về README](./README_vi.md) · [🐳 Docker Docs](https://docs.docker.com/) · [💬 Nhóm Facebook](https://www.facebook.com/groups/scart.opensource)
 
----
+</div>
 
-## Phần 1 — Chạy môi trường DEV
+## Giới thiệu
 
-**1. Copy file cấu hình môi trường**
+Tài liệu này hướng dẫn dựng S-Cart bằng Docker từ đầu, dành cho người muốn chạy thử trên máy cá nhân hoặc đưa lên server mà **không phải tự cài PHP, Composer, MySQL**. Đọc xong, bạn sẽ chạy được môi trường dev và prod, biết các lệnh dùng hằng ngày, và tự xử lý được các lỗi thường gặp.
 
-```bash
-cp .env.example .env
-```
+## Mục lục
 
-`.env.example` đã có sẵn cấu hình mặc định chạy được ngay (dùng MySQL đóng
-gói sẵn trong Docker), không cần sửa gì thêm.
-
-**2. Khởi động container**
-
-```bash
-docker compose up -d --build
-```
-
-Lệnh này build image PHP và khởi động toàn bộ: app, Nginx, MySQL, queue
-worker, và scheduler.
-
-**3. Cài đặt S-Cart**
-
-```bash
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan gp247:install
-docker compose exec app php artisan gp247:shop-sample   # tùy chọn: thêm dữ liệu mẫu
-```
-
-**4. Truy cập website**
-
-- Website: http://localhost:8000
-  (đặt `APP_URL=http://localhost:8000` trong `.env` để link sinh từ queue/CLI — ví dụ trong e-mail — có đúng cổng;
-  request web tự lấy host từ trình duyệt nên không cần cho việc duyệt trang)
-- Vite dev server (hot-reload assets): http://localhost:5173
-
-Có thể đổi cổng và thông tin database trong `.env` trước bước 2 — xem
-`SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `DB_*`, `COMPOSE_PROFILES`. Mỗi biến Docker
-đều có comment giải thích (vai trò, giá trị mặc định, khi nào có hiệu lực) ngay
-trong mục `#========DOCKER=========` của `.env.example`. Nếu muốn dùng database từ xa thay vì
-database có sẵn, xem [Q: Làm sao để dùng database từ xa thay vì database có
-sẵn?](#q-làm-sao-để-dùng-database-từ-xa-thay-vì-database-có-sẵn)
-
-Vậy là xong — dev đã chạy. Các lệnh dùng hằng ngày xem ở [Phần 3](#phần-3--các-lệnh-dùng-hằng-ngày).
+1. [Yêu cầu](#-yêu-cầu)
+2. [Stack gồm những gì](#-stack-gồm-những-gì)
+3. [Chạy môi trường DEV](#-chạy-môi-trường-dev)
+4. [Chạy môi trường PROD](#-chạy-môi-trường-prod)
+5. [Lệnh dùng hằng ngày](#-lệnh-dùng-hằng-ngày)
+6. [Khi nào cần build lại / restart](#-khi-nào-cần-build-lại--restart)
+7. [Dữ liệu được lưu ở đâu](#-dữ-liệu-được-lưu-ở-đâu)
+8. [MySQL đóng gói sẵn](#-mysql-đóng-gói-sẵn)
+9. [Chạy nhiều dự án trên một host](#-chạy-nhiều-dự-án-trên-một-host)
+10. [Điều kiện & ràng buộc](#-điều-kiện--ràng-buộc-hiểu-trước-khi-thao-tác)
+11. [Hỏi & Đáp](#-hỏi--đáp-qa)
 
 ---
 
-## Phần 2 — Chạy môi trường PROD
+## 🧰 Yêu cầu
 
-**1. Chuẩn bị `.env` trên server**
+| Thành phần | Yêu cầu |
+|---|---|
+| Docker | Docker Desktop (Windows/Mac) hoặc Docker Engine + Compose plugin (Linux) |
+| Mã nguồn | Đã có repo này trên máy/server: `git clone https://github.com/gp247net/s-cart.git` |
+| Windows | Nên dùng WSL2; để nhanh nhất, đặt project trong filesystem của WSL2 (vd `~/projects/s-cart`) thay vì `/mnt/c/...` |
 
-Copy `.env.example` thành `.env` và đặt tối thiểu các biến sau:
+---
 
-```env
-APP_ENV=production
-APP_DEBUG=false
+## 🧱 Stack gồm những gì
 
-# Database — chọn MỘT trong hai cách bên dưới
-DB_CONNECTION=mysql
-DB_HOST=your-remote-mysql-host   # hoặc "mysql-local" nếu dùng DB đóng gói sẵn — xem mục 4.2
-DB_PORT=3306
-DB_DATABASE=scart-db-prod
-DB_USERNAME=scar-user
-DB_PASSWORD=********              # BẮT BUỘC đổi — container prod từ chối khởi động nếu còn giá trị mẫu "password"
-COMPOSE_PROFILES=                 # rỗng = dùng DB từ xa (không tạo mysql-local); "db-local" = dùng MySQL đóng gói (xem 4.2)
-# SC_DOCKER_DB_ROOT_PASSWORD=****  # chỉ khi COMPOSE_PROFILES=db-local — BẮT BUỘC đổi khỏi "change_me_root"
+| Service | Vai trò | Image |
+|---|---|---|
+| `app` | PHP-FPM chạy Laravel | build từ `docker/php` |
+| `webserver` | Nginx, phục vụ `public/`, chuyển `.php` sang `app` | `nginx:1.27-alpine` |
+| `queue` | `php artisan queue:work` (email, job nền) | dùng chung image `app` |
+| `scheduler` | Gọi `php artisan schedule:run` mỗi 60 giây | dùng chung image `app` |
+| `mysql-local` | MySQL 8.4 (tùy chọn, bật bằng `COMPOSE_PROFILES=db-local`) | `mysql:8.4` |
+| `node` | Build/dev asset (Vite) — chỉ chạy khi cần | `node:22-alpine` |
 
-# Bắt buộc với prod: khớp với user thật mà Docker chạy trên server này
-SC_DOCKER_WWWUSER=1000    # chạy `id -u` trên server
-SC_DOCKER_WWWGROUP=1000   # chạy `id -g` trên server
+Có hai file compose **tách biệt hoàn toàn** — luôn dùng đúng file cho đúng môi trường:
 
-# Cổng web: KHÔNG đặt SC_DOCKER_APP_PORT trừ khi cần cổng khác 80 (ví dụ sau reverse proxy).
-# .env.example để dòng này dạng comment có chủ đích — file compose prod tự mặc định 80.
-```
+| | `docker-compose.yml` — **DEV** | `docker-compose.prod.yml` — **PROD** |
+|---|---|---|
+| Dùng cho | Máy cá nhân | Server thật |
+| Lệnh | `docker compose ...` | `docker compose -f docker-compose.prod.yml ...` |
+| Cổng web mặc định | `8000` | `80` |
+| `APP_ENV` / `APP_DEBUG` | `local` / `true` (ghim trong file compose) | `production` / `false` (ghim trong file compose) |
+| `app` chạy bằng | root (tránh lỗi quyền khi bind-mount) | `www-data` theo `SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP` |
+| Xdebug, Vite hot-reload | Có | Không |
+| Tên container | `scart-app`, `scart-nginx`… | `scart-app-prod`, `scart-nginx-prod`… |
 
-> **Guard bí mật mẫu**: khi `APP_ENV=production`, `docker/php/prod-guard.sh` (chạy lúc container khởi động) **từ chối
-> khởi động** nếu `DB_PASSWORD` vẫn là `password`, hoặc `COMPOSE_PROFILES=db-local` mà `SC_DOCKER_DB_ROOT_PASSWORD` vẫn là
-> `change_me_root`. Chỉ so đúng giá trị mẫu, không đánh giá "mật khẩu yếu" — mật khẩu thật của DB từ xa không bao giờ bị
-> chặn nhầm. Xem Q&A "Container prod từ chối khởi động với thông điệp `[prod-guard] Refusing to start`" bên dưới.
+---
 
-> **Lưu ý về `APP_ENV`/`APP_DEBUG`**: `docker-compose.prod.yml` đã **ghim cứng** `APP_ENV=production` và `APP_DEBUG=false`
-> cho **cả 3 service PHP** (`app`, `queue`, `scheduler`), và biến của container luôn thắng `.env` — nên dù `.env` có sai,
-> web lẫn job nền vẫn chạy production/debug-off. Hai dòng trên trong `.env` vẫn cần cho lệnh chạy **ngoài** container
-> (PHP trên host) và để `.env` mô tả đúng môi trường. `.env` **vẫn bắt buộc**: `APP_KEY`, `GP247_*`, `MAIL_*` chỉ được đọc
-> từ đó, và chính Compose nội suy `DB_*`/`SC_DOCKER_*` từ `.env`.
+## 💻 Chạy môi trường DEV
 
-**2. Khởi động container**
+1. Vào thư mục project, tạo file cấu hình:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   `.env.example` đã có sẵn cấu hình chạy được ngay (dùng MySQL đóng gói trong Docker) — không cần sửa gì.
+
+2. Khởi động toàn bộ container (lần đầu mất vài phút để build image):
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+   Kiểm tra bằng `docker compose ps` — các service phải ở trạng thái `running`.
+
+3. Cài S-Cart:
+
+   ```bash
+   docker compose exec app php artisan key:generate
+   docker compose exec app php artisan gp247:install
+   docker compose exec app php artisan gp247:shop-sample   # tùy chọn: dữ liệu mẫu
+   ```
+
+   `gp247:install` hỏi xác nhận — gõ `yes`.
+
+4. Mở trình duyệt:
+
+   | Trang | Địa chỉ |
+   |---|---|
+   | Cửa hàng | <http://localhost:8000> |
+   | Quản trị | <http://localhost:8000/gp247_admin> — `admin` / `admin` |
+   | Vite dev server (hot-reload asset) | <http://localhost:5173> |
+
+   > 🔑 Đổi mật khẩu `admin` ngay sau lần đăng nhập đầu tiên.
+
+> 💡 Muốn đổi cổng hoặc database, sửa `.env` **trước bước 2**: `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `DB_*`, `COMPOSE_PROFILES`. Mỗi biến có chú thích ngay trong mục `#========DOCKER=========` của `.env.example`. Nên đặt `APP_URL=http://localhost:8000` để link trong email (sinh từ queue/CLI) có đúng cổng.
+
+---
+
+## 🏭 Chạy môi trường PROD
+
+1. Trên server, tạo `.env` từ file mẫu:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Chọn **một** trong hai cách dùng database:
+
+   | | **A. Database từ xa / managed** (RDS, Cloud SQL…) | **B. MySQL đóng gói trong Docker** |
+   |---|---|---|
+   | `DB_HOST` | `your-remote-mysql-host` | `mysql-local` |
+   | `COMPOSE_PROFILES` | *(để trống)* — không tạo container `mysql-local` | `db-local` |
+   | `SC_DOCKER_DB_ROOT_PASSWORD` | không cần | **bắt buộc**, đổi khỏi `change_me_root` |
+
+3. Sửa `.env` — tối thiểu các dòng sau (ví dụ cho cách A):
+
+   ```env
+   APP_ENV=production
+   APP_DEBUG=false
+
+   DB_CONNECTION=mysql
+   DB_HOST=your-remote-mysql-host
+   DB_PORT=3306
+   DB_DATABASE=scart-db-prod
+   DB_USERNAME=scart-user
+   DB_PASSWORD=mat_khau_that        # BẮT BUỘC đổi khỏi giá trị mẫu "password"
+   COMPOSE_PROFILES=
+
+   SC_DOCKER_WWWUSER=1000           # chạy `id -u` trên server
+   SC_DOCKER_WWWGROUP=1000          # chạy `id -g` trên server
+   ```
+
+   > Không đặt `SC_DOCKER_APP_PORT` trừ khi cần cổng khác `80` (vd đứng sau reverse proxy) — file compose prod tự mặc định `80`.
+
+4. Khởi động container:
+
+   ```bash
+   docker compose -f docker-compose.prod.yml up -d --build
+   ```
+
+5. Cài S-Cart (chỉ lần đầu):
+
+   ```bash
+   docker compose -f docker-compose.prod.yml exec app php artisan key:generate
+   docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
+   ```
+
+6. Build asset CSS/JS (asset không nằm sẵn trong image — chạy lại mỗi khi CSS/JS đổi):
+
+   ```bash
+   docker compose -f docker-compose.prod.yml run --rm node
+   ```
+
+7. Mở `http://ten-mien-cua-ban` và `http://ten-mien-cua-ban/gp247_admin` để kiểm tra.
+
+> ⚠️ Mọi lệnh prod đều có `-f docker-compose.prod.yml`. Hãy **copy nguyên lệnh**, đừng gõ theo trí nhớ — thiếu `-f` là Docker lặng lẽ dùng file DEV. Xem [Câu 7](#-hỏi--đáp-qa).
+
+**Mẹo rút gọn lệnh** — chỉ có hiệu lực trong phiên terminal hiện tại:
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
-```
-
-**3. Cài đặt S-Cart (chỉ lần đầu)**
-
-```bash
-docker compose -f docker-compose.prod.yml exec app php artisan key:generate
-docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
-docker compose -f docker-compose.prod.yml exec app php artisan gp247:shop-sample   # tùy chọn
-```
-
-**4. Build assets frontend**
-
-```bash
-docker compose -f docker-compose.prod.yml run --rm node
-```
-
-Assets không được build sẵn trong image, nên chạy lệnh này một lần sau khi
-cài đặt, và chạy lại mỗi khi CSS/JS thay đổi.
-
-Vậy là website đã chạy. Hai lựa chọn database và giá trị `.env` chính xác
-được nói kỹ ở Q&A: [Q: Prod có 2 lựa chọn database, `.env` mỗi lựa chọn cần
-những gì?](#q-prod-có-2-lựa-chọn-database-env-mỗi-lựa-chọn-cần-những-gì)
-
-Mọi lệnh ở trên đều ghi đầy đủ `-f docker-compose.prod.yml` có chủ đích.
-Lệnh thiếu `-f` sẽ âm thầm rơi về `docker-compose.yml` (file DEV) thay vì
-báo lỗi — xem [Q: Tôi lỡ tay chạy `docker compose up -d --build` trên prod
-(quên `-f docker-compose.prod.yml`) — giờ chuyện gì xảy
-ra?](#q-tôi-lỡ-tay-chạy-docker-compose-up-d---build-trên-prod-quên--f-docker-composeprodyml--giờ-chuyện-gì-xảy-ra)
-để biết cụ thể hậu quả. Hãy copy nguyên các lệnh trên, không gõ lại theo
-trí nhớ.
-
-**(Tùy chọn) Rút gọn lệnh**
-
-Nếu không muốn gõ `-f docker-compose.prod.yml` mỗi lần, có thể export biến
-này một lần cho phiên shell:
-
-```bash
-export COMPOSE_FILE=docker-compose.prod.yml   # bash/zsh
+export COMPOSE_FILE=docker-compose.prod.yml       # bash/zsh
 # $env:COMPOSE_FILE = "docker-compose.prod.yml"   # PowerShell
 ```
 
-Đây chỉ là tiện lợi cho phiên làm việc tương tác hiện tại — không tồn tại
-khi đăng nhập SSH mới, mở tab terminal mới, chạy cron job, hoặc chạy script
-deploy không tương tác. **Không được giả định biến này đã được export**
-chỉ vì bạn (hoặc ai khác) đã export nó trước đây. Khi không chắc, khi viết
-script, hoặc trong CI, luôn dùng dạng đầy đủ `-f docker-compose.prod.yml`
-thay vì dựa vào `COMPOSE_FILE`.
+Biến này **mất** khi mở SSH mới, tab mới, hoặc trong cron/script deploy. Trong script và CI, luôn ghi đầy đủ `-f docker-compose.prod.yml`.
 
 ---
 
-## Phần 3 — Các lệnh dùng hằng ngày
+## 🔁 Lệnh dùng hằng ngày
 
-Các lệnh dưới đây không ghi `-f` để ngắn gọn — chúng áp dụng cho môi trường
-mà shell hiện tại của bạn đang nhắm tới. **Trên server production, thêm
-`-f docker-compose.prod.yml` vào mọi lệnh `docker compose` dưới đây.**
-Không giả định `COMPOSE_FILE` đã được export cho phiên shell này (xem lưu ý
-ở Phần 2) — kiểm tra bằng `docker compose config --services` nếu không
-chắc, hoặc cứ luôn gõ rõ `-f docker-compose.prod.yml`.
+> Các lệnh dưới đây viết cho DEV. **Trên prod, thêm `-f docker-compose.prod.yml` sau `docker compose`.** Không chắc shell đang nhắm file nào? Chạy `docker compose config --services`.
 
-**Cập nhật code sau khi `git pull`:**
+**Cập nhật code sau `git pull`:**
 
 ```bash
 git pull
 docker compose exec app composer install --no-interaction --optimize-autoloader   # nếu composer.lock đổi
-docker compose run --rm node                                                       # nếu assets đổi
+docker compose exec app php artisan gp247:update                                   # nếu gói gp247/* lên phiên bản mới
 docker compose exec app php artisan migrate --force                                # nếu có migration mới
+docker compose run --rm node                                                       # nếu asset đổi
 docker compose exec app php artisan config:cache
 ```
 
-Không cần `docker compose build` hay `restart` với thay đổi code thông
-thường — xem [Q: Khi nào thực sự cần build lại hoặc restart?](#q-khi-nào-thực-sự-cần-build-lại-hoặc-restart)
+Thay đổi code thông thường **không cần** build lại hay restart — xem [mục 6](#-khi-nào-cần-build-lại--restart).
 
-**Các lệnh thường dùng khác:**
+**Các lệnh khác:**
+
+| Việc | Lệnh |
+|---|---|
+| Chạy lệnh artisan bất kỳ | `docker compose exec app php artisan <lệnh>` |
+| Xem log PHP / Nginx | `docker compose logs -f app` · `docker compose logs -f webserver` |
+| Xem log Laravel | `tail -f storage/logs/laravel.log` (PowerShell: `Get-Content storage\logs\laravel.log -Wait -Tail 50`) |
+| Vào shell container | `docker compose exec app sh` |
+| Dừng toàn bộ (giữ dữ liệu) | `docker compose down` |
+| Sao lưu MySQL đóng gói | `docker compose exec mysql-local mysqldump -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" scart > backup.sql` |
+| Cập nhật dependency PHP | `docker compose exec app composer update --no-interaction --optimize-autoloader` rồi `docker compose restart queue scheduler` |
+
+> 💡 Đặt `LOG_STACK=daily` trong `.env` để log Laravel xoay vòng theo ngày, tránh một file `laravel.log` phình mãi.
+
+---
+
+## 🔨 Khi nào cần build lại / restart
+
+Quy tắc: file được **copy vào image** (trong `docker/php/Dockerfile`) → sửa xong phải **build lại**. File chỉ được **mount** → chỉ cần **restart/recreate**. Code ứng dụng → **không cần gì**.
+
+| Thay đổi | Build lại? | Restart? | Lệnh |
+|---|---|---|---|
+| `docker/php/Dockerfile`, `php.ini`, `entrypoint.sh`, `prod-guard.sh` | **Có** | Có | `docker compose build app && docker compose up -d` |
+| `.env`: `SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP` | **Có** | Có | `docker compose up -d --build` |
+| `.env`: biến runtime (`DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`…) | Không | Có | `docker compose up -d` |
+| `docker-compose*.yml` | Không | Có | `docker compose up -d` |
+| `docker/nginx/default.conf` | Không | Có | `docker compose restart webserver` |
+| `docker/mysql/my.cnf` | Không | Có | `docker compose restart mysql-local` |
+| Code PHP / Blade | Không | Không | — (chạy lại `config:cache` nếu bạn dùng nó) |
+| `composer.json` / `composer.lock` | Không | Không | `docker compose exec app composer install ...` |
+| `package.json` / asset JS-CSS | Không | Không | `docker compose run --rm node` |
+| `APP_ENV` / `APP_DEBUG` trong `.env` | Không | Không | Không tác dụng bên trong container — hai giá trị này bị file compose **ghim** cho cả `app`, `queue`, `scheduler`. Muốn đổi phải sửa file compose |
+
+> Đã chạy `php artisan config:cache`? Thay đổi trong `.env` chỉ có hiệu lực sau khi chạy lại `config:cache` (hoặc `config:clear`).
+
+---
+
+## 💾 Dữ liệu được lưu ở đâu
+
+Image **không chứa code** — toàn bộ thư mục project được bind-mount từ máy bạn vào container (`./:/var/www/html`). Vì vậy build lại hay tạo lại container **không làm mất** các thư mục sau:
+
+- `app/GP247` — controller, helper, plugin, template bạn tùy biến
+- `public/GP247`, `public/vendor`, `resources/views/vendor`
+- `storage/app/public` — ảnh sản phẩm, file upload
+
+Ngoại lệ là các thư mục nằm trong **named volume** của Docker (nhanh hơn nhiều so với bind-mount trên Windows):
+
+| Nội dung | Volume DEV | Volume PROD |
+|---|---|---|
+| `vendor/` | `scart_scart-vendor` | `scart-vendor` |
+| `node_modules/` | `scart_scart-node-modules` | `scart-node-modules` |
+| Dữ liệu MySQL | `scart_scart-mysql-local-data-dev` | `scart-mysql-local-data-prod` |
+
+- Volume **còn nguyên** khi `docker compose down`, **chỉ mất** khi `docker compose down -v` hoặc `docker volume rm`.
+- `vendor/` và `node_modules/` không duyệt được từ File Explorer — bình thường, vì không nên sửa tay chúng. Mất volume này cũng không sao: container tự cài lại khi khởi động.
+- Xem tên volume thật: `docker volume ls`. Tên PROD được ghim cố định trong `docker-compose.prod.yml`; tên DEV có tiền tố project `scart_`.
+
+> ⚠️ **Nâng cấp một server prod đã chạy từ bản cũ?** Chạy `docker volume ls` **trước khi** kéo `docker-compose.prod.yml` mới. Nếu volume MySQL đang có tên dạng `scart_scart-mysql-local-data-prod` (có tiền tố), hãy đổi tên/chép dữ liệu sang `scart-mysql-local-data-prod`, hoặc sửa `name:` trong file compose cho khớp — nếu không MySQL sẽ khởi động trên một volume mới, trống rỗng.
+
+Khi chuyển sang server khác, nhớ mang theo các thư mục ở danh sách trên (qua git, rsync, hoặc backup riêng).
+
+---
+
+## 🐬 MySQL đóng gói sẵn
+
+Khi `COMPOSE_PROFILES=db-local`, container `mysql-local` tự tạo database và user từ `.env`:
+
+| Biến `.env` | Trở thành | Mặc định DEV (nếu bỏ trống) |
+|---|---|---|
+| `DB_DATABASE` | `MYSQL_DATABASE` | `scart` |
+| `DB_USERNAME` | `MYSQL_USER` | `scart` |
+| `DB_PASSWORD` | `MYSQL_PASSWORD` | `scart` |
+| `SC_DOCKER_DB_ROOT_PASSWORD` | `MYSQL_ROOT_PASSWORD` | `root_secret` |
+
+- PROD **không có mặc định** — phải khai báo đủ cả 4 biến.
+- Laravel đọc cùng file `.env` nên thông tin luôn khớp; chỉ cần `DB_HOST=mysql-local` (tên service, không phải hostname thật).
+- Dùng HeidiSQL/DBeaver trên máy (chỉ DEV): kết nối `127.0.0.1`, cổng `SC_DOCKER_DB_PORT` (mặc định `3306`).
+
+Kiểm tra database đang có trong container:
 
 ```bash
-# Chạy artisan bất kỳ
-docker compose exec app php artisan <command>
+docker compose exec mysql-local mysql -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" -e "SHOW DATABASES;"
+```
 
-# Xem log
-docker compose logs -f app
-docker compose logs -f webserver
+Thêm database/user còn thiếu mà **không đụng** dữ liệu hiện có:
 
-# Vào shell container
-docker compose exec app sh
+```bash
+docker compose exec mysql-local mysql -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS your_db; CREATE USER IF NOT EXISTS 'your_user'@'%' IDENTIFIED BY 'your_pass'; GRANT ALL ON your_db.* TO 'your_user'@'%';"
+```
 
-# Dừng toàn bộ (dữ liệu vẫn giữ nguyên — xem Q&A)
+Reset toàn bộ — ⚠️ **mất hết dữ liệu MySQL, không khôi phục được**, sao lưu trước:
+
+```bash
 docker compose down
-
-# Sao lưu MySQL (khi dùng database có sẵn)
-docker compose exec mysql-local mysqldump -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" scart > backup.sql
-
-# Update dependency PHP
-docker compose exec app composer update --no-interaction --optimize-autoloader
-docker compose restart queue scheduler   # để các tiến trình nền nhận code mới
-```
-
-**Xem log Laravel:**
-
-```powershell
-# PowerShell
-Get-Content storage\logs\laravel.log -Wait -Tail 50
-```
-
-```bash
-# Git Bash / WSL / Linux / Mac
-tail -f storage/logs/laravel.log
+docker volume ls | grep mysql-local-data            # xem tên thật trước khi xoá
+docker volume rm scart_scart-mysql-local-data-dev   # DEV; PROD: scart-mysql-local-data-prod
+docker compose up -d
 ```
 
 ---
 
-## Q&A
+## 🏢 Chạy nhiều dự án trên một host
 
-### Q: Vì sao `git pull` xong không cần build lại image Docker?
+Docker phân biệt stack theo **project name**, không theo thư mục. Mọi tên container, image tag, volume, network đều sinh ra từ **một biến `SC_DOCKER_INSTANCE`** (bỏ trống = `scart`). Vì vậy **mỗi dự án phải có `SC_DOCKER_INSTANCE` riêng** — hai thư mục cùng để trống sẽ bị Docker coi là **cùng một stack**: `up` ở thư mục thứ hai sẽ chiếm container và **cả database MySQL** của dự án thứ nhất, không có cảnh báo nào.
 
-Vì image không hề đóng gói sẵn code ứng dụng. Toàn bộ thư mục project được
-bind-mount thẳng từ máy bạn vào container:
+Thêm dự án thứ 2, thứ 3…:
 
-```yaml
-volumes:
-  - ./:/var/www/html
-```
+1. Đặt mỗi dự án trong **thư mục riêng**.
+2. Trong `.env` của dự án đó, đặt tên instance và cổng host **riêng**:
 
-Nên code mới trên đĩa có ngay trong container, không cần build lại. Image
-chỉ chứa PHP-FPM và các extension; chỉ cần build lại khi bạn sửa
-`docker/php/Dockerfile` (ví dụ đổi phiên bản PHP hoặc thêm extension).
+   ```env
+   SC_DOCKER_INSTANCE=shopa     # duy nhất mỗi dự án: shopa, shopb…
+   SC_DOCKER_APP_PORT=8001      # cổng web khác nhau mỗi dự án
+   SC_DOCKER_VITE_PORT=5174     # chỉ DEV
+   SC_DOCKER_DB_PORT=3307       # chỉ DEV, khi COMPOSE_PROFILES=db-local
 
-### Q: Build lại hoặc tạo lại container có làm mất các tùy chỉnh của tôi (`app/GP247`, ảnh đã upload...) không?
+   # GIỮ NGUYÊN ở mọi dự án:
+   DB_HOST=mysql-local
+   DB_PORT=3306
+   ```
 
-Không. Vì toàn bộ project nằm trên đĩa của bạn (không nằm trong image), các
-thư mục sau tự động được giữ nguyên, không cần cấu hình gì thêm:
+3. Khởi động như bình thường (`docker compose up -d --build`, thêm `-f docker-compose.prod.yml` cho prod).
 
-- `app/GP247` — nơi bạn override controller, helper, plugin, template
-- `public/GP247`, `public/vendor`
-- `resources/views/vendor`
-- `storage/app/public` — ảnh sản phẩm, file upload
+Kết quả với `SC_DOCKER_INSTANCE=shopa`:
 
-Khi deploy sang server khác, chỉ cần đảm bảo các thư mục này đi cùng code
-(git, rsync, hoặc backup riêng nếu không commit vào git).
+| Định danh | Mặc định (bỏ trống) | `SC_DOCKER_INSTANCE=shopa` |
+|---|---|---|
+| Project (dev / prod) | `scart` / `scart-prod` | `shopa` / `shopa-prod` |
+| Container | `scart-app`, `scart-nginx`… | `shopa-app`, `shopa-nginx`… |
+| Image tag (dev / prod) | `scart-app:8.3` / `scart-app:8.3-prod` | `scart-app:8.3-shopa` / `scart-app:8.3-shopa-prod` |
+| Volume DEV | `scart_scart-vendor`, `scart_scart-mysql-local-data-dev`… | `shopa_scart-vendor`, `shopa_scart-mysql-local-data-dev`… |
+| Volume PROD | `scart-vendor`, `scart-mysql-local-data-prod`… | `shopa-vendor`, `shopa-mysql-local-data-prod`… |
+| Network (dev / prod) | `scart_scart` / `scart-prod_scart` | `shopa_scart` / `shopa-prod_scart` |
 
-### Q: Vì sao tôi không duyệt được `vendor/` hay `node_modules/` từ File Explorer?
+Vai trò của từng biến khi nhiều stack chạy chung host:
 
-`vendor/` và `node_modules/` là ngoại lệ duy nhất của bind-mount ở trên —
-chúng nằm trong named volume riêng của Docker (`scart-vendor`,
-`scart-node-modules`) thay vì bind-mount từ host:
+| Biến | Tác dụng | Khi nhiều stack |
+|---|---|---|
+| `SC_DOCKER_INSTANCE` | Tên project, container, image tag, volume, network | **Bắt buộc khác nhau** |
+| `SC_DOCKER_APP_PORT` | Cổng web trên host (mặc định dev `8000`, prod `80`) | **Khác nhau**, hoặc đặt reverse proxy phía trước |
+| `SC_DOCKER_VITE_PORT` | Cổng Vite dev server (chỉ DEV) | **Khác nhau** nếu chạy nhiều stack dev |
+| `SC_DOCKER_DB_PORT` | Cổng `mysql-local` trên host cho công cụ DB (chỉ DEV) | **Khác nhau** nếu nhiều stack dev bật `db-local` |
+| `DB_HOST` / `DB_PORT` | Nơi Laravel kết nối, **bên trong** network Docker | **Giữ nguyên** `mysql-local` / `3306` — mỗi stack có network riêng |
+| `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | Database của dự án | Trùng được nếu mỗi stack có `mysql-local` riêng; **phải khác** nếu dùng chung một MySQL |
+| `COMPOSE_PROFILES` | `db-local` = MySQL riêng; trống = DB ngoài | Để trống nếu muốn nhiều stack dùng chung một MySQL (tiết kiệm RAM) |
+| `SC_DOCKER_PHP_VERSION` | Phiên bản PHP của image | Khác nhau được |
+| `SC_DOCKER_WWWUSER` / `SC_DOCKER_WWWGROUP` | UID/GID của `www-data` (PROD) | Theo chủ sở hữu thư mục của **từng** dự án |
 
-```yaml
-volumes:
-  - ./:/var/www/html
-  - scart-vendor:/var/www/html/vendor
-```
+- **Nhiều site trên prod** → dùng reverse proxy (Traefik, Caddy, hoặc Nginx trên host) publish `80`/`443` và route theo domain tới từng stack; các stack không cần publish cổng ra ngoài, lại có TLS tập trung.
+- **Tài nguyên**: mỗi instance là 4–6 container, RAM/CPU tăng theo số instance. Muốn chứa nhiều site hơn trên VPS nhỏ, cho các instance dùng chung một MySQL (mỗi site một `DB_DATABASE`, `COMPOSE_PROFILES=` để trống).
 
-Hai thư mục này chứa hàng chục nghìn file nhỏ (riêng `aws-sdk-php` đã có
-khoảng 150 định nghĩa package). Đọc/ghi lượng file nhỏ như vậy qua
-**bind-mount từ ổ Windows** chậm tới mức `composer install`/`npm ci` có thể
-bị timeout. Named volume nằm trong storage Linux gốc của Docker nên nhanh
-hơn nhiều — và vẫn được giữ nguyên qua các lần tạo lại container/build lại
-image (chỉ mất khi chạy `docker compose down -v`). Đánh đổi là bạn không
-duyệt trực tiếp được hai thư mục này từ host, nhưng không sao vì vốn dĩ
-không nên tự sửa tay chúng.
+---
 
-Dữ liệu MySQL cũng được lưu ở named volume riêng, nên cũng không mất khi
-`docker compose down` (chỉ mất khi `docker compose down -v`). Tên thật của
-volume (xem bằng `docker volume ls`):
+## 🚦 Điều kiện & ràng buộc (hiểu trước khi thao tác)
 
-- Dev: `scart_scart-mysql-local-data-dev`, `scart_scart-vendor`,
-  `scart_scart-node-modules` — `docker-compose.yml` không ghim `name:`, nên
-  Docker tự thêm tiền tố `<tên project>_`.
-- Prod: `scart-mysql-local-data-prod`, `scart-vendor`, `scart-node-modules` —
-  được ghim `name:` (xem đoạn dưới).
+**Khi khởi động PROD**
 
-Cả 3 volume của prod (`scart-vendor`, `scart-node-modules`,
-`scart-mysql-local-data-prod`) đã được ghim `name:` cố định trong
-`docker-compose.prod.yml` (từ modification `20260709T090000`), đúng y
-nguyên các literal string trên — độc lập với tên project, nên không đổi
-khi tên project đổi.
+- **Container prod từ chối khởi động nếu còn bí mật mẫu** — khi `APP_ENV=production`, `DB_PASSWORD` không được là `password`, và nếu `COMPOSE_PROFILES=db-local` thì `SC_DOCKER_DB_ROOT_PASSWORD` không được là `change_me_root`. Vì một site thật chạy với mật khẩu ai cũng biết là site bị chiếm. Kiểm tra này chỉ so đúng giá trị mẫu — không chấm "độ mạnh" mật khẩu thật, và không bao giờ chặn DEV.
+- **Lệnh prod phải có `-f docker-compose.prod.yml`** — thiếu nó, Docker không báo lỗi mà dùng file DEV (bật debug, chạy root, cài Xdebug).
+- **`APP_ENV` / `APP_DEBUG` bị ghim trong file compose** — sửa `.env` không đổi được giá trị bên trong container; điều này đảm bảo prod không thể vô tình chạy chế độ debug. `.env` vẫn cần hai dòng này cho lệnh chạy ngoài container.
 
-> **Đang nâng cấp một deployment prod đã chạy từ trước khi có việc ghim
-> tên này?** Chạy `docker volume ls` **trước khi** pull
-> `docker-compose.prod.yml` mới, xác nhận tên volume thực tế đã khớp các
-> tên trên. Nếu deployment hiện tại có tên volume dạng có prefix project
-> (vd `scart_scart-mysql-local-data-prod`), hãy đổi tên volume đó để khớp
-> (hoặc sao chép dữ liệu sang volume mới) hoặc sửa lại `name:` trong
-> `docker-compose.prod.yml` cho khớp với volume hiện có trước khi chạy
-> `up` — để MySQL không bị mount vào một volume mới trống rỗng.
-> `vendor`/`node_modules` thì an toàn trong mọi trường hợp — tự rebuild lại
-> khi container khởi động (xem `docker/php/entrypoint.sh`).
+**Khi cấu hình database**
 
-### Q: `composer install` báo lỗi "process timeout" ở lần chạy đầu — xử lý sao?
+- **MySQL đóng gói chỉ tạo database/user/mật khẩu root ở lần khởi động đầu tiên** (volume dữ liệu còn trống). Sửa `DB_*` hay `SC_DOCKER_DB_ROOT_PASSWORD` trong `.env` sau đó **không** làm MySQL thay đổi — phải sửa trong MySQL (`CREATE USER`, `ALTER USER`) hoặc reset volume.
+- **Không đổi `DB_PORT`** để tránh trùng cổng giữa các dự án — `DB_PORT` là cổng bên trong network Docker, MySQL luôn nghe ở `3306`. Cổng phía host là `SC_DOCKER_DB_PORT`. (Hướng dẫn cũ từng ghi `DB_PORT=3307` cho dự án thứ 2 — nếu đã làm vậy: trả `DB_PORT=3306`, chuyển `3307` sang `SC_DOCKER_DB_PORT`, rồi `docker compose up -d`.)
 
-Triệu chứng:
+**Khi đặt `SC_DOCKER_INSTANCE`**
 
-```
-Install of aws/aws-sdk-php failed
-The following exception is caused by a process timeout
-...exceeded the timeout of 300 seconds.
-```
+- **Chỉ gồm chữ thường, số, `-`, `_`, bắt đầu bằng chữ hoặc số** — đây là quy tắc đặt tên project của Docker.
+- **Chọn trước lần `up` đầu tiên.** Muốn đổi về sau: `docker compose down` **trước**, rồi mới sửa `.env` và `up -d`. Stack mới chạy trên **volume mới, trống** — dữ liệu cũ không mất, chỉ nằm lại trong volume mang tên cũ.
 
-Lỗi này xảy ra trên Windows khi project nằm trên ổ Windows mount vào WSL2
-(ví dụ `/mnt/d/...`) — I/O qua cầu nối đó chậm với các package nhiều file
-nhỏ. `docker/php/Dockerfile` đã tăng sẵn timeout
-(`COMPOSER_PROCESS_TIMEOUT=900`) và đưa `vendor/`/`node_modules/` ra khỏi
-bind-mount chậm (xem Q&A phía trên), nhưng nếu vẫn gặp lỗi:
+**Khi chạy lại `gp247:install`**
 
-- Chạy lại là được, chỉ cần hoàn tất một lần:
-  `docker compose exec app composer install --no-interaction --optimize-autoloader`
-- Để có hiệu năng I/O tốt nhất, nên đặt project trong filesystem gốc của
-  WSL2 (ví dụ `~/projects/s-cart-project`) thay vì dưới `/mnt/c/...` hay
-  `/mnt/d/...`, rồi mở từ Windows qua `\\wsl$\<distro>\...` hoặc extension
-  WSL Remote của VS Code.
+- Lệnh cài đặt ghi đè dữ liệu cửa hàng và một số file đã publish. **Sao lưu database và `app/GP247` trước** nếu site đã có dữ liệu hoặc tùy biến.
 
-### Q: Làm sao để dùng database từ xa thay vì database có sẵn?
+---
 
-Việc container `mysql-local` có khởi động hay không được điều khiển bằng
-`COMPOSE_PROFILES` trong `.env`. Để bỏ nó và trỏ sang database từ
-xa/managed:
+## ❓ Hỏi & Đáp (Q&A)
 
-```env
-DB_HOST=your-remote-mysql-host
-COMPOSE_PROFILES=
-```
+**Câu 1: `git pull` xong có phải build lại image không?**
 
-Muốn dùng database có sẵn, đặt `COMPOSE_PROFILES=db-local` và
-`DB_HOST=mysql-local` (đây là mặc định của `.env.example` cho dev).
+→ Không. Code được bind-mount thẳng vào container nên có hiệu lực ngay. Chỉ build lại khi sửa file trong `docker/php/` — xem [mục 6](#-khi-nào-cần-build-lại--restart).
 
-### Q: Prod có 2 lựa chọn database, `.env` mỗi lựa chọn cần những gì?
+**Câu 2: Build lại hoặc xoá container có làm mất tùy biến và ảnh đã upload không?**
 
-**Lựa chọn A — Database từ xa/managed (mặc định, ví dụ RDS/Cloud SQL):**
+→ Không. `app/GP247`, `public/GP247`, `storage/app/public`… nằm trên đĩa của bạn. Chỉ `docker compose down -v` hoặc `docker volume rm` mới xoá dữ liệu MySQL — xem [mục 7](#-dữ-liệu-được-lưu-ở-đâu).
 
-```env
-DB_CONNECTION=mysql
-DB_HOST=your-remote-mysql-host
-DB_PORT=3306
-DB_DATABASE=scart-db-prod
-DB_USERNAME=scar-user
-DB_PASSWORD=********
-COMPOSE_PROFILES=
-```
+**Câu 3: `composer install` báo "process timeout" ở lần chạy đầu?**
 
-Container `mysql-local` sẽ không được tạo.
+→ Thường gặp trên Windows khi project nằm ở `/mnt/c/...` hoặc `/mnt/d/...`. Chạy lại `docker compose exec app composer install --no-interaction --optimize-autoloader` — chỉ cần xong một lần. Để nhanh hẳn, chuyển project vào filesystem của WSL2 (vd `~/projects/s-cart`).
 
-**Lựa chọn B — MySQL đóng gói trong Docker:**
+**Câu 4: Trên Linux, file do container tạo ra thuộc root, sửa phải dùng `sudo`?**
 
-```env
-DB_CONNECTION=mysql
-DB_HOST=mysql-local
-DB_PORT=3306
-DB_DATABASE=scart-db
-DB_USERNAME=scar-user
-DB_PASSWORD=********
-SC_DOCKER_DB_ROOT_PASSWORD=********
-COMPOSE_PROFILES=db-local
-```
+→ DEV chạy `app` bằng root để tránh lỗi quyền. Muốn chạy bằng user của bạn, trong service `app` của `docker-compose.yml` đặt `build.args.WWWUSER`/`WWWGROUP` theo `id -u`/`id -g` và `environment.PHP_FPM_ALLOW_ROOT: "false"`, rồi `docker compose build app && docker compose up -d`. ⚠️ Trên Windows với project ở `/mnt/...`, cách này gây lỗi `touch(): Utime failed` — giữ mặc định root, hoặc chuyển project vào WSL2.
 
-Dù chọn cách nào, khởi động bằng cùng một lệnh:
+**Câu 5: Deploy prod bằng root, bị `Permission denied` khi ghi `composer.lock` / `vendor/`?**
 
-```bash
-docker compose -f docker-compose.prod.yml up -d --build
-```
-
-### Q: Khi nào thực sự cần build lại hoặc restart?
-
-Quy tắc chung: file bị **copy vào image** (trong `docker/php/Dockerfile`)
-thì sửa xong phải build lại. File chỉ được **mount** (nginx/mysql conf,
-`docker-compose*.yml`) chỉ cần recreate/restart container, không cần build.
-Code ứng dụng (PHP, blade, JS, CSS) không cần cái nào cả, nhờ bind-mount và
-`opcache.validate_timestamps=1`.
-
-| Thay đổi | Cần build lại? | Cần restart/recreate? | Lệnh cần chạy |
-|---|---|---|---|
-| `docker/php/Dockerfile` (đổi PHP version, thêm extension) | **Có** | Có | `docker compose build app && docker compose up -d` |
-| `docker/php/php.ini` | **Có** | Có | `docker compose build app && docker compose up -d` |
-| `docker/php/entrypoint.sh` / `docker/php/prod-guard.sh` | **Có** | Có | `docker compose build app && docker compose up -d` |
-| Biến `.env` dùng làm build arg (`SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP`) | **Có** | Có | `docker compose up -d --build` |
-| Biến `.env` chỉ dùng runtime (`DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`...) | Không | Có | `docker compose up -d` |
-| `APP_ENV` / `APP_DEBUG` trong `.env` | Không | Không (chỉ cho lệnh chạy **ngoài** container) | Bên trong container **3 service PHP** (`app`, `queue`, `scheduler`) đều được file compose **ghim cứng** giá trị này (`production`/`false` ở prod, `local`/`true` ở dev) — biến của container thắng `.env`, nên đổi trong `.env` không ảnh hưởng chúng. Muốn đổi thật phải sửa file compose rồi `docker compose up -d` |
-| `docker-compose.yml` / `docker-compose.prod.yml` (thêm service, đổi volume/command) | Không | Có | `docker compose up -d` |
-| `docker/nginx/default.conf` | Không | Có | `docker compose restart webserver` |
-| `docker/mysql/my.cnf` | Không | Có | `docker compose restart mysql` |
-| Code PHP/blade ứng dụng | Không | **Không** | Không cần gì (chạy lại `config:cache` nếu bạn dùng) |
-| `composer.json` / `composer.lock` | Không | Không | `docker compose exec app composer install ...` |
-| `package.json` / assets JS-CSS | Không | Không | `docker compose run --rm node` |
-| Migration mới | Không | Không | `docker compose exec app php artisan migrate --force` |
-
-**Lưu ý:** nếu bạn đã chạy `php artisan config:cache` trước đó, thay đổi
-trong `.env` sẽ không có tác dụng cho tới khi chạy lại `config:cache` (hoặc
-`config:clear`) — việc này không liên quan gì tới Docker.
-
-### Q: Tôi gặp lỗi quyền ghi file — nguyên nhân là gì?
-
-Mặc định ở dev, container `app` chạy dưới quyền root, chủ đích để bạn không
-gặp lỗi permission khi bind-mount bất kể hệ điều hành nào. Đánh đổi: file do
-container tạo ra (log, view đã compile, file publish) sẽ thuộc sở hữu root
-trên đĩa. Điều này vô hình trên WSL2/Windows, nhưng trên **Linux gốc** có
-thể cần `sudo` để sửa/xóa các file đó từ ngoài container.
-
-Nếu điều này gây khó chịu trên Linux gốc, sửa service `app` trong
-`docker-compose.yml`:
-
-```yaml
-build:
-  args:
-    WWWUSER: "1000"   # `id -u` của bạn
-    WWWGROUP: "1000"  # `id -g` của bạn
-environment:
-  PHP_FPM_ALLOW_ROOT: "false"
-```
-
-rồi:
-
-```bash
-docker compose build app
-docker compose up -d
-```
-
-(Đây cũng chính là cách prod luôn dùng — xem Phần 2.)
-
-⚠️ Trên Windows, nếu bạn đổi sang user không phải root theo cách trên **và**
-project nằm trên ổ Windows mount vào WSL2 (`/mnt/c/...`, `/mnt/d/...`), bạn
-sẽ gặp lỗi `touch(): Utime failed: Operation not permitted` từ Blade
-compiler của Laravel — cầu nối WSL2 cho đường dẫn ổ Windows không hỗ trợ
-`utime()` với UID không phải root. Cách sửa: quay lại mặc định hardcode
-root, hoặc chuyển project vào filesystem gốc của WSL2.
-
-### Q: Tôi deploy prod bằng root và bị `Permission denied` khi ghi `composer.lock`/`vendor/` — sửa sao?
-
-Triệu chứng:
-
-```
-file_put_contents(./composer.lock): Failed to open stream: Permission denied
-```
-
-Nguyên nhân: ở prod, `www-data` trong container chạy dưới UID/GID lấy từ
-`SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP` (mặc định `1000`). Nếu bạn deploy/`git pull` bằng
-**root**, file project trên host thuộc sở hữu root, `www-data` không có
-quyền ghi vào đó.
-
-**Cách sửa khuyến nghị** — thiết lập ACL mặc định một lần, để mọi file mới
-root tạo ra sau này tự động ghi được bởi UID 1000:
+→ `www-data` trong container chạy bằng UID `SC_DOCKER_WWWUSER` (mặc định `1000`) nên không ghi được file của root. Cấp quyền một lần bằng ACL (thay `1000` nếu bạn dùng UID khác):
 
 ```bash
 apt-get install -y acl
@@ -448,256 +400,28 @@ setfacl -R  -m u:1000:rwx .
 setfacl -R -d -m u:1000:rwx .
 ```
 
-Sau đó cứ tiếp tục deploy bằng root như bình thường — không cần `chown`
-lại. Thay `1000` bằng đúng `SC_DOCKER_WWWUSER` bạn đang dùng nếu khác mặc định.
+Hoặc dành riêng một user UID 1000 để deploy và `chown -R 1000:1000 /path/to/project`.
 
-**Cách khác** — đổi hẳn owner (chỉ hợp lý nếu bạn có thể dành riêng một user
-UID 1000 cho việc deploy, vì mọi lần ghi sau đó đều phải dùng đúng user
-này):
+**Câu 6: Container prod báo `[prod-guard] Refusing to start`?**
 
-```bash
-chown -R 1000:1000 /path/to/project
-```
+→ `.env` còn mật khẩu mẫu. Xem biến nào bằng `docker compose -f docker-compose.prod.yml logs app`, đặt mật khẩu thật (hoặc `COMPOSE_PROFILES=` nếu dùng DB từ xa), rồi `docker compose -f docker-compose.prod.yml up -d`. Nếu volume MySQL đã được tạo với mật khẩu mẫu, đổi thêm trong MySQL bằng `ALTER USER`.
 
-### Q: Chạy lại `gp247:install` có ghi đè các file tôi đã tùy chỉnh không?
+**Câu 7: Lỡ chạy `docker compose up -d --build` trên prod mà quên `-f docker-compose.prod.yml`?**
 
-- Nếu file đích chưa tồn tại: được tạo mới bình thường.
-- Nếu đã tồn tại: có bị ghi đè hay không tùy lệnh publish bên dưới có dùng
-  `--force` hay không (chỉ `gp247:core-install` dùng). Đây là hành vi vốn
-  có của S-Cart, giống hệt khi không dùng Docker.
-  **Hãy backup `app/GP247` trước khi chạy lại `gp247:install`** nếu bạn đã
-  tùy chỉnh nó.
-- Trên Linux host, file mới publish mang UID/GID của container (map theo
-  `SC_DOCKER_WWWUSER`/`SC_DOCKER_WWWGROUP`) — có thể cần `chown` để sửa nếu khác user của bạn
-  (đọc thì vẫn được vì file publish thường world-readable).
+→ Stack prod **không bị ảnh hưởng** — Docker chỉ dựng thêm một stack DEV riêng (tên không có `-prod`, volume riêng). Có thể bạn thấy lỗi trùng cổng thay vì bị ghi đè. Dừng stack DEV lỡ chạy bằng `docker compose -f docker-compose.yml down`, rồi kiểm tra prod bằng `docker compose -f docker-compose.prod.yml ps`.
 
-### Q: Các log khác nằm ở đâu, xem thế nào?
+**Câu 8: Sửa `DB_DATABASE`/mật khẩu trong `.env` mà MySQL không đổi?**
 
-`storage/logs/laravel.log` đã nằm sẵn trên host (xem Phần 3). Hai log khác
-thì **không**, vì chưa được mount ra ngoài theo mặc định:
+→ MySQL chỉ đọc các giá trị này ở lần khởi động đầu tiên. Thêm database/user bằng lệnh ở [mục 8](#-mysql-đóng-gói-sẵn), hoặc reset volume (mất dữ liệu).
 
-| Log | Ở đâu | Cách xem |
-|---|---|---|
-| Nginx access/error | Bên trong container `webserver` | `docker compose logs -f webserver` |
-| PHP-FPM stdout/stderr | Bên trong container `app` | `docker compose logs -f app` |
+**Câu 9: Log Nginx và PHP-FPM ở đâu?**
 
-Muốn xem cả log Nginx trên host, thêm volume này vào service `webserver`
-trong `docker-compose.yml`:
+→ Nằm trong container, xem bằng `docker compose logs -f webserver` và `docker compose logs -f app`. Muốn có log Nginx trên máy, thêm volume `./storage/logs/nginx:/var/log/nginx` vào service `webserver` trong file compose.
 
-```yaml
-volumes:
-  - ./storage/logs/nginx:/var/log/nginx
-```
+**Câu 10: Làm sao dùng database từ xa thay cho MySQL đóng gói?**
 
-Mẹo: đổi sang xoay vòng log theo ngày bằng `LOG_STACK=daily` trong `.env`
-để tránh một file `laravel.log` phình to mãi.
+→ Trong `.env`: `DB_HOST=your-remote-mysql-host` và `COMPOSE_PROFILES=` (để trống), rồi `docker compose up -d`. Container `mysql-local` sẽ không được tạo. Xem bảng ở bước 2 của [PROD](#-chạy-môi-trường-prod).
 
-### Q: MySQL đóng gói trong Docker lấy đâu ra tên database/user để tạo?
+---
 
-Từ `.env` của bạn, Compose chuyển các giá trị này vào container
-`mysql-local`:
-
-| Biến `.env` | Trở thành | Mặc định ở dev nếu không set |
-|---|---|---|
-| `DB_DATABASE` | `MYSQL_DATABASE` | `scart` |
-| `DB_USERNAME` | `MYSQL_USER` | `scart` |
-| `DB_PASSWORD` | `MYSQL_PASSWORD` | `scart` (khớp mặc định của `app`/`queue`/`scheduler`) |
-| `SC_DOCKER_DB_ROOT_PASSWORD` | `MYSQL_ROOT_PASSWORD` | `root_secret` |
-
-(Prod không có mặc định — bắt buộc set đủ cả 4 biến.) Vì Laravel cũng đọc
-các biến `DB_*` của mình từ đúng file `.env` này, chúng luôn tự khớp nhau.
-Chỉ cần nhớ đặt `DB_HOST=mysql-local` (tên service trong Compose, không
-phải hostname thật) khi dùng database có sẵn.
-
-**Quan trọng:** MySQL chỉ chạy bước tạo này **đúng một lần**, vào lần khởi
-động đầu tiên khi volume dữ liệu còn trống. Nếu bạn sửa
-`DB_DATABASE`/user/password trong `.env` *sau khi* đã từng khởi động, sẽ
-không có gì thay đổi trong container — volume cũ vẫn giữ giá trị cũ.
-
-Để kiểm tra thực tế bên trong container đang chạy:
-
-```bash
-docker compose exec mysql-local mysql -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" -e "SHOW DATABASES;"
-```
-
-Nếu không khớp với `.env`, hoặc thêm phần còn thiếu mà không đụng dữ liệu
-hiện có:
-
-```bash
-docker compose exec mysql-local mysql -u root -p"$SC_DOCKER_DB_ROOT_PASSWORD" -e \
-  "CREATE DATABASE IF NOT EXISTS your_db; \
-   CREATE USER IF NOT EXISTS 'your_user'@'%' IDENTIFIED BY 'your_pass'; \
-   GRANT ALL ON your_db.* TO 'your_user'@'%';"
-```
-
-hoặc reset toàn bộ (⚠️ mất hết dữ liệu trong volume đó):
-
-```bash
-docker compose down
-docker volume ls | grep mysql-local-data            # xem tên thật trước khi xoá
-docker volume rm scart_scart-mysql-local-data-dev   # dev; prod: scart-mysql-local-data-prod
-docker compose up -d
-```
-
-### Q: Container prod từ chối khởi động với thông điệp `[prod-guard] Refusing to start` — sửa sao?
-
-`.env` trên server vẫn còn **giá trị bí mật mẫu** của `.env.example`. `docker compose -f docker-compose.prod.yml logs app`
-sẽ nêu đúng biến: `DB_PASSWORD` còn là `password`, hoặc `COMPOSE_PROFILES=db-local` mà `SC_DOCKER_DB_ROOT_PASSWORD` còn là
-`change_me_root`. Sửa `.env` (đặt mật khẩu thật; hoặc `COMPOSE_PROFILES=` nếu dùng DB từ xa) rồi
-`docker compose -f docker-compose.prod.yml up -d`. Container đang `restart: unless-stopped` nên sẽ tự lên khi `.env` đã đúng.
-
-Lưu ý: mật khẩu root của `mysql-local` chỉ được áp ở **lần khởi động đầu** (volume dữ liệu rỗng). Nếu volume đã tồn tại với
-mật khẩu mẫu, đổi trong `.env` là chưa đủ — phải đổi cả trong MySQL (`ALTER USER`), xem Q&A về MySQL đóng gói.
-
-Guard **chỉ** chạy khi `APP_ENV=production` (file compose prod ghim cho cả 3 service PHP) và **chỉ** so đúng giá trị mẫu —
-không bao giờ chặn dev, không đánh giá độ mạnh mật khẩu thật.
-
-### Q: Tôi lỡ tay chạy `docker compose up -d --build` trên prod (quên `-f docker-compose.prod.yml`) — giờ chuyện gì xảy ra?
-
-**Từ modification `20260709T090000` (RISK-OPS-006 / NFR-SEC-005 / ADR
-`installer-deploy_docker-dev-prod-safeguards`), lỗi này không còn ghi đè
-âm thầm container/image prod đang chạy nữa.** Dev (`docker-compose.yml`) và
-prod (`docker-compose.prod.yml`) nay dùng project name khác nhau (`scart`
-vs `scart-prod`), image tag khác nhau (`scart-app:${SC_DOCKER_PHP_VERSION}` vs
-`scart-app:${SC_DOCKER_PHP_VERSION}-prod`), và tên container khác nhau (mọi container
-prod đều có hậu tố `-prod`). Ràng buộc tên container duy nhất của Docker
-không còn thể bị "đụng" giữa hai môi trường.
-
-Thực tế sẽ xảy ra nếu bạn chạy lệnh dev trên host đang chạy sẵn stack prod:
-
-- Một **stack dev độc lập, tên hoàn toàn khác** (`scart-app`, `scart-nginx`,
-  ... — không có hậu tố `-prod`) khởi động song song với stack prod vẫn
-  đang chạy nguyên vẹn (`scart-app-prod`, `scart-nginx-prod`, ...). Không có
-  gì ở container hay image tag prod bị đổi.
-- Bạn có thể gặp **xung đột cổng** thay vì bị ghi đè (nếu `SC_DOCKER_APP_PORT`/
-  `SC_DOCKER_DB_PORT`/`SC_DOCKER_VITE_PORT` của cả hai stack trùng cổng host) — Docker sẽ báo
-  lỗi rõ ràng và từ chối chạy service dev bị trùng, không âm thầm thay thế
-  bất cứ thứ gì.
-- Volume MySQL đóng gói cũng tách biệt hoàn toàn
-  (`scart_scart-mysql-local-data-dev` của dev vs `scart-mysql-local-data-prod`
-  được ghim `name:` của prod), nên cũng không còn rủi ro app prod bị trỏ nhầm
-  vào volume dev rỗng.
-
-**Cách sửa — chỉ cần dừng stack dev lỡ chạy** (phía prod không hề bị động
-tới, không cần build lại gì):
-
-```bash
-docker compose -f docker-compose.yml down
-```
-
-Muốn kiểm tra chắc chắn phía prod không bị ảnh hưởng:
-
-```bash
-docker compose -f docker-compose.prod.yml ps   # container prod, vẫn -prod, vẫn đang chạy
-docker images | grep scart-app                  # scart-app:<ver> (dev) và scart-app:<ver>-prod (prod) là 2 image khác nhau
-```
-
-### Q: Tôi có thể chạy nhiều dự án S-Cart độc lập trên cùng một host không? (multi-instance)
-
-Có. Docker vốn cô lập các stack theo *project name*, và các file compose
-sinh mọi định danh phạm vi-host từ **một biến `SC_DOCKER_INSTANCE`**, nên mỗi dự
-án có container/image tag/volume dữ liệu/network riêng, không đụng nhau.
-
-**Vì sao bắt buộc phải đặt `SC_DOCKER_INSTANCE`?** Docker phân biệt stack theo
-*project name*, **không** theo thư mục. Hai thư mục cùng bỏ trống
-`SC_DOCKER_INSTANCE` đều ra project `scart` → với Docker đó là **cùng một stack**:
-chạy `up` ở thư mục thứ 2 sẽ **thay** container của dự án thứ 1 bằng code của dự
-án thứ 2 và **mount luôn volume dữ liệu** của dự án thứ 1 (kể cả database MySQL).
-Không có lỗi nào báo cho bạn biết.
-
-**Mặc định (không set `SC_DOCKER_INSTANCE`) mọi thứ y như cũ** — slug là `scart`,
-project vẫn là `scart`/`scart-prod`, container vẫn `scart-app`…, volume vẫn
-`scart_scart-vendor` (dev) / `scart-vendor` (prod)… Deployment single-instance
-đang chạy **không đổi tên, không phải migrate dữ liệu**.
-
-Để thêm dự án thứ 2 (thứ 3, …) trên cùng host:
-
-1. Đặt mỗi dự án trong **thư mục riêng** (mỗi thư mục bind-mount `./` là app root
-   của chính nó).
-2. Trong `.env` của dự án đó, đặt slug **duy nhất** và **cổng host riêng**:
-
-   ```env
-   SC_DOCKER_INSTANCE=shopa          # duy nhất mỗi dự án: shopa, shopb, …
-   SC_DOCKER_APP_PORT=8001           # cổng host khác nhau mỗi dự án
-   SC_DOCKER_VITE_PORT=5174          # chỉ dev
-   SC_DOCKER_DB_PORT=3307            # chỉ dev, khi COMPOSE_PROFILES=db-local
-
-   # GIỮ NGUYÊN ở mọi dự án — không đổi theo instance:
-   DB_HOST=mysql-local
-   DB_PORT=3306
-   ```
-
-3. Khởi động như thường (`docker compose up -d --build`, hoặc thêm
-   `-f docker-compose.prod.yml` cho prod).
-
-**Vai trò của từng biến khi nhiều stack chạy chung một host:**
-
-| Biến | Tác dụng | Khi nhiều stack trên 1 host |
-|---|---|---|
-| `SC_DOCKER_INSTANCE` | Slug đặt tên project, container, image tag, volume, network | **Bắt buộc khác nhau** — trùng là 2 dự án giẫm lên nhau (xem trên) |
-| `SC_DOCKER_APP_PORT` | Cổng host của website (nginx). Bỏ trống: dev `8000`, prod `80` | **Khác nhau**, hoặc không publish và đặt reverse proxy phía trước |
-| `SC_DOCKER_VITE_PORT` | Cổng host của Vite dev server (chỉ dev) | **Khác nhau** nếu chạy nhiều stack dev cùng lúc |
-| `SC_DOCKER_DB_PORT` | Cổng host của `mysql-local` để dùng HeidiSQL/DBeaver… (chỉ dev; prod không publish MySQL) | **Khác nhau** nếu nhiều stack dev cùng bật `db-local` |
-| `DB_HOST` / `DB_PORT` | Nơi Laravel kết nối, **bên trong** network Docker | **Giữ nguyên** `mysql-local` / `3306` — mỗi stack có network riêng, tên `mysql-local` luôn trỏ về MySQL của chính stack đó |
-| `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | Database của dự án | Tự do trùng nếu mỗi stack có `mysql-local` riêng; **phải khác nhau** nếu nhiều stack dùng chung một MySQL server |
-| `COMPOSE_PROFILES` | `db-local` = bật MySQL riêng cho stack; bỏ trống = dùng DB ngoài | Tuỳ từng stack; bỏ trống để nhiều stack dùng chung một MySQL (tiết kiệm RAM) |
-| `SC_DOCKER_PHP_VERSION` | Phiên bản PHP của image | Tự do khác nhau — nằm trong image tag nên các stack cùng tồn tại được |
-| `SC_DOCKER_WWWUSER` / `SC_DOCKER_WWWGROUP` | UID/GID của `www-data` trong container prod | Theo chủ sở hữu thư mục của **từng** dự án trên server |
-| `SC_DOCKER_XDEBUG_MODE`, `SC_DOCKER_DB_ROOT_PASSWORD` | Chế độ Xdebug (dev) / mật khẩu root của `mysql-local` | Riêng từng stack, không ảnh hưởng stack khác |
-
-> ⚠️ **Đừng đổi `DB_PORT` theo instance.** Hướng dẫn cũ ghi `DB_PORT=3307` cho dự
-> án thứ 2 là **sai**: `DB_PORT` là cổng Laravel kết nối tới `mysql-local` bên
-> trong network Docker, nơi MySQL luôn lắng nghe ở `3306` — app sẽ không kết nối
-> được database (entrypoint chờ ~60 giây rồi bỏ qua, sau đó site báo lỗi DB). Cổng
-> phía host nay tách ra biến riêng `SC_DOCKER_DB_PORT`. Nếu đã làm theo hướng dẫn
-> cũ: đặt lại `DB_PORT=3306`, chuyển `3307` sang `SC_DOCKER_DB_PORT`, rồi chạy
-> `docker compose up -d`.
-
-`SC_DOCKER_INSTANCE` scope tất cả cùng lúc nên 2 instance không bao giờ đụng nhau:
-
-| Định danh | `SC_DOCKER_INSTANCE` bỏ trống (mặc định) | `SC_DOCKER_INSTANCE=shopa` |
-|---|---|---|
-| Project name (dev / prod) | `scart` / `scart-prod` | `shopa` / `shopa-prod` |
-| Tên container | `scart-app`, `scart-nginx`, … | `shopa-app`, `shopa-nginx`, … |
-| Image tag (dev / prod) | `scart-app:8.3` / `…-prod` | `scart-app:8.3-shopa` / `…-shopa-prod` |
-| Volume dev (tiền tố project) | `scart_scart-vendor`, `scart_scart-mysql-local-data-dev`, … | `shopa_scart-vendor`, `shopa_scart-mysql-local-data-dev`, … |
-| Volume ghim tên (prod) | `scart-vendor`, `scart-mysql-local-data-prod`, … | `shopa-vendor`, `shopa-mysql-local-data-prod`, … |
-| Network (dev / prod) | `scart_scart` / `scart-prod_scart` | `shopa_scart` / `shopa-prod_scart` |
-
-Nhờ vậy mỗi instance có **volume MySQL riêng** — không có cách nào để dự án này
-mount trúng database của dự án kia (xem RISK-OPS-009). Cơ chế này kết hợp với việc
-tách dev/prod ở câu hỏi trước: định danh luôn là `<instance>-<env>`, và
-`SC_DOCKER_INSTANCE=scart` (mặc định) tái tạo đúng tên cũ.
-
-**Chọn slug trước lần `up` đầu tiên.** Slug chỉ gồm chữ thường, số, `-`, `_`, bắt
-đầu bằng chữ hoặc số (quy tắc project name của Docker). Muốn đổi slug về sau: chạy
-`docker compose down` **trước** khi sửa `.env` (nếu không, container cũ vẫn chạy và
-giữ cổng), rồi `up -d`. Stack khi đó khởi động trên **volume mới, rỗng** — dữ liệu
-MySQL cũ không mất, chỉ nằm lại trong volume mang tên cũ (`docker volume ls`).
-
-**Quản cổng khi nhiều site — dùng reverse proxy.** Cấp cổng thủ công sẽ mệt khi
-có nhiều site. Ở prod, đặt trước các stack một reverse proxy (Traefik, Caddy, hoặc
-Nginx chạy trên host) chỉ publish `80`/`443` và route theo domain tới container
-`webserver` nội bộ của từng instance. Khi đó các stack không cần publish
-`SC_DOCKER_APP_PORT` ra host (bind loopback hoặc bỏ publish), lại có TLS tập trung. Đây là
-bố cục khuyến nghị để host nhiều site khách trên một máy.
-
-**Trần tài nguyên.** Mỗi instance ~4–6 container (app, nginx, queue, scheduler,
-và tùy chọn mysql + node), nên RAM/CPU tăng theo số instance — VPS nhỏ chỉ chứa
-được vài cái. Muốn nhồi nhiều hơn, cho các instance trỏ về **DB dùng chung/managed**
-(mỗi cái một `DB_DATABASE`, `COMPOSE_PROFILES=` để không bật `mysql-local` riêng)
-thay vì mỗi stack một MySQL. Xem NFR-SCAL-003 / NFR-SCAL-001.
-
-### Q: Kiến trúc gồm những service nào?
-
-| Service | Vai trò | Image |
-|---------|---------|-------|
-| `app` | PHP-FPM chạy Laravel | build từ `docker/php` |
-| `webserver` | Nginx, phục vụ `public/`, forward `.php` sang `app` | `nginx:1.27-alpine` |
-| `queue` | `php artisan queue:work` (email, job nền) | dùng chung image `app` |
-| `scheduler` | Vòng lặp gọi `php artisan schedule:run` mỗi 60s | dùng chung image `app` |
-| `mysql-local` | MySQL 8.4 (tùy chọn) | `mysql:8.4` |
-| `node` | Build/dev assets (Vite) — chạy khi cần | `node:22-alpine` |
-
-Chỉ duy nhất `app` được build riêng; nginx/mysql/node dùng image chính
-thức, chỉ mount file cấu hình vào.
+<sub>📅 **Cập nhật lần cuối:** 2026-09-29 · ✍️ **Tác giả (Author):** GP247</sub>

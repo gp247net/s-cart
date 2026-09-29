@@ -2,7 +2,7 @@
 # Set SC_DOCKER_INSTANCE=<slug> in .env to run several independent S-Cart projects on the
 # same host - it scopes the project name, every container_name, the image tag
 # and (via project prefix) the named volumes, so two instances never collide.
-# See ADR installer-deploy_docker-multi-instance / DOCKER.md "multiple instances".
+# See ADR installer-deploy_docker-multi-instance / DOCKER.md "Run several projects on one host".
 name: ${SC_DOCKER_INSTANCE:-scart}
 
 # =============================================================================

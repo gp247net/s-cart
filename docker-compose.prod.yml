@@ -32,7 +32,7 @@
 # so two production instances never collide or share a MySQL data volume. This
 # composes with the dev/prod suffix (ADR-017): identity is <instance>-<env>, and
 # the default SC_DOCKER_INSTANCE=scart reproduces exactly the previous scart-prod names.
-# See ADR installer-deploy_docker-multi-instance / DOCKER.md "multiple instances".
+# See ADR installer-deploy_docker-multi-instance / DOCKER.md "Run several projects on one host".
 name: ${SC_DOCKER_INSTANCE:-scart}-prod
 
 services:

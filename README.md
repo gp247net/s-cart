@@ -153,7 +153,7 @@ cd s-cart
 cp .env.example .env
 docker compose up -d --build
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan gp247:install --force=1
+docker compose exec app php artisan gp247:install
 docker compose exec app php artisan gp247:shop-sample   # optional
 ```
 
@@ -169,7 +169,7 @@ sed -i 's/^APP_ENV=local/APP_ENV=production/' .env
 # Finish .env: APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
-docker compose -f docker-compose.prod.yml exec app php artisan gp247:install --force=1
+docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
 docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 ```
 
