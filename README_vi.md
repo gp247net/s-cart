@@ -4,6 +4,10 @@
 
 # 🛒 S-Cart
 
+```bash
+composer create-project gp247/s-cart my-shop "^3.0"
+```
+
 **Nền tảng thương mại điện tử mã nguồn mở, miễn phí — xây dựng trên hệ sinh thái GP247 & Laravel**
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
@@ -20,19 +24,6 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 
 **Công nghệ S-Cart 3.x:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 4 · MySQL / MariaDB
 
-## Mục lục
-
-1. [Có gì trong S-Cart](#-có-gì-trong-s-cart)
-2. [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
-3. [Cài đặt](#-cài-đặt)
-4. [Cập nhật phiên bản](#-cập-nhật-phiên-bản)
-5. [Tùy biến & mở rộng](#-tùy-biến--mở-rộng)
-6. [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
-7. [Biến môi trường hay dùng](#-biến-môi-trường-hay-dùng)
-8. [Hỏi & Đáp](#-hỏi--đáp-qa)
-
----
-
 ## ✨ Có gì trong S-Cart
 
 | Nhóm | Chức năng |
@@ -44,9 +35,7 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 | 🔐 **Quản trị & bảo mật** | Phân quyền theo vai trò (quản trị viên, quản lý, marketing…), nhật ký thao tác, CAPTCHA |
 | 📊 **Công cụ kinh doanh** | Xử lý đơn hàng, quản lý khách hàng, thống kê & báo cáo |
 | 🧩 **Mở rộng** | Plugin theo mô hình HMVC, chợ plugin/template trực tuyến, API bảo mật cho app di động |
-| ⭐ **Plugin Pro** | [Multi-vendor](https://gp247.net/vi/product/multi-vendor-pro.html) (sàn nhiều người bán) · [Multi-store](https://gp247.net/vi/product/multi-store-pro.html) (nhiều cửa hàng) |
-
----
+| ⭐ **Plugin Pro** | [Multi-vendor](https://gp247.net/vi/product/multi-vendor-pro.html) (sàn nhiều người bán) · [Multi-store](https://gp247.net/vi/product/multi-store-pro.html) (nhiều cửa hàng) · [Quản lý thu chi](https://gp247.net/vi/product/plugin-inout-purchase-return.html) (nhập hàng, trả hàng, thu chi & công nợ) |
 
 ## 🧰 Yêu cầu hệ thống
 
@@ -59,8 +48,6 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 
 > 💡 Dùng Docker thì **không cần** cài PHP, Composer, MySQL trên máy — xem [Cách 3](#cách-3--docker).
 
----
-
 ## 🚀 Cài đặt
 
 Chọn **một** trong ba cách:
@@ -71,7 +58,7 @@ Chọn **một** trong ba cách:
 | [**2. Git clone**](#cách-2--git-clone) | Muốn lấy mã nguồn mới nhất từ GitHub để phát triển/đóng góp |
 | [**3. Docker**](#cách-3--docker) | Không muốn cài PHP/MySQL trên máy |
 
-### Cách 1 — Composer (khuyến nghị)
+## Cách 1 — Composer (khuyến nghị)
 
 1. Mở **Terminal** (Windows: "Command Prompt" hoặc terminal của Laragon), kiểm tra Composer đang chạy bằng PHP nào:
 
@@ -125,7 +112,7 @@ Chọn **một** trong ba cách:
 
    > 🔑 **Đổi mật khẩu `admin` ngay sau lần đăng nhập đầu tiên.**
 
-### Cách 2 — Git clone
+## Cách 2 — Git clone
 
 ```bash
 git clone https://github.com/gp247net/s-cart.git
@@ -136,7 +123,7 @@ composer install
 
 Sau đó làm tiếp **bước 3 → 6 của [Cách 1](#cách-1--composer-khuyến-nghị)** (sửa `.env`, chạy `gp247:install`, mở trình duyệt).
 
-### Cách 3 — Docker
+## Cách 3 — Docker
 
 Có hai file cấu hình **tách biệt** — luôn dùng đúng file cho đúng môi trường:
 
@@ -165,8 +152,7 @@ Mở website tại <http://localhost:8000>.
 git clone https://github.com/gp247net/s-cart.git
 cd s-cart
 cp .env.example .env
-sed -i 's/^APP_ENV=local/APP_ENV=production/' .env
-# Sửa tiếp .env: APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
+# Sửa .env: APP_ENV=production, APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
 docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
@@ -176,8 +162,6 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 > ⚠️ Trên prod **luôn** thêm `-f docker-compose.prod.yml`. Quên nó là chạy nhầm cấu hình dev (bật debug, chạy quyền root, cài Xdebug…).
 
 📘 Hướng dẫn từng bước và xử lý sự cố Docker: [DOCKER_vi.md](./DOCKER_vi.md).
-
----
 
 ## 🔄 Cập nhật phiên bản
 
@@ -204,8 +188,6 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Hướng dẫn cập nhật GP247](https://github.com/gp247net/gp247-docs/blob/main/system/update-gp247_vi.md) trước khi dùng.
 
----
-
 ## 🎨 Tùy biến & mở rộng
 
 | Bạn muốn… | Cách làm |
@@ -222,7 +204,7 @@ Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm m�
 
 > 💡 Template mặc định `GP247Front` được nạp **trực tiếp từ package**, nên file bạn chưa publish sẽ tự nhận bản mới khi cập nhật. Chỉ publish đúng file bạn cần sửa.
 
-### Ghi đè controller
+## Ghi đè controller
 
 Áp dụng cho mọi controller (kể cả API) của `GP247/Core`, `GP247/Front`, `GP247/Shop`:
 
@@ -237,8 +219,6 @@ Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm m�
    | `GP247\Front\...` / `GP247\Shop\...` | `App\GP247\Front\...` / `App\GP247\Shop\...` |
 
 📘 Tài liệu chi tiết: [Tạo plugin](https://github.com/gp247net/gp247-docs/blob/main/extension/create-plugin_vi.md) · [Tạo template](https://github.com/gp247net/gp247-docs/blob/main/extension/create-template_vi.md) · [Toàn bộ lệnh CLI](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference_vi.md)
-
----
 
 ## 📂 Cấu trúc thư mục
 
@@ -267,8 +247,6 @@ my-shop/
     └── shop           ← sản phẩm, giỏ hàng, đơn hàng
 ```
 
----
-
 ## 🔧 Biến môi trường hay dùng
 
 Khai báo trong file `.env`:
@@ -281,8 +259,6 @@ Khai báo trong file `.env`:
 | `GP247_ADMIN_LOG` | `1` | Ghi nhật ký truy cập trang quản trị |
 | `GP247_SEO_LANG` | `0` | Thêm mã ngôn ngữ vào URL cửa hàng (`/vi/...`, `/en/...`) |
 | `GP247_ENCRYPTION_KEY` | *(trống)* | Khóa mã hóa riêng cho mật khẩu SMTP, license… — xem ghi chú trong `.env.example` |
-
----
 
 ## ❓ Hỏi & Đáp (Q&A)
 

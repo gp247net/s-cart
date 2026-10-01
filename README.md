@@ -4,6 +4,10 @@
 
 # 🛒 S-Cart
 
+```bash
+composer create-project gp247/s-cart my-shop "^3.0"
+```
+
 **Free, open-source e-commerce platform — built on the GP247 ecosystem & Laravel**
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
@@ -20,19 +24,6 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 
 **S-Cart 3.x tech stack:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 4 · MySQL / MariaDB
 
-## Table of contents
-
-1. [What's in S-Cart](#-whats-in-s-cart)
-2. [Requirements](#-requirements)
-3. [Installation](#-installation)
-4. [Updating](#-updating)
-5. [Customization & extension](#-customization--extension)
-6. [Folder structure](#-folder-structure)
-7. [Common environment variables](#-common-environment-variables)
-8. [Q&A](#-qa)
-
----
-
 ## ✨ What's in S-Cart
 
 | Area | Features |
@@ -44,9 +35,7 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 | 🔐 **Admin & security** | Role-based permissions (admin, manager, marketing…), activity log, CAPTCHA |
 | 📊 **Business tools** | Order processing, customer management, analytics & reports |
 | 🧩 **Extensibility** | HMVC plugins, online plugin/template marketplace, secured API for mobile apps |
-| ⭐ **Pro plugins** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html) (marketplace with many sellers) · [Multi-store](https://gp247.net/en/product/multi-store-pro.html) (several stores) |
-
----
+| ⭐ **Pro plugins** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html) (marketplace with many sellers) · [Multi-store](https://gp247.net/en/product/multi-store-pro.html) (several stores) · [InOut](https://gp247.net/en/product/plugin-inout-purchase-return.html) (purchases, returns, cash flow & debts) |
 
 ## 🧰 Requirements
 
@@ -59,8 +48,6 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 
 > 💡 With Docker you **don't need** PHP, Composer or MySQL on your machine — see [Option 3](#option-3--docker).
 
----
-
 ## 🚀 Installation
 
 Pick **one** of three options:
@@ -71,7 +58,7 @@ Pick **one** of three options:
 | [**2. Git clone**](#option-2--git-clone) | You want the latest source from GitHub to develop or contribute |
 | [**3. Docker**](#option-3--docker) | You don't want to install PHP/MySQL on your machine |
 
-### Option 1 — Composer (recommended)
+## Option 1 — Composer (recommended)
 
 1. Open a **Terminal** (on Windows: "Command Prompt" or the Laragon terminal) and check which PHP Composer runs on:
 
@@ -125,7 +112,7 @@ Pick **one** of three options:
 
    > 🔑 **Change the `admin` password right after your first login.**
 
-### Option 2 — Git clone
+## Option 2 — Git clone
 
 ```bash
 git clone https://github.com/gp247net/s-cart.git
@@ -136,7 +123,7 @@ composer install
 
 Then continue with **steps 3 → 6 of [Option 1](#option-1--composer-recommended)** (edit `.env`, run `gp247:install`, open the browser).
 
-### Option 3 — Docker
+## Option 3 — Docker
 
 There are two **separate** compose files — always use the right one for the environment:
 
@@ -165,8 +152,7 @@ Open the site at <http://localhost:8000>.
 git clone https://github.com/gp247net/s-cart.git
 cd s-cart
 cp .env.example .env
-sed -i 's/^APP_ENV=local/APP_ENV=production/' .env
-# Finish .env: APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
+# Edit .env: APP_ENV=production, APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate
 docker compose -f docker-compose.prod.yml exec app php artisan gp247:install
@@ -176,8 +162,6 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 > ⚠️ On prod **always** add `-f docker-compose.prod.yml`. Forgetting it runs the dev config by mistake (debug on, running as root, Xdebug installed…).
 
 📘 Step-by-step guide and Docker troubleshooting: [DOCKER.md](./DOCKER.md).
-
----
 
 ## 🔄 Updating
 
@@ -204,8 +188,6 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [GP247 update guide](https://github.com/gp247net/gp247-docs/blob/main/system/update-gp247.md) carefully before using them.
 
----
-
 ## 🎨 Customization & extension
 
 | You want to… | How |
@@ -222,7 +204,7 @@ Advanced options (overwrite translations with `--overwrite-lang`, refresh assets
 
 > 💡 The default `GP247Front` template is loaded **directly from the package**, so files you have not published pick up new versions automatically when you update. Publish only the files you need to edit.
 
-### Override a controller
+## Override a controller
 
 Works for every controller (API included) in `GP247/Core`, `GP247/Front`, `GP247/Shop`:
 
@@ -237,8 +219,6 @@ Works for every controller (API included) in `GP247/Core`, `GP247/Front`, `GP247
    | `GP247\Front\...` / `GP247\Shop\...` | `App\GP247\Front\...` / `App\GP247\Shop\...` |
 
 📘 Detailed docs: [Create a plugin](https://github.com/gp247net/gp247-docs/blob/main/extension/create-plugin.md) · [Create a template](https://github.com/gp247net/gp247-docs/blob/main/extension/create-template.md) · [Full CLI reference](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference.md)
-
----
 
 ## 📂 Folder structure
 
@@ -267,8 +247,6 @@ my-shop/
     └── shop           ← products, cart, orders
 ```
 
----
-
 ## 🔧 Common environment variables
 
 Set these in the `.env` file:
@@ -281,8 +259,6 @@ Set these in the `.env` file:
 | `GP247_ADMIN_LOG` | `1` | Log admin access |
 | `GP247_SEO_LANG` | `0` | Add the language code to storefront URLs (`/en/...`, `/vi/...`) |
 | `GP247_ENCRYPTION_KEY` | *(empty)* | Dedicated key for encrypting SMTP passwords, licenses… — see the notes in `.env.example` |
-
----
 
 ## ❓ Q&A
 
