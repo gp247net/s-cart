@@ -12,7 +12,7 @@ composer create-project gp247/s-cart my-shop "^3.0"
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
 
-[🏠 Homepage](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Documentation](https://github.com/gp247net/gp247-docs) · [🤖 AI agent skills](https://github.com/gp247net/gp247-skills) · [💬 Facebook group](https://www.facebook.com/groups/scart.opensource)
+[🏠 Homepage](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Documentation](https://gp247.net/en/docs) · [🤖 AI agent skills](https://github.com/gp247net/gp247-skills) · [💬 Facebook group](https://www.facebook.com/groups/scart.opensource)
 
 <img src="https://static.gp247.net/page/sc-1.jpg" alt="S-Cart storefront" width="49%"> <img src="https://static.gp247.net/page/sc-2.jpg" alt="S-Cart admin dashboard" width="49%">
 
@@ -186,7 +186,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ Running `composer update` alone is **not enough** — always run step 3 too.
 
-Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [GP247 update guide](https://github.com/gp247net/gp247-docs/blob/main/system/update-gp247.md) carefully before using them.
+Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [GP247 update guide](https://gp247.net/en/docs/system/how-to-update-gp247.html) carefully before using them.
 
 ## 🎨 Customization & extension
 
@@ -218,7 +218,7 @@ Works for every controller (API included) in `GP247/Core`, `GP247/Front`, `GP247
    | `GP247\Core\Api\Controllers` | `App\GP247\Core\Api\Controllers` |
    | `GP247\Front\...` / `GP247\Shop\...` | `App\GP247\Front\...` / `App\GP247\Shop\...` |
 
-📘 Detailed docs: [Create a plugin](https://github.com/gp247net/gp247-docs/blob/main/extension/create-plugin.md) · [Create a template](https://github.com/gp247net/gp247-docs/blob/main/extension/create-template.md) · [Full CLI reference](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference.md)
+📘 Detailed docs: [Create a plugin](https://gp247.net/en/docs/user-guide-extension/create-new-plugin.html) · [Create a template](https://gp247.net/en/docs/user-guide-extension/create-new-template.html) · [Full CLI reference](https://gp247.net/en/docs/system/gp247-system-command-line.html)
 
 ## 📂 Folder structure
 
@@ -300,7 +300,7 @@ Set these in the `.env` file:
 
 **Q10: Where can I ask for more help?**
 
-→ Read the [GP247 documentation](https://github.com/gp247net/gp247-docs), ask [DeepWiki](https://deepwiki.com/gp247net/s-cart), or post in the [S-Cart Facebook group](https://www.facebook.com/groups/scart.opensource).
+→ Read the [GP247 documentation](https://gp247.net/en/docs), ask [DeepWiki](https://deepwiki.com/gp247net/s-cart), or post in the [S-Cart Facebook group](https://www.facebook.com/groups/scart.opensource).
 
 ---
 

@@ -12,7 +12,7 @@ composer create-project gp247/s-cart my-shop "^3.0"
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
 
-[🏠 Trang chủ](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Tài liệu](https://github.com/gp247net/gp247-docs/blob/main/README_vi.md) · [🤖 Skill cho AI agent](https://github.com/gp247net/gp247-skills) · [💬 Nhóm Facebook](https://www.facebook.com/groups/scart.opensource)
+[🏠 Trang chủ](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Tài liệu](https://gp247.net/vi/docs) · [🤖 Skill cho AI agent](https://github.com/gp247net/gp247-skills) · [💬 Nhóm Facebook](https://www.facebook.com/groups/scart.opensource)
 
 <img src="https://static.gp247.net/page/sc-1.jpg" alt="Giao diện cửa hàng S-Cart" width="49%"> <img src="https://static.gp247.net/page/sc-2.jpg" alt="Trang quản trị S-Cart" width="49%">
 
@@ -186,7 +186,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ Chỉ chạy `composer update` là **chưa đủ** — luôn chạy thêm bước 3.
 
-Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Hướng dẫn cập nhật GP247](https://github.com/gp247net/gp247-docs/blob/main/system/update-gp247_vi.md) trước khi dùng.
+Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Hướng dẫn cập nhật GP247](https://gp247.net/vi/docs/system/how-to-update-gp247.html) trước khi dùng.
 
 ## 🎨 Tùy biến & mở rộng
 
@@ -218,7 +218,7 @@ Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm m�
    | `GP247\Core\Api\Controllers` | `App\GP247\Core\Api\Controllers` |
    | `GP247\Front\...` / `GP247\Shop\...` | `App\GP247\Front\...` / `App\GP247\Shop\...` |
 
-📘 Tài liệu chi tiết: [Tạo plugin](https://github.com/gp247net/gp247-docs/blob/main/extension/create-plugin_vi.md) · [Tạo template](https://github.com/gp247net/gp247-docs/blob/main/extension/create-template_vi.md) · [Toàn bộ lệnh CLI](https://github.com/gp247net/gp247-docs/blob/main/system/command-line-reference_vi.md)
+📘 Tài liệu chi tiết: [Tạo plugin](https://gp247.net/vi/docs/user-guide-extension/create-new-plugin.html) · [Tạo template](https://gp247.net/vi/docs/user-guide-extension/create-new-template.html) · [Toàn bộ lệnh CLI](https://gp247.net/vi/docs/system/gp247-system-command-line.html)
 
 ## 📂 Cấu trúc thư mục
 
@@ -300,7 +300,7 @@ Khai báo trong file `.env`:
 
 **Câu 10: Cần hỏi thêm thì hỏi ở đâu?**
 
-→ Xem [tài liệu GP247](https://github.com/gp247net/gp247-docs/blob/main/README_vi.md), hỏi [DeepWiki](https://deepwiki.com/gp247net/s-cart), hoặc đăng câu hỏi ở [nhóm Facebook S-Cart](https://www.facebook.com/groups/scart.opensource).
+→ Xem [tài liệu GP247](https://gp247.net/vi/docs), hỏi [DeepWiki](https://deepwiki.com/gp247net/s-cart), hoặc đăng câu hỏi ở [nhóm Facebook S-Cart](https://www.facebook.com/groups/scart.opensource).
 
 ---
 
