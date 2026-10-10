@@ -34,6 +34,7 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 | 💳 **Payment & shipping** | Payment plugins, shipping methods, discount codes, tax calculation |
 | 🔐 **Admin & security** | Role-based permissions (admin, manager, marketing…), activity log, CAPTCHA |
 | 📊 **Business tools** | Order processing, customer management, analytics & reports |
+| 🤖 **AI-ready (MCP server)** | Free **MCP Server** plugin: connect AI agents (Claude, Cursor, VS Code…) to your shop via the [Model Context Protocol](https://modelcontextprotocol.io) and just ask — *"how much did we sell this week?"*, *"which products are low on stock?"*, *"is order OR-1024 paid?"*. The agent acts as one admin account with the same permissions, token-secured, customer data masked, every call logged |
 | 🧩 **Extensibility** | HMVC plugins, online plugin/template marketplace, secured API for mobile apps |
 | ⭐ **Pro plugins** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html) (marketplace with many sellers) · [Multi-store](https://gp247.net/en/product/multi-store-pro.html) (several stores) · [InOut](https://gp247.net/en/product/plugin-inout-purchase-return.html) (purchases, returns, cash flow & debts) |
 

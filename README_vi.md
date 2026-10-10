@@ -34,6 +34,7 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 | 💳 **Thanh toán & vận chuyển** | Plugin thanh toán, phương thức vận chuyển, mã giảm giá, tính thuế |
 | 🔐 **Quản trị & bảo mật** | Phân quyền theo vai trò (quản trị viên, quản lý, marketing…), nhật ký thao tác, CAPTCHA |
 | 📊 **Công cụ kinh doanh** | Xử lý đơn hàng, quản lý khách hàng, thống kê & báo cáo |
+| 🤖 **Sẵn sàng cho AI (MCP server)** | Plugin **MCP Server** miễn phí: kết nối AI agent (Claude, Cursor, VS Code…) với cửa hàng qua chuẩn [Model Context Protocol](https://modelcontextprotocol.io) và hỏi bằng ngôn ngữ tự nhiên — *"tuần này bán được bao nhiêu?"*, *"sản phẩm nào sắp hết hàng?"*, *"đơn OR-1024 đã thanh toán chưa?"*. Agent hoạt động thay mặt một tài khoản admin với đúng quyền của tài khoản đó, xác thực bằng token, che thông tin khách hàng, ghi nhật ký mọi lệnh gọi |
 | 🧩 **Mở rộng** | Plugin theo mô hình HMVC, chợ plugin/template trực tuyến, API bảo mật cho app di động |
 | ⭐ **Plugin Pro** | [Multi-vendor](https://gp247.net/vi/product/multi-vendor-pro.html) (sàn nhiều người bán) · [Multi-store](https://gp247.net/vi/product/multi-store-pro.html) (nhiều cửa hàng) · [Quản lý thu chi](https://gp247.net/vi/product/plugin-inout-purchase-return.html) (nhập hàng, trả hàng, thu chi & công nợ) |
 
