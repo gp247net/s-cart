@@ -2,7 +2,7 @@
     "name": "gp247/s-cart",
     "type": "project",
     "description": "Free Laravel e-commerce for business: shopping cart, cms content, and more...",
-    "keywords": ["Laravel ecommerce", "gp247", "SCart ecommerce", "SCart open source", "Free Shopping cart", "Laravel multiple vendor", "Laravel marketplace", "Laravel multiple store",  "S-Cart"],
+    "keywords": ["Laravel ecommerce", "gp247", "SCart ecommerce", "SCart open source", "multi-store","multi-vendor", "multi-seller", "Free Shopping cart", "Laravel marketplace", "S-Cart"],
     "homepage": "https://gp247.net",
     "license": "MIT",
     "authors": [
@@ -13,9 +13,9 @@
     ],
     "require": {
         "php": "^8.3",
-        "gp247/core": "^3.2",
-        "gp247/front": "^3.2",
-        "gp247/shop": "^3.2",
+        "gp247/core": "^3.5",
+        "gp247/front": "^3.3",
+        "gp247/shop": "^3.3.1",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0"
     },
