@@ -22,11 +22,12 @@ Tài liệu này hướng dẫn dựng S-Cart bằng Docker từ đầu, dành c
 4. [Chạy môi trường PROD](#-chạy-môi-trường-prod)
 5. [Lệnh dùng hằng ngày](#-lệnh-dùng-hằng-ngày)
 6. [Khi nào cần build lại / restart](#-khi-nào-cần-build-lại--restart)
-7. [Dữ liệu được lưu ở đâu](#-dữ-liệu-được-lưu-ở-đâu)
-8. [MySQL đóng gói sẵn](#-mysql-đóng-gói-sẵn)
-9. [Chạy nhiều dự án trên một host](#-chạy-nhiều-dự-án-trên-một-host)
-10. [Điều kiện & ràng buộc](#-điều-kiện--ràng-buộc-hiểu-trước-khi-thao-tác)
-11. [Hỏi & Đáp](#-hỏi--đáp-qa)
+7. [Cập nhật bản vá bảo mật](#-cập-nhật-bản-vá-bảo-mật)
+8. [Dữ liệu được lưu ở đâu](#-dữ-liệu-được-lưu-ở-đâu)
+9. [MySQL đóng gói sẵn](#-mysql-đóng-gói-sẵn)
+10. [Chạy nhiều dự án trên một host](#-chạy-nhiều-dự-án-trên-một-host)
+11. [Điều kiện & ràng buộc](#-điều-kiện--ràng-buộc-hiểu-trước-khi-thao-tác)
+12. [Hỏi & Đáp](#-hỏi--đáp-qa)
 
 ---
 
@@ -45,7 +46,7 @@ Tài liệu này hướng dẫn dựng S-Cart bằng Docker từ đầu, dành c
 | Service | Vai trò | Image |
 |---|---|---|
 | `app` | PHP-FPM chạy Laravel | build từ `docker/php` |
-| `webserver` | Nginx, phục vụ `public/`, chuyển `.php` sang `app` | `nginx:1.27-alpine` |
+| `webserver` | Nginx, phục vụ `public/`, chuyển `.php` sang `app` | `nginx:stable-alpine` |
 | `queue` | `php artisan queue:work` (email, job nền) | dùng chung image `app` |
 | `scheduler` | Gọi `php artisan schedule:run` mỗi 60 giây | dùng chung image `app` |
 | `mysql-local` | MySQL 8.4 (tùy chọn, bật bằng `COMPOSE_PROFILES=db-local`) | `mysql:8.4` |
@@ -217,6 +218,7 @@ Quy tắc: file được **copy vào image** (trong `docker/php/Dockerfile`) →
 | Thay đổi | Build lại? | Restart? | Lệnh |
 |---|---|---|---|
 | `docker/php/Dockerfile`, `php.ini`, `entrypoint.sh`, `prod-guard.sh` | **Có** | Có | `docker compose build app && docker compose up -d` |
+| Bản phát hành bảo mật PHP / Nginx (image gốc mới ở upstream) | **Có**, kèm `--pull` | Có | `docker compose pull && docker compose build --pull && docker compose up -d` — xem [Cập nhật bản vá bảo mật](#-cập-nhật-bản-vá-bảo-mật) |
 | `.env`: `SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP` | **Có** | Có | `docker compose up -d --build` |
 | `.env`: biến runtime (`DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`…) | Không | Có | `docker compose up -d` |
 | `docker-compose*.yml` | Không | Có | `docker compose up -d` |
@@ -228,6 +230,31 @@ Quy tắc: file được **copy vào image** (trong `docker/php/Dockerfile`) →
 | `APP_ENV` / `APP_DEBUG` trong `.env` | Không | Không | Không tác dụng bên trong container — hai giá trị này bị file compose **ghim** cho cả `app`, `queue`, `scheduler`. Muốn đổi phải sửa file compose |
 
 > Đã chạy `php artisan config:cache`? Thay đổi trong `.env` chỉ có hiệu lực sau khi chạy lại `config:cache` (hoặc `config:clear`).
+
+---
+
+## 🔒 Cập nhật bản vá bảo mật
+
+Image **không** tự được vá. Container giữ nguyên PHP và Nginx của lần build/pull trước, và `docker compose up -d --build` **dùng lại image gốc đã có sẵn trên máy** — nên một bản vá đã phát hành (ví dụ **PHP2Shell**, CVE-2026-109618 / CVE-2026-109619, vá ở PHP 8.3.36 / 8.4.27 / 8.5.12 ngày 21/10/2026) chỉ tới site của bạn sau khi bạn tải lại image.
+
+Khi có bản phát hành bảo mật của PHP hoặc Nginx, chạy (trên server production thêm `-f docker-compose.prod.yml`, hoặc đặt `COMPOSE_FILE` như ở mục PROD):
+
+```bash
+docker compose pull                # image nginx / mysql / node mới nhất của nhánh đang dùng
+docker compose build --pull        # build lại image PHP trên image gốc php:<SC_DOCKER_PHP_VERSION> mới nhất
+docker compose up -d               # tạo lại container trên image mới
+```
+
+Sau đó kiểm tra phiên bản đang chạy thật:
+
+```bash
+docker compose exec app php -v           # ví dụ PHP 8.3.36 trở lên
+docker compose exec webserver nginx -v
+```
+
+- Nginx đi theo kênh `stable-alpine`, nên `pull` tự chuyển sang nhánh stable hiện hành (không cần sửa gì khi một nhánh hết hạn).
+- PHP giữ nhánh đặt ở `SC_DOCKER_PHP_VERSION` (mặc định `8.3`) — `build --pull` lấy bản vá mới nhất của nhánh đó.
+- Dữ liệu (`.env`, `storage/`, volume MySQL) không bị đụng tới: chỉ image và container được thay.
 
 ---
 

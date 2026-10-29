@@ -85,7 +85,7 @@ services:
       - scart
 
   webserver:
-    image: nginx:1.27-alpine
+    image: nginx:stable-alpine
     container_name: ${SC_DOCKER_INSTANCE:-scart}-nginx-prod
     depends_on:
       - app

@@ -22,11 +22,12 @@ This guide sets up S-Cart with Docker from scratch, for anyone who wants to try 
 4. [Run the PROD environment](#-run-the-prod-environment)
 5. [Everyday commands](#-everyday-commands)
 6. [When to rebuild / restart](#-when-to-rebuild--restart)
-7. [Where your data lives](#-where-your-data-lives)
-8. [The built-in MySQL](#-the-built-in-mysql)
-9. [Run several projects on one host](#-run-several-projects-on-one-host)
-10. [Conditions & rules](#-conditions--rules-know-before-you-act)
-11. [Q&A](#-qa)
+7. [Security updates](#-security-updates)
+8. [Where your data lives](#-where-your-data-lives)
+9. [The built-in MySQL](#-the-built-in-mysql)
+10. [Run several projects on one host](#-run-several-projects-on-one-host)
+11. [Conditions & rules](#-conditions--rules-know-before-you-act)
+12. [Q&A](#-qa)
 
 ---
 
@@ -45,7 +46,7 @@ This guide sets up S-Cart with Docker from scratch, for anyone who wants to try 
 | Service | Role | Image |
 |---|---|---|
 | `app` | PHP-FPM running Laravel | built from `docker/php` |
-| `webserver` | Nginx, serves `public/`, forwards `.php` to `app` | `nginx:1.27-alpine` |
+| `webserver` | Nginx, serves `public/`, forwards `.php` to `app` | `nginx:stable-alpine` |
 | `queue` | `php artisan queue:work` (e-mail, background jobs) | shares the `app` image |
 | `scheduler` | Calls `php artisan schedule:run` every 60 seconds | shares the `app` image |
 | `mysql-local` | MySQL 8.4 (optional, enabled with `COMPOSE_PROFILES=db-local`) | `mysql:8.4` |
@@ -217,6 +218,7 @@ Rule of thumb: files **copied into the image** (by `docker/php/Dockerfile`) → 
 | Change | Rebuild? | Restart? | Command |
 |---|---|---|---|
 | `docker/php/Dockerfile`, `php.ini`, `entrypoint.sh`, `prod-guard.sh` | **Yes** | Yes | `docker compose build app && docker compose up -d` |
+| PHP / Nginx security release (new base image upstream) | **Yes**, with `--pull` | Yes | `docker compose pull && docker compose build --pull && docker compose up -d` — see [Security updates](#-security-updates) |
 | `.env`: `SC_DOCKER_PHP_VERSION`, `SC_DOCKER_WWWUSER`, `SC_DOCKER_WWWGROUP` | **Yes** | Yes | `docker compose up -d --build` |
 | `.env`: runtime variables (`DB_HOST`, `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `SC_DOCKER_XDEBUG_MODE`…) | No | Yes | `docker compose up -d` |
 | `docker-compose*.yml` | No | Yes | `docker compose up -d` |
@@ -228,6 +230,31 @@ Rule of thumb: files **copied into the image** (by `docker/php/Dockerfile`) → 
 | `APP_ENV` / `APP_DEBUG` in `.env` | No | No | No effect inside the containers — the compose file **pins** both for `app`, `queue` and `scheduler`. To change them, edit the compose file |
 
 > Ran `php artisan config:cache` before? `.env` changes only take effect after you run `config:cache` (or `config:clear`) again.
+
+---
+
+## 🔒 Security updates
+
+The images are **not** patched automatically. A container keeps the PHP and Nginx it was built/pulled with, and `docker compose up -d --build` **reuses the base image already on the host** — so a fix published upstream (e.g. **PHP2Shell**, CVE-2026-109618 / CVE-2026-109619, fixed in PHP 8.3.36 / 8.4.27 / 8.5.12 on 2026-10-21) only reaches your site after you pull it.
+
+When a PHP or Nginx security release is announced, run (add `-f docker-compose.prod.yml` on a production server, or set `COMPOSE_FILE` as shown in the PROD section):
+
+```bash
+docker compose pull                # newest nginx / mysql / node images of their branch
+docker compose build --pull        # rebuild the PHP image on the newest php:<SC_DOCKER_PHP_VERSION> base
+docker compose up -d               # recreate the containers on the new images
+```
+
+Then check what is actually running:
+
+```bash
+docker compose exec app php -v           # e.g. PHP 8.3.36 or later
+docker compose exec webserver nginx -v
+```
+
+- Nginx follows the `stable-alpine` channel, so `pull` moves it to the current stable branch (no edit needed when a branch ends).
+- PHP stays on the branch set by `SC_DOCKER_PHP_VERSION` (default `8.3`) — `build --pull` gets the newest patch release of that branch.
+- Your data (`.env`, `storage/`, MySQL volume) is untouched: only images and containers are replaced.
 
 ---
 
