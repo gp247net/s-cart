@@ -173,7 +173,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
    composer update gp247/core gp247/front gp247/shop gp247/mcp
    ```
 
-   Site cài trước S-Cart 3.5 (chưa có MCP server): chạy thêm một lần `composer require gp247/mcp`.
+   Site cài trước S-Cart 3.5 (chưa có MCP server): chạy thêm một lần `composer require gp247/mcp -W`.
 
 3. Áp dụng thay đổi lên site (an toàn, không xóa dữ liệu, không ghi đè bản dịch hay template bạn đã sửa):
 

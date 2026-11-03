@@ -13,9 +13,10 @@
     ],
     "require": {
         "php": "^8.3",
-        "gp247/core": "^3.8",
-        "gp247/front": "^3.5",
+        "gp247/core": "^3.9",
+        "gp247/front": "^3.5.2",
         "gp247/shop": "^3.7",
+        "gp247/mcp": "^2.0.1",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0"
     },

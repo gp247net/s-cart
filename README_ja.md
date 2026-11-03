@@ -173,7 +173,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
    composer update gp247/core gp247/front gp247/shop gp247/mcp
    ```
 
-   S-Cart 3.5 より前にインストールしたサイト（MCP サーバーがまだない場合）：`composer require gp247/mcp` を 1 回だけ実行します。
+   S-Cart 3.5 より前にインストールしたサイト（MCP サーバーがまだない場合）：`composer require gp247/mcp -W` を 1 回だけ実行します。
 
 3. 変更をサイトに反映します（安全です：データは削除されず、編集済みの翻訳やテンプレートも上書きされません）：
 
