@@ -34,7 +34,7 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 | 💳 **Thanh toán & vận chuyển** | Plugin thanh toán, phương thức vận chuyển, mã giảm giá, tính thuế |
 | 🔐 **Quản trị & bảo mật** | Phân quyền theo vai trò (quản trị viên, quản lý, marketing…), nhật ký thao tác, CAPTCHA |
 | 📊 **Công cụ kinh doanh** | Xử lý đơn hàng, quản lý khách hàng, thống kê & báo cáo |
-| 🤖 **Sẵn sàng cho AI (MCP server)** | Plugin **MCP Server** miễn phí: kết nối AI agent (Claude, Cursor, VS Code…) với cửa hàng qua chuẩn [Model Context Protocol](https://modelcontextprotocol.io) và hỏi bằng ngôn ngữ tự nhiên — *"tuần này bán được bao nhiêu?"*, *"sản phẩm nào sắp hết hàng?"*, *"đơn OR-1024 đã thanh toán chưa?"*. Agent hoạt động thay mặt một tài khoản admin với đúng quyền của tài khoản đó, xác thực bằng token, che thông tin khách hàng, ghi nhật ký mọi lệnh gọi |
+| 🤖 **Sẵn sàng cho AI (MCP server)** | **MCP server** có sẵn (tắt cho tới khi bạn bật): kết nối AI agent (Claude, Cursor, VS Code…) với cửa hàng qua chuẩn [Model Context Protocol](https://modelcontextprotocol.io) và hỏi bằng ngôn ngữ tự nhiên — *"tuần này bán được bao nhiêu?"*, *"sản phẩm nào sắp hết hàng?"*, *"đơn OR-1024 đã thanh toán chưa?"*. Agent hoạt động thay mặt một tài khoản admin với đúng quyền của tài khoản đó, xác thực bằng token, che thông tin khách hàng, ghi nhật ký mọi lệnh gọi |
 | 🧩 **Mở rộng** | Plugin theo mô hình HMVC, chợ plugin/template trực tuyến, API bảo mật cho app di động |
 | ⭐ **Plugin Pro** | [Multi-vendor](https://gp247.net/vi/product/multi-vendor-pro.html) (sàn nhiều người bán) · [Multi-store](https://gp247.net/vi/product/multi-store-pro.html) (nhiều cửa hàng) · [Quản lý thu chi](https://gp247.net/vi/product/plugin-inout-purchase-return.html) (nhập hàng, trả hàng, thu chi & công nợ) |
 
@@ -170,8 +170,10 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 2. Tải mã nguồn mới:
 
    ```bash
-   composer update gp247/core gp247/front gp247/shop
+   composer update gp247/core gp247/front gp247/shop gp247/mcp
    ```
+
+   Site cài trước S-Cart 3.5 (chưa có MCP server): chạy thêm một lần `composer require gp247/mcp`.
 
 3. Áp dụng thay đổi lên site (an toàn, không xóa dữ liệu, không ghi đè bản dịch hay template bạn đã sửa):
 

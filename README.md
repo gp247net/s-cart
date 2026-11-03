@@ -34,7 +34,7 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 | 💳 **Payment & shipping** | Payment plugins, shipping methods, discount codes, tax calculation |
 | 🔐 **Admin & security** | Role-based permissions (admin, manager, marketing…), activity log, CAPTCHA |
 | 📊 **Business tools** | Order processing, customer management, analytics & reports |
-| 🤖 **AI-ready (MCP server)** | Free **MCP Server** plugin: connect AI agents (Claude, Cursor, VS Code…) to your shop via the [Model Context Protocol](https://modelcontextprotocol.io) and just ask — *"how much did we sell this week?"*, *"which products are low on stock?"*, *"is order OR-1024 paid?"*. The agent acts as one admin account with the same permissions, token-secured, customer data masked, every call logged |
+| 🤖 **AI-ready (MCP server)** | Built-in **MCP server** (off until you turn it on): connect AI agents (Claude, Cursor, VS Code…) to your shop via the [Model Context Protocol](https://modelcontextprotocol.io) and just ask — *"how much did we sell this week?"*, *"which products are low on stock?"*, *"is order OR-1024 paid?"*. The agent acts as one admin account with the same permissions, token-secured, customer data masked, every call logged |
 | 🧩 **Extensibility** | HMVC plugins, online plugin/template marketplace, secured API for mobile apps |
 | ⭐ **Pro plugins** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html) (marketplace with many sellers) · [Multi-store](https://gp247.net/en/product/multi-store-pro.html) (several stores) · [InOut](https://gp247.net/en/product/plugin-inout-purchase-return.html) (purchases, returns, cash flow & debts) |
 
@@ -170,8 +170,10 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 2. Download the new code:
 
    ```bash
-   composer update gp247/core gp247/front gp247/shop
+   composer update gp247/core gp247/front gp247/shop gp247/mcp
    ```
+
+   Site installed before S-Cart 3.5 (no MCP server yet): run `composer require gp247/mcp` once.
 
 3. Apply the changes to the site (safe: deletes no data, does not overwrite translations or templates you edited):
 

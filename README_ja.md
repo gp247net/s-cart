@@ -34,7 +34,7 @@ S-Cart は、企業、個人事業主、開発者、学生のための**無料�
 | 💳 **決済と配送** | 決済プラグイン、配送方法、クーポンコード、税計算 |
 | 🔐 **管理とセキュリティ** | ロールによる権限管理（管理者、マネージャー、マーケティング…）、操作ログ、CAPTCHA |
 | 📊 **ビジネスツール** | 注文処理、顧客管理、統計とレポート |
-| 🤖 **AI 対応（MCP サーバー）** | 無料の **MCP Server** プラグイン：AI エージェント（Claude、Cursor、VS Code…）を [Model Context Protocol](https://modelcontextprotocol.io) 標準でストアに接続し、自然な言葉で質問できます —「*今週の売上はいくら？*」「*在庫切れが近い商品は？*」「*注文 OR-1024 は支払い済み？*」。エージェントは 1 つの管理者アカウントの代理として、そのアカウントと同じ権限で動作し、トークンで認証され、顧客情報はマスクされ、すべての呼び出しがログに記録されます |
+| 🤖 **AI 対応（MCP サーバー）** | 組み込みの **MCP サーバー**（有効にするまでオフ）：AI エージェント（Claude、Cursor、VS Code…）を [Model Context Protocol](https://modelcontextprotocol.io) 標準でストアに接続し、自然な言葉で質問できます —「*今週の売上はいくら？*」「*在庫切れが近い商品は？*」「*注文 OR-1024 は支払い済み？*」。エージェントは 1 つの管理者アカウントの代理として、そのアカウントと同じ権限で動作し、トークンで認証され、顧客情報はマスクされ、すべての呼び出しがログに記録されます |
 | 🧩 **拡張性** | HMVC モデルのプラグイン、オンラインのプラグイン／テンプレートマーケットプレイス、モバイルアプリ向けのセキュアな API |
 | ⭐ **Pro プラグイン** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html)（複数の販売者が出店するマーケットプレイス）· [Multi-store](https://gp247.net/en/product/multi-store-pro.html)（複数ストア）· [入出金管理](https://gp247.net/en/product/plugin-inout-purchase-return.html)（仕入れ、返品、入出金と債権債務） |
 
@@ -170,8 +170,10 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 2. 新しいソースコードを取得します：
 
    ```bash
-   composer update gp247/core gp247/front gp247/shop
+   composer update gp247/core gp247/front gp247/shop gp247/mcp
    ```
+
+   S-Cart 3.5 より前にインストールしたサイト（MCP サーバーがまだない場合）：`composer require gp247/mcp` を 1 回だけ実行します。
 
 3. 変更をサイトに反映します（安全です：データは削除されず、編集済みの翻訳やテンプレートも上書きされません）：
 
