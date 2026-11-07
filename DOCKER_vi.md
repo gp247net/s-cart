@@ -144,6 +144,8 @@ Có hai file compose **tách biệt hoàn toàn** — luôn dùng đúng file ch
 
    > Không đặt `SC_DOCKER_APP_PORT` trừ khi cần cổng khác `80` (vd đứng sau reverse proxy) — file compose prod tự mặc định `80`.
 
+   > **Đứng sau proxy (HTTPS trên máy chủ hoặc CDN):** mặc định bộ Docker **không** tin proxy nào, nên khách không giả được IP. Nếu nginx / Caddy / Traefik trên **cùng máy chủ** lo HTTPS, thêm vào `.env`: `TRUSTED_PROXIES=172.16.0.0/12` và `SC_DOCKER_APP_PORT=127.0.0.1:8000` (cổng chỉ gọi được từ chính máy chủ), trỏ proxy tới `127.0.0.1:8000` và giữ header `Host` (nginx: `proxy_set_header Host $host;`). Sau Cloudflare / load balancer thì khai dải IP của nó (mẫu sẵn trong `.env.example`). Không bao giờ dùng `REMOTE_ADDR` hay `*`. **Nâng cấp site đang dùng mặc định cũ** (`REMOTE_ADDR`): `git pull` không sửa `.env` của bạn — đặt `TRUSTED_PROXIES` như trên rồi `docker compose up -d`. Không đặt thì mọi khách hiện cùng một IP và link sinh ra là `http://`.
+
 4. Khởi động container:
 
    ```bash
@@ -451,4 +453,4 @@ Hoặc dành riêng một user UID 1000 để deploy và `chown -R 1000:1000 /pa
 
 ---
 
-<sub>📅 **Cập nhật lần cuối:** 2026-09-29 · ✍️ **Tác giả (Author):** GP247</sub>
+<sub>📅 **Cập nhật lần cuối:** 2026-11-06 · ✍️ **Tác giả (Author):** GP247</sub>

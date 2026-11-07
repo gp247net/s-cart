@@ -144,6 +144,8 @@ There are two **completely separate** compose files — always use the right one
 
    > Don't set `SC_DOCKER_APP_PORT` unless you need a port other than `80` (e.g. behind a reverse proxy) — the prod compose file defaults to `80`.
 
+   > **Behind a proxy (HTTPS on the host or a CDN):** the stack trusts **no** proxy by default, so visitors cannot fake their IP. If nginx / Caddy / Traefik on the **same server** terminates HTTPS, add to `.env`: `TRUSTED_PROXIES=172.16.0.0/12` and `SC_DOCKER_APP_PORT=127.0.0.1:8000` (port reachable only from the server), point the proxy at `127.0.0.1:8000` and keep the `Host` header (nginx: `proxy_set_header Host $host;`). Behind Cloudflare / a load balancer, list its IP ranges instead (presets in `.env.example`). Never use `REMOTE_ADDR` or `*`. **Upgrading a site that used the old default** (`REMOTE_ADDR`): `git pull` does not change your `.env` — set `TRUSTED_PROXIES` as above, then `docker compose up -d`. Without it every visitor shows the same IP and links are generated as `http://`.
+
 4. Start the containers:
 
    ```bash
@@ -451,4 +453,4 @@ Or dedicate a UID 1000 user to deployments and run `chown -R 1000:1000 /path/to/
 
 ---
 
-<sub>📅 **Last updated:** 2026-09-29 · ✍️ **Author:** GP247</sub>
+<sub>📅 **Last updated:** 2026-11-06 · ✍️ **Author:** GP247</sub>

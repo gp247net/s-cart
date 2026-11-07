@@ -10,18 +10,25 @@
 | return null for .env values.
 |
 | TRUSTED_PROXIES values:
-|   (unset)  trust nothing - correct for a bare host install where
-|            Nginx/Apache talks to php-fpm directly over FastCGI (client
-|            IP and HTTPS flag arrive natively, no proxy hop to trust).
-|            Trusting more here would let clients spoof X-Forwarded-*.
-|   *        trust the directly-connecting peer - set automatically by
-|            docker-compose*.yml (safe there: the app container has no
-|            published port and is only reachable by the internal
-|            webserver container, whose bridge IP is dynamic).
-|   ip,cidr  comma-separated list, for a host install that DOES sit
-|            behind an HTTP proxy hop (e.g. 127.0.0.1 for a local
-|            proxy_pass, or Cloudflare's ranges) - add it to that
-|            server's .env.
+|   (unset)  trust nothing - the default, also in docker-compose*.yml.
+|            Correct whenever nothing sits in front of the web server:
+|            the client IP and HTTPS flag arrive natively over FastCGI.
+|   ip,cidr  comma-separated ranges of the proxy that DOES sit in front:
+|            Cloudflare / load-balancer ranges, 127.0.0.1 for a local
+|            proxy_pass on a bare host, or 172.16.0.0/12 for nginx /
+|            Caddy / Traefik on the same host in front of Docker (then
+|            also bind the port: SC_DOCKER_APP_PORT=127.0.0.1:8000).
+|   REMOTE_ADDR, *, 0.0.0.0/0 - never: over FastCGI REMOTE_ADDR is the
+|            visitor's own address (the bundled nginx passes $remote_addr),
+|            so these trust every visitor and let anyone fake their IP and
+|            scheme through X-Forwarded-*. The System alerts page and
+|            `php artisan gp247:doctor` warn about them (check
+|            trusted_proxies).
+|
+| Whatever is listed, gp247/core never trusts X-Forwarded-Host or
+| X-Forwarded-Prefix: generated URLs take their host from the real Host
+| header, so the proxy in front must keep it (nginx: proxy_set_header
+| Host $host;).
 |
 | @see https://laravel.com/docs/13.x/requests#configuring-trusted-proxies
 */
