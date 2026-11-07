@@ -51,6 +51,8 @@ S-Cart は、企業、個人事業主、開発者、学生のための**無料�
 
 ## 🚀 インストール
 
+> 📘 **インストールの詳しいガイド** — インストール構成の選び方（S-Cart、GP247 CMS、core のみ）、コマンドラインのないホスティング、既存サイトへの front/shop 追加、トラブルシューティング：[GP247 と S-Cart のインストール](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/install_ja.md)。
+
 次の 3 つの方法から**いずれか 1 つ**を選んでください：
 
 | 方法 | 適しているケース |
@@ -166,6 +168,8 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 🔄 バージョンアップデート
 
+> 📘 **詳しいガイド：**[GP247 と S-Cart の更新](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_ja.md) · 2.x 系のサイト：[3.x 系へのアップグレード](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/upgrade_ja.md)。
+
 1. アップデートの前に、データベースと `app/GP247`、`public/GP247` ディレクトリを**バックアップ**してください。
 2. 新しいソースコードを取得します：
 
@@ -189,7 +193,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ `composer update` を実行するだけでは**不十分です** — 必ず手順 3 も実行してください。
 
-高度なオプション（`--overwrite-lang` による翻訳の上書き、`--publish=…` によるアセット／ビューの更新）は、**あなたのカスタマイズを上書きする**可能性があります — 使用する前に [GP247 アップデートガイド](https://gp247.net/en/docs/system/how-to-update-gp247.html) をよくお読みください。
+高度なオプション（`--overwrite-lang` による翻訳の上書き、`--publish=…` によるアセット／ビューの更新）は、**あなたのカスタマイズを上書きする**可能性があります — 使用する前に [GP247 と S-Cart の更新 — 上級者向けオプション](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_ja.md#上級者向けオプション) をよくお読みください。
 
 ## 🎨 カスタマイズと拡張
 

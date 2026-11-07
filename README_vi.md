@@ -51,6 +51,8 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 
 ## 🚀 Cài đặt
 
+> 📘 **Hướng dẫn cài đặt đầy đủ** — chọn bộ cài (S-Cart, GP247 CMS, chỉ core), hosting không có dòng lệnh, thêm front/shop vào site đang có, xử lý sự cố: [Cài đặt GP247 và S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/install_vi.md).
+
 Chọn **một** trong ba cách:
 
 | Cách | Phù hợp khi |
@@ -166,6 +168,8 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 🔄 Cập nhật phiên bản
 
+> 📘 **Hướng dẫn đầy đủ:** [Cập nhật GP247 và S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_vi.md) · site còn ở dòng 2.x: [Nâng cấp lên dòng 3.x](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/upgrade_vi.md).
+
 1. **Sao lưu** database và thư mục `app/GP247`, `public/GP247` trước khi cập nhật.
 2. Tải mã nguồn mới:
 
@@ -189,7 +193,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ Chỉ chạy `composer update` là **chưa đủ** — luôn chạy thêm bước 3.
 
-Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Hướng dẫn cập nhật GP247](https://gp247.net/vi/docs/system/how-to-update-gp247.html) trước khi dùng.
+Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Cập nhật GP247 và S-Cart — Tùy chọn nâng cao](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_vi.md#tùy-chọn-nâng-cao) trước khi dùng.
 
 ## 🎨 Tùy biến & mở rộng
 

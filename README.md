@@ -51,6 +51,8 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 
 ## 🚀 Installation
 
+> 📘 **Full installation guide** — choosing a package set (S-Cart, GP247 CMS, core only), hosting without a command line, adding front/shop to an existing site, troubleshooting: [Installing GP247 and S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/install.md).
+
 Pick **one** of three options:
 
 | Option | Best when |
@@ -166,6 +168,8 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 🔄 Updating
 
+> 📘 **Full guide:** [Updating GP247 and S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update.md) · site still on 2.x: [Upgrading to the 3.x line](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/upgrade.md).
+
 1. **Back up** the database and the `app/GP247`, `public/GP247` folders before updating.
 2. Download the new code:
 
@@ -189,7 +193,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ Running `composer update` alone is **not enough** — always run step 3 too.
 
-Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [GP247 update guide](https://gp247.net/en/docs/system/how-to-update-gp247.html) carefully before using them.
+Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [Updating GP247 and S-Cart — Advanced options](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update.md#advanced-options) carefully before using them.
 
 ## 🎨 Customization & extension
 
