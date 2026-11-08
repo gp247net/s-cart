@@ -48,7 +48,7 @@ This guide sets up S-Cart with Docker from scratch, for anyone who wants to try 
 | `app` | PHP-FPM running Laravel | built from `docker/php` |
 | `webserver` | Nginx, serves `public/`, forwards `.php` to `app` | `nginx:stable-alpine` |
 | `queue` | `php artisan queue:work` (e-mail, background jobs) | shares the `app` image |
-| `scheduler` | Calls `php artisan schedule:run` every 60 seconds | shares the `app` image |
+| `scheduler` | `php artisan schedule:work` — runs scheduled tasks on every minute | shares the `app` image |
 | `mysql-local` | MySQL 8.4 (optional, enabled with `COMPOSE_PROFILES=db-local`) | `mysql:8.4` |
 | `node` | Builds/serves assets (Vite) — runs only when needed | `node:22-alpine` |
 
@@ -230,6 +230,7 @@ Rule of thumb: files **copied into the image** (by `docker/php/Dockerfile`) → 
 | `composer.json` / `composer.lock` | No | No | `docker compose exec app composer install ...` |
 | `package.json` / JS-CSS assets | No | No | `docker compose run --rm node` |
 | `APP_ENV` / `APP_DEBUG` in `.env` | No | No | No effect inside the containers — the compose file **pins** both for `app`, `queue` and `scheduler`. To change them, edit the compose file |
+| `GP247_SCHEDULE_QUEUE_WORK` in `.env` | No | No | No effect inside the containers — the compose file **pins** `false` for all three services, because the `queue` service already drains the queue continuously, so the scheduler does not need to start an extra `queue:work` every minute. Change it (in the compose file) only if you remove the `queue` service |
 
 > Ran `php artisan config:cache` before? `.env` changes only take effect after you run `config:cache` (or `config:clear`) again.
 

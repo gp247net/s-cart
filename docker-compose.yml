@@ -59,6 +59,10 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      # The `queue` service is a persistent worker, so GP247 must not
+      # also schedule its own per-minute `queue:work` drain
+      # (RISK-OPS-mail-queue-double-worker). Same value on every PHP service.
+      GP247_SCHEDULE_QUEUE_WORK: "false"
       # Default: trust NO proxy. Behind the bundled nginx, php-fpm receives the
       # visitor's own address as REMOTE_ADDR (FastCGI passes $remote_addr), so
       # "REMOTE_ADDR" or "*" here would trust every visitor and let anyone fake
@@ -123,6 +127,10 @@ services:
       # matching note in docker-compose.prod.yml.
       APP_ENV: local
       APP_DEBUG: "true"
+      # The `queue` service is a persistent worker, so GP247 must not
+      # also schedule its own per-minute `queue:work` drain
+      # (RISK-OPS-mail-queue-double-worker). Same value on every PHP service.
+      GP247_SCHEDULE_QUEUE_WORK: "false"
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST:-mysql-local}
       DB_PORT: ${DB_PORT:-3306}
@@ -145,7 +153,7 @@ services:
     image: scart-app:${SC_DOCKER_PHP_VERSION:-8.3}${SC_DOCKER_INSTANCE:+-}${SC_DOCKER_INSTANCE:-}
     container_name: ${SC_DOCKER_INSTANCE:-scart}-scheduler
     working_dir: /var/www/html
-    command: ["sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
+    command: ["php", "artisan", "schedule:work"]
     volumes:
       - ./:/var/www/html
       - scart-vendor:/var/www/html/vendor
@@ -157,6 +165,10 @@ services:
       # matching note in docker-compose.prod.yml.
       APP_ENV: local
       APP_DEBUG: "true"
+      # The `queue` service is a persistent worker, so GP247 must not
+      # also schedule its own per-minute `queue:work` drain
+      # (RISK-OPS-mail-queue-double-worker). Same value on every PHP service.
+      GP247_SCHEDULE_QUEUE_WORK: "false"
       DB_CONNECTION: ${DB_CONNECTION:-mysql}
       DB_HOST: ${DB_HOST:-mysql-local}
       DB_PORT: ${DB_PORT:-3306}

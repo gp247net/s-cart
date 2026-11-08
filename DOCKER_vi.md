@@ -48,7 +48,7 @@ Tài liệu này hướng dẫn dựng S-Cart bằng Docker từ đầu, dành c
 | `app` | PHP-FPM chạy Laravel | build từ `docker/php` |
 | `webserver` | Nginx, phục vụ `public/`, chuyển `.php` sang `app` | `nginx:stable-alpine` |
 | `queue` | `php artisan queue:work` (email, job nền) | dùng chung image `app` |
-| `scheduler` | Gọi `php artisan schedule:run` mỗi 60 giây | dùng chung image `app` |
+| `scheduler` | `php artisan schedule:work` — chạy tác vụ đã lên lịch đúng từng phút | dùng chung image `app` |
 | `mysql-local` | MySQL 8.4 (tùy chọn, bật bằng `COMPOSE_PROFILES=db-local`) | `mysql:8.4` |
 | `node` | Build/dev asset (Vite) — chỉ chạy khi cần | `node:22-alpine` |
 
@@ -230,6 +230,7 @@ Quy tắc: file được **copy vào image** (trong `docker/php/Dockerfile`) →
 | `composer.json` / `composer.lock` | Không | Không | `docker compose exec app composer install ...` |
 | `package.json` / asset JS-CSS | Không | Không | `docker compose run --rm node` |
 | `APP_ENV` / `APP_DEBUG` trong `.env` | Không | Không | Không tác dụng bên trong container — hai giá trị này bị file compose **ghim** cho cả `app`, `queue`, `scheduler`. Muốn đổi phải sửa file compose |
+| `GP247_SCHEDULE_QUEUE_WORK` trong `.env` | Không | Không | Không tác dụng bên trong container — file compose **ghim** `false` cho cả ba service, vì service `queue` đã xử lý hàng đợi liên tục nên scheduler không cần mở thêm `queue:work` mỗi phút. Chỉ đổi (sửa file compose) nếu bạn bỏ service `queue` |
 
 > Đã chạy `php artisan config:cache`? Thay đổi trong `.env` chỉ có hiệu lực sau khi chạy lại `config:cache` (hoặc `config:clear`).
 
