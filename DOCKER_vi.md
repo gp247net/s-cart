@@ -92,17 +92,21 @@ Có hai file compose **tách biệt hoàn toàn** — luôn dùng đúng file ch
    docker compose exec app php artisan gp247:shop-sample   # tùy chọn: dữ liệu mẫu
    ```
 
-   `gp247:install` hỏi xác nhận — gõ `yes`.
+   `gp247:install` hỏi xác nhận — gõ `yes`. Khi cài xong, **khối cuối cùng** in tên đăng nhập `admin` và một **mật khẩu ngẫu
+   nhiên**.
+
+   > ⚠️ **Mật khẩu chỉ hiện một lần**, ngay sau khi cài thành công — không lưu ở đâu, không in lại (kể cả trong
+   > `docker compose logs`). Chép vào trình quản lý mật khẩu **trước khi** đóng Terminal.
 
 4. Mở trình duyệt:
 
    | Trang | Địa chỉ |
    |---|---|
    | Cửa hàng | <http://localhost:8000> |
-   | Quản trị | <http://localhost:8000/gp247_admin> — `admin` / `admin` |
+   | Quản trị | <http://localhost:8000/gp247_admin> — `admin` / mật khẩu in ra ở bước 3 |
    | Vite dev server (hot-reload asset) | <http://localhost:5173> |
 
-   > 🔑 Đổi mật khẩu `admin` ngay sau lần đăng nhập đầu tiên.
+   > 🔑 Đăng nhập xong, đổi email tài khoản sang email thật (Thiết lập tài khoản ở góc trên) để dùng được Quên mật khẩu.
 
 > 💡 Muốn đổi cổng hoặc database, sửa `.env` **trước bước 2**: `SC_DOCKER_APP_PORT`, `SC_DOCKER_DB_PORT`, `DB_*`, `COMPOSE_PROFILES`. Mỗi biến có chú thích ngay trong mục `#========DOCKER=========` của `.env.example`. Nên đặt `APP_URL=http://localhost:8000` để link trong email (sinh từ queue/CLI) có đúng cổng.
 
@@ -454,4 +458,4 @@ Hoặc dành riêng một user UID 1000 để deploy và `chown -R 1000:1000 /pa
 
 ---
 
-<sub>📅 **Cập nhật lần cuối:** 2026-11-06 · ✍️ **Tác giả (Author):** GP247</sub>
+<sub>📅 **Cập nhật lần cuối:** 2026-11-08 · ✍️ **Tác giả (Author):** GP247</sub>

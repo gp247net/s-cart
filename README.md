@@ -98,7 +98,11 @@ Pick **one** of three options:
    php artisan gp247:install
    ```
 
-   The command asks for confirmation — type `yes`. When it finishes, the screen shows the admin path and login.
+   The command asks for confirmation — type `yes`. When the install finishes, the **last block** on the screen shows the admin
+   path, the user name `admin` and a **random password**.
+
+   > ⚠️ **The password is shown only once**, right after a successful install — it is not stored anywhere and never printed
+   > again. Save it in a password manager **before** you close the Terminal.
 
 5. *(Optional)* Add sample data to try it out:
 
@@ -111,9 +115,9 @@ Pick **one** of three options:
    | Page | Address | Login |
    |---|---|---|
    | Storefront | `http://your-domain` | — |
-   | Admin | `http://your-domain/gp247_admin` | `admin` / `admin` |
+   | Admin | `http://your-domain/gp247_admin` | `admin` / the password printed in step 4 |
 
-   > 🔑 **Change the `admin` password right after your first login.**
+   > 🔑 **After signing in, change the account email to a real one** (Setting account at the top) so Forgot password works.
 
 ## Option 2 — Git clone
 
@@ -275,7 +279,9 @@ Set these in the `.env` file:
 
 **Q2: Where is the admin panel and how do I log in?**
 
-→ `http://your-domain/gp247_admin`, user `admin` / password `admin`. Change the password right away.
+→ `http://your-domain/gp247_admin`, user `admin` with the random password printed at the end of `gp247:install` — it is shown only
+once. Missed it on a freshly installed site with no data yet: run `php artisan gp247:install` again to get a new password. A site
+installed with an older version may still use `admin` / `admin` — change it right away.
 
 **Q3: How do I see which version I'm running?**
 
@@ -311,4 +317,4 @@ Set these in the `.env` file:
 
 ---
 
-<sub>📅 **Last updated:** 2026-10-22 · ✍️ **Author:** GP247</sub>
+<sub>📅 **Last updated:** 2026-11-08 · ✍️ **Author:** GP247</sub>

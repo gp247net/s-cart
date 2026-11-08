@@ -98,7 +98,11 @@ Chọn **một** trong ba cách:
    php artisan gp247:install
    ```
 
-   Lệnh sẽ hỏi xác nhận, gõ `yes`. Khi xong, màn hình in ra đường dẫn trang quản trị và tài khoản đăng nhập.
+   Lệnh sẽ hỏi xác nhận, gõ `yes`. Khi cài xong, **khối cuối cùng** trên màn hình in ra đường dẫn trang quản trị, tên đăng nhập
+   `admin` và một **mật khẩu ngẫu nhiên**.
+
+   > ⚠️ **Mật khẩu chỉ hiện một lần**, ngay sau khi cài thành công — không lưu ở đâu, không in lại. Chép vào trình quản lý mật
+   > khẩu **trước khi** đóng Terminal.
 
 5. *(Tùy chọn)* Thêm dữ liệu mẫu để xem thử:
 
@@ -111,9 +115,9 @@ Chọn **một** trong ba cách:
    | Trang | Địa chỉ | Đăng nhập |
    |---|---|---|
    | Cửa hàng | `http://ten-mien-cua-ban` | — |
-   | Quản trị | `http://ten-mien-cua-ban/gp247_admin` | `admin` / `admin` |
+   | Quản trị | `http://ten-mien-cua-ban/gp247_admin` | `admin` / mật khẩu in ra ở bước 4 |
 
-   > 🔑 **Đổi mật khẩu `admin` ngay sau lần đăng nhập đầu tiên.**
+   > 🔑 **Đăng nhập xong, đổi email tài khoản sang email thật** (Thiết lập tài khoản ở góc trên) để dùng được Quên mật khẩu.
 
 ## Cách 2 — Git clone
 
@@ -275,7 +279,9 @@ Khai báo trong file `.env`:
 
 **Câu 2: Trang quản trị ở đâu, đăng nhập bằng gì?**
 
-→ `http://ten-mien-cua-ban/gp247_admin`, tài khoản `admin` / mật khẩu `admin`. Hãy đổi mật khẩu ngay.
+→ `http://ten-mien-cua-ban/gp247_admin`, tài khoản `admin` với mật khẩu ngẫu nhiên in ở cuối lệnh `gp247:install` — mật khẩu chỉ hiện
+một lần. Lỡ chưa chép trên site vừa cài (chưa có dữ liệu): chạy lại `php artisan gp247:install` để nhận mật khẩu mới. Site cài bằng
+bản cũ hơn có thể vẫn là `admin` / `admin` — đổi ngay.
 
 **Câu 3: Làm sao biết mình đang dùng phiên bản nào?**
 
@@ -311,4 +317,4 @@ Khai báo trong file `.env`:
 
 ---
 
-<sub>📅 **Cập nhật lần cuối:** 2026-10-22 · ✍️ **Tác giả (Author):** GP247</sub>
+<sub>📅 **Cập nhật lần cuối:** 2026-11-08 · ✍️ **Tác giả (Author):** GP247</sub>
