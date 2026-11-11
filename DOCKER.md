@@ -456,6 +456,26 @@ Or dedicate a UID 1000 user to deployments and run `chown -R 1000:1000 /path/to/
 
 → In `.env`: `DB_HOST=your-remote-mysql-host` and `COMPOSE_PROFILES=` (empty), then `docker compose up -d`. No `mysql-local` container is created. See the table in step 2 of [PROD](#-run-the-prod-environment).
 
+`DB_HOST` only tells Laravel where to connect; **whether a MySQL container is created** is decided by `COMPOSE_PROFILES` alone. Change `DB_HOST` but forget to empty `COMPOSE_PROFILES` (common when `.env.example`, which ships with `db-local`, is copied as is) and `mysql-local` still starts, even though the app already uses the remote DB.
+
+**Already running `mysql-local` and switching to a remote DB:** emptying `COMPOSE_PROFILES` and running `up -d` does **not stop** the running container — it still shows `Running`. Also do the following (PROD example; the container is named `<SC_DOCKER_INSTANCE>-mysql-local-prod`, `scart-mysql-local-prod` by default; for DEV drop the `-prod` suffix and the `-f docker-compose.prod.yml`):
+
+1. Confirm the app uses the remote DB — this must print the remote DB address (if you ever ran `config:cache`, run it again after editing `.env`):
+   ```bash
+   docker compose -f docker-compose.prod.yml exec app php artisan tinker --execute="echo config('database.connections.mysql.host');"
+   ```
+2. If `mysql-local` ever held real data, back it up before stopping it:
+   ```bash
+   docker exec scart-mysql-local-prod sh -c 'exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction "$MYSQL_DATABASE"' > mysql-local-backup.sql
+   ```
+3. Stop and remove the container — the data stays in the `<SC_DOCKER_INSTANCE>-mysql-local-data-prod` volume and comes back if you re-enable `db-local`:
+   ```bash
+   docker stop scart-mysql-local-prod
+   docker rm scart-mysql-local-prod
+   ```
+
+> ⚠️ Only delete the volume (`docker volume rm …`, `docker compose down -v`) once you are sure the data has been moved — this **cannot be undone**.
+
 ---
 
 <sub>📅 **Last updated:** 2026-11-08 · ✍️ **Author:** GP247</sub>

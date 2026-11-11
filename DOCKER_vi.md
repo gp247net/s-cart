@@ -456,6 +456,26 @@ Hoặc dành riêng một user UID 1000 để deploy và `chown -R 1000:1000 /pa
 
 → Trong `.env`: `DB_HOST=your-remote-mysql-host` và `COMPOSE_PROFILES=` (để trống), rồi `docker compose up -d`. Container `mysql-local` sẽ không được tạo. Xem bảng ở bước 2 của [PROD](#-chạy-môi-trường-prod).
 
+`DB_HOST` chỉ báo cho Laravel biết kết nối tới đâu; việc **có tạo container MySQL hay không** chỉ do `COMPOSE_PROFILES` quyết định. Đổi `DB_HOST` mà quên để trống `COMPOSE_PROFILES` (hay gặp khi copy nguyên `.env.example`, vốn để sẵn `db-local`) thì `mysql-local` vẫn được bật, dù app đã dùng DB ngoài.
+
+**Đã chạy `mysql-local` rồi mới chuyển sang DB ngoài:** để trống `COMPOSE_PROFILES` rồi `up -d` **không dừng** container đang chạy — nó vẫn hiện `Running`. Làm thêm (ví dụ PROD; tên container là `<SC_DOCKER_INSTANCE>-mysql-local-prod`, mặc định `scart-mysql-local-prod`; DEV bỏ đuôi `-prod` và bỏ `-f docker-compose.prod.yml`):
+
+1. Xác nhận app đã dùng DB ngoài — lệnh sau phải in ra địa chỉ DB ngoài (nếu từng chạy `config:cache` thì chạy lại sau khi sửa `.env`):
+   ```bash
+   docker compose -f docker-compose.prod.yml exec app php artisan tinker --execute="echo config('database.connections.mysql.host');"
+   ```
+2. Nếu `mysql-local` từng chứa dữ liệu thật, sao lưu trước khi dừng:
+   ```bash
+   docker exec scart-mysql-local-prod sh -c 'exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction "$MYSQL_DATABASE"' > mysql-local-backup.sql
+   ```
+3. Dừng và gỡ container — dữ liệu vẫn nằm nguyên trong volume `<SC_DOCKER_INSTANCE>-mysql-local-data-prod`, bật lại `db-local` là thấy lại:
+   ```bash
+   docker stop scart-mysql-local-prod
+   docker rm scart-mysql-local-prod
+   ```
+
+> ⚠️ Chỉ xoá volume (`docker volume rm …`, `docker compose down -v`) khi đã chắc chắn chuyển xong dữ liệu — thao tác này **không khôi phục được**.
+
 ---
 
 <sub>📅 **Cập nhật lần cuối:** 2026-11-08 · ✍️ **Tác giả (Author):** GP247</sub>
