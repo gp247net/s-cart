@@ -146,9 +146,21 @@ Có hai file compose **tách biệt hoàn toàn** — luôn dùng đúng file ch
    SC_DOCKER_WWWGROUP=1000          # chạy `id -g` trên server
    ```
 
-   > Không đặt `SC_DOCKER_APP_PORT` trừ khi cần cổng khác `80` (vd đứng sau reverse proxy) — file compose prod tự mặc định `80`.
+   > Không đặt `SC_DOCKER_APP_PORT` trừ khi cần cổng khác `80` (vd đứng sau reverse proxy — khi đó luôn ghi `127.0.0.1:<cổng>`: chỉ ghi số cổng thì cổng mở ra mọi địa chỉ IPv4/IPv6 công khai, và tường lửa máy chủ không chặn cổng Docker) — file compose prod tự mặc định `80`.
 
    > **Đứng sau proxy (HTTPS trên máy chủ hoặc CDN):** mặc định bộ Docker **không** tin proxy nào, nên khách không giả được IP. Nếu nginx / Caddy / Traefik trên **cùng máy chủ** lo HTTPS, thêm vào `.env`: `TRUSTED_PROXIES=172.16.0.0/12` và `SC_DOCKER_APP_PORT=127.0.0.1:8000` (cổng chỉ gọi được từ chính máy chủ), trỏ proxy tới `127.0.0.1:8000` và giữ header `Host` (nginx: `proxy_set_header Host $host;`). Sau Cloudflare / load balancer thì khai dải IP của nó (mẫu sẵn trong `.env.example`). Không bao giờ dùng `REMOTE_ADDR` hay `*`. **Nâng cấp site đang dùng mặc định cũ** (`REMOTE_ADDR`): `git pull` không sửa `.env` của bạn — đặt `TRUSTED_PROXIES` như trên rồi `docker compose up -d`. Không đặt thì mọi khách hiện cùng một IP và link sinh ra là `http://`.
+
+   > **Nhiều lớp proxy nối nhau** (vd Cloudflare → nginx trên máy chủ → bộ Docker này): khai **mọi lớp** trong **một** dòng — `TRUSTED_PROXIES="172.16.0.0/12,<các dải Cloudflare>"` (dòng đầy đủ có sẵn trong `.env.example`). Chỉ khai dải Cloudflare thì link vẫn là `http://` và trình duyệt chặn thao tác trong trang quản trị ("Mixed Content"); trang **System alerts** và `php artisan gp247:doctor` (dòng `trusted_proxies`) sẽ nhắc. Sửa xong, kiểm cổng chỉ nghe trên máy chủ — kết quả phải là `127.0.0.1:8000`, không có `0.0.0.0` hay `[::]`:
+   >
+   > ```bash
+   > ss -ltnp | grep 8000
+   > ```
+   >
+   > `172.16.0.0/12` bao các mạng Docker thường gặp. Máy chủ có nhiều stack thì Docker có thể cấp `192.168.x.x`; xem subnet thật (thay `scart` bằng `SC_DOCKER_INSTANCE` của bạn) rồi khai subnet đó:
+   >
+   > ```bash
+   > docker network inspect scart-prod_scart -f '{{range .IPAM.Config}}{{.Subnet}}{{end}}'
+   > ```
 
 4. Khởi động container:
 

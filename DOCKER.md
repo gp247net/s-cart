@@ -146,9 +146,21 @@ There are two **completely separate** compose files — always use the right one
    SC_DOCKER_WWWGROUP=1000          # run `id -g` on the server
    ```
 
-   > Don't set `SC_DOCKER_APP_PORT` unless you need a port other than `80` (e.g. behind a reverse proxy) — the prod compose file defaults to `80`.
+   > Don't set `SC_DOCKER_APP_PORT` unless you need a port other than `80` (e.g. behind a reverse proxy — then always `127.0.0.1:<port>`: a bare number also listens on every public IPv4/IPv6 address, and the server firewall does not cover Docker ports) — the prod compose file defaults to `80`.
 
    > **Behind a proxy (HTTPS on the host or a CDN):** the stack trusts **no** proxy by default, so visitors cannot fake their IP. If nginx / Caddy / Traefik on the **same server** terminates HTTPS, add to `.env`: `TRUSTED_PROXIES=172.16.0.0/12` and `SC_DOCKER_APP_PORT=127.0.0.1:8000` (port reachable only from the server), point the proxy at `127.0.0.1:8000` and keep the `Host` header (nginx: `proxy_set_header Host $host;`). Behind Cloudflare / a load balancer, list its IP ranges instead (presets in `.env.example`). Never use `REMOTE_ADDR` or `*`. **Upgrading a site that used the old default** (`REMOTE_ADDR`): `git pull` does not change your `.env` — set `TRUSTED_PROXIES` as above, then `docker compose up -d`. Without it every visitor shows the same IP and links are generated as `http://`.
+
+   > **Several proxies in a row** (for example Cloudflare → nginx on the server → this stack): list **every** hop in **one** value — `TRUSTED_PROXIES="172.16.0.0/12,<Cloudflare ranges>"` (the full line is ready in `.env.example`). Listing only the Cloudflare ranges leaves links on `http://`, and the browser blocks admin actions as "Mixed Content"; the **System alerts** page and `php artisan gp247:doctor` (row `trusted_proxies`) report it. After the change, check that the port listens on the server only — the output must show `127.0.0.1:8000`, not `0.0.0.0` or `[::]`:
+   >
+   > ```bash
+   > ss -ltnp | grep 8000
+   > ```
+   >
+   > `172.16.0.0/12` covers the usual Docker networks. On a server with many stacks Docker may use `192.168.x.x` instead; read the real subnet (replace `scart` with your `SC_DOCKER_INSTANCE`) and list that instead:
+   >
+   > ```bash
+   > docker network inspect scart-prod_scart -f '{{range .IPAM.Config}}{{.Subnet}}{{end}}'
+   > ```
 
 4. Start the containers:
 

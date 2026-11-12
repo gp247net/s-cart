@@ -13,11 +13,15 @@
 |   (unset)  trust nothing - the default, also in docker-compose*.yml.
 |            Correct whenever nothing sits in front of the web server:
 |            the client IP and HTTPS flag arrive natively over FastCGI.
-|   ip,cidr  comma-separated ranges of the proxy that DOES sit in front:
-|            Cloudflare / load-balancer ranges, 127.0.0.1 for a local
-|            proxy_pass on a bare host, or 172.16.0.0/12 for nginx /
+|   ip,cidr  comma-separated ranges of EVERY proxy that sits in front, in
+|            one value: Cloudflare / load-balancer ranges, 127.0.0.1 for a
+|            local proxy_pass on a bare host, or 172.16.0.0/12 for nginx /
 |            Caddy / Traefik on the same host in front of Docker (then
 |            also bind the port: SC_DOCKER_APP_PORT=127.0.0.1:8000).
+|            Several hops (Cloudflare -> host nginx -> Docker) need all of
+|            them: X-Forwarded-* is read only when the direct peer is
+|            listed, so a missing hop turns every URL into http:// (the
+|            System alerts page and gp247:doctor report it).
 |   REMOTE_ADDR, *, 0.0.0.0/0 - never: over FastCGI REMOTE_ADDR is the
 |            visitor's own address (the bundled nginx passes $remote_addr),
 |            so these trust every visitor and let anyone fake their IP and

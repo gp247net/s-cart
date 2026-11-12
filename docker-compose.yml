@@ -73,6 +73,8 @@ services:
       #   - nginx / Caddy / Traefik on the same host: 172.16.0.0/12 (the docker
       #     bridge range) AND bind the port to the host only with
       #     SC_DOCKER_APP_PORT=127.0.0.1:8000; the proxy must keep the Host header.
+      #   - several hops (Cloudflare -> host nginx -> this stack): list ALL of them
+      #     in one value (172.16.0.0/12 plus the Cloudflare ranges).
       # Ready-made values in .env.example; rationale in config/trustedproxy.php.
       # The app never trusts X-Forwarded-Host / X-Forwarded-Prefix (gp247/core).
       TRUSTED_PROXIES: "${TRUSTED_PROXIES:-}"
