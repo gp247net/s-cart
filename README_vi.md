@@ -2,11 +2,9 @@
 
 <div align="center">
 
-# 🛒 S-Cart
+<img src="./public/s-cart/logo.png" alt="S-Cart" width="280">
 
-```bash
-composer create-project gp247/s-cart my-shop "^3.0"
-```
+`composer create-project gp247/s-cart my-shop`
 
 **Phần mềm bán hàng trực tuyến mã nguồn mở, miễn phí, xây dựng trên GP247 và Laravel**
 
@@ -20,9 +18,35 @@ composer create-project gp247/s-cart my-shop "^3.0"
 
 ## Giới thiệu
 
-S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, dành cho doanh nghiệp, cá nhân kinh doanh, lập trình viên và sinh viên. Bạn có sẵn một cửa hàng trực tuyến hoàn chỉnh (sản phẩm, giỏ hàng, đơn hàng, khách hàng, tin tức) cùng trang quản trị, và có thể mở rộng bằng plugin/template. Đọc xong trang này, bạn sẽ cài được S-Cart trên máy hoặc server của mình, biết cách cập nhật và tùy biến nó.
+S-Cart là phần mềm bán hàng trực tuyến **miễn phí, mã nguồn mở** (giấy phép MIT), dành cho chủ cửa hàng, doanh nghiệp và lập trình viên. Cài xong, bạn có ngay một cửa hàng trực tuyến hoàn chỉnh (sản phẩm, giỏ hàng, đơn hàng, khách hàng, trang nội dung) cùng trang quản trị. Toàn bộ S-Cart miễn phí để dùng, sửa và tích hợp vào hệ thống của bạn; plugin Pro là phần tùy chọn khi cửa hàng cần mở rộng, ví dụ nhiều cửa hàng hoặc sàn nhiều người bán.
 
-**Công nghệ S-Cart 3.x:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 4 · MySQL / MariaDB
+S-Cart được xây dựng theo bốn nguyên tắc:
+
+| Nguyên tắc | Bạn nhận được |
+|---|---|
+| 🎯 **Giải đúng việc của người bán hàng** | SEO, sao lưu & phục hồi, phân quyền, báo cáo có sẵn ngay khi cài, không cần plugin. Cài đặt và cập nhật chỉ bằng vài lệnh. |
+| 🌍 **Chạy ở nhiều môi trường** | Từ shared hosting không có cron tới VPS, Docker. |
+| 🔐 **An toàn** | Một lớp phân quyền và nhật ký chung cho trang quản trị, API và AI agent; mật khẩu, khoá bên thứ ba được mã hoá khi lưu. |
+| 🧩 **Dễ tùy biến** | Mở rộng bằng plugin và template, ghi đè giao diện hay xử lý mà không sửa mã gốc — cập nhật không làm mất phần bạn đã sửa. |
+
+Đọc xong trang này, bạn sẽ cài được S-Cart trên máy hoặc server của mình, biết cách cập nhật và tùy biến nó.
+
+**Công nghệ S-Cart 3.x:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 3 · MySQL / MariaDB
+
+### S-Cart và GP247
+
+**S-Cart = GP247/core + GP247/front + GP247/shop + GP247/mcp**
+
+GP247 là hệ sinh thái mã nguồn mở trên Laravel để xây dựng ứng dụng web cho doanh nghiệp. S-Cart là sản phẩm bán hàng trực tuyến dựng trên nền đó, gồm bốn package:
+
+| Package | Đảm nhận |
+|---|---|
+| [`gp247/core`](https://github.com/gp247net/core) | Lõi: trang quản trị, phân quyền, cấu hình, plugin & template |
+| [`gp247/front`](https://github.com/gp247net/front) | Giao diện cửa hàng, nội dung (CMS) |
+| [`gp247/shop`](https://github.com/gp247net/shop) | Sản phẩm, giỏ hàng, đơn hàng, khách hàng |
+| [`gp247/mcp`](https://github.com/gp247net/mcp) | MCP server cho AI agent |
+
+Bạn chỉ cần cài **S-Cart** — cả bốn package được cài kèm, không phải cài GP247 riêng.
 
 ## ✨ Có gì trong S-Cart
 
@@ -30,7 +54,7 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 |---|---|
 | 🛍️ **Bán hàng** | Sản phẩm, giỏ hàng, đơn hàng, khách hàng |
 | 🌏 **Đa quốc gia** | Đa ngôn ngữ, đa tiền tệ |
-| 📰 **Nội dung (CMS)** | Danh mục, tin tức, trang nội dung |
+| 📰 **Nội dung (CMS)** | Danh mục, trang nội dung; tin tức (plugin News miễn phí) |
 | 💳 **Thanh toán & vận chuyển** | Plugin thanh toán, phương thức vận chuyển, mã giảm giá, tính thuế |
 | 🔐 **Quản trị & bảo mật** | Phân quyền theo vai trò (quản trị viên, quản lý, marketing…), nhật ký thao tác, CAPTCHA |
 | 📊 **Công cụ kinh doanh** | Xử lý đơn hàng, quản lý khách hàng, thống kê & báo cáo |
@@ -51,7 +75,7 @@ S-Cart là phần mềm website bán hàng **miễn phí, mã nguồn mở**, d�
 
 ## 🚀 Cài đặt
 
-> 📘 **Hướng dẫn cài đặt đầy đủ** — chọn bộ cài (S-Cart, GP247 CMS, chỉ core), hosting không có dòng lệnh, thêm front/shop vào site đang có, xử lý sự cố: [Cài đặt GP247 và S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/install_vi.md).
+> 📘 **Hướng dẫn cài đặt đầy đủ** — chọn bộ cài (S-Cart, GP247 CMS, chỉ core), hosting không có dòng lệnh, thêm front/shop vào site đang có, xử lý sự cố: [Cài đặt GP247 và S-Cart](https://gp247.net/vi/docs/install-update/install.html).
 
 Chọn **một** trong ba cách:
 
@@ -71,12 +95,12 @@ Chọn **một** trong ba cách:
 
    Dòng `PHP version` phải là **8.3 trở lên**.
 
-   > ⚠️ Nếu PHP cũ hơn, Composer **không báo lỗi** mà lặng lẽ cài bản S-Cart 1.x rất cũ. Luôn giữ `"^3.0"` trong lệnh ở bước 2 để Composer báo lỗi rõ ràng thay vì cài nhầm.
+   > ⚠️ Nếu PHP cũ hơn 8.3, Composer **không báo lỗi** mà lặng lẽ cài bản S-Cart 1.x rất cũ. Chuyển Composer sang PHP 8.3 trở lên rồi mới làm bước 2.
 
 2. Tạo dự án (thay `my-shop` bằng tên thư mục bạn muốn):
 
    ```bash
-   composer create-project gp247/s-cart my-shop "^3.0"
+   composer create-project gp247/s-cart my-shop
    cd my-shop
    ```
 
@@ -172,7 +196,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 🔄 Cập nhật phiên bản
 
-> 📘 **Hướng dẫn đầy đủ:** [Cập nhật GP247 và S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_vi.md) · site còn ở dòng 2.x: [Nâng cấp lên dòng 3.x](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/upgrade_vi.md).
+> 📘 **Hướng dẫn đầy đủ:** [Cập nhật GP247 và S-Cart](https://gp247.net/vi/docs/install-update/update.html) · site còn ở dòng 2.x: [Nâng cấp lên dòng 3.x](https://gp247.net/vi/docs/install-update/upgrade.html).
 
 1. **Sao lưu** database và thư mục `app/GP247`, `public/GP247` trước khi cập nhật.
 2. Tải mã nguồn mới:
@@ -197,7 +221,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ Chỉ chạy `composer update` là **chưa đủ** — luôn chạy thêm bước 3.
 
-Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Cập nhật GP247 và S-Cart — Tùy chọn nâng cao](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_vi.md#tùy-chọn-nâng-cao) trước khi dùng.
+Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm mới asset/view bằng `--publish=…`) có thể **ghi đè tùy biến của bạn** — đọc kỹ [Cập nhật GP247 và S-Cart — Tùy chọn nâng cao](https://gp247.net/vi/docs/install-update/update.html) trước khi dùng.
 
 ## 🎨 Tùy biến & mở rộng
 
@@ -255,7 +279,8 @@ my-shop/
 └── vendor/gp247/
     ├── core           ← lõi: quản trị, phân quyền, cấu hình
     ├── front          ← giao diện cửa hàng, CMS
-    └── shop           ← sản phẩm, giỏ hàng, đơn hàng
+    ├── shop           ← sản phẩm, giỏ hàng, đơn hàng
+    └── mcp            ← MCP server cho AI agent
 ```
 
 ## 🔧 Biến môi trường hay dùng
@@ -270,51 +295,3 @@ Khai báo trong file `.env`:
 | `GP247_ADMIN_LOG` | `1` | Ghi nhật ký truy cập trang quản trị |
 | `GP247_SEO_LANG` | `0` | Thêm mã ngôn ngữ vào URL cửa hàng (`/vi/...`, `/en/...`) |
 | `GP247_ENCRYPTION_KEY` | *(trống)* | Khóa mã hóa riêng cho mật khẩu SMTP, license… — xem ghi chú trong `.env.example` |
-
-## ❓ Hỏi & Đáp (Q&A)
-
-**Câu 1: Composer cài xong rồi báo `Access denied for user 'root'`, là sao?**
-
-→ Composer đang chạy bằng PHP cũ hơn 8.3 nên đã cài nhầm S-Cart 1.x. Xóa thư mục vừa tạo, chuyển Composer sang PHP 8.3+ (kiểm tra bằng `composer diagnose`), rồi cài lại với `"^3.0"`.
-
-**Câu 2: Trang quản trị ở đâu, đăng nhập bằng gì?**
-
-→ `http://ten-mien-cua-ban/gp247_admin`, tài khoản `admin` với mật khẩu ngẫu nhiên in ở cuối lệnh `gp247:install` — mật khẩu chỉ hiện
-một lần. Lỡ chưa chép trên site vừa cài (chưa có dữ liệu): chạy lại `php artisan gp247:install` để nhận mật khẩu mới. Site cài bằng
-bản cũ hơn có thể vẫn là `admin` / `admin` — đổi ngay.
-
-**Câu 3: Làm sao biết mình đang dùng phiên bản nào?**
-
-→ Chạy `php artisan gp247:info`.
-
-**Câu 4: Site lỗi hoặc cài không được, kiểm tra ở đâu trước?**
-
-→ Chạy `php artisan gp247:doctor` — lệnh kiểm tra môi trường (PHP, quyền ghi thư mục, cấu hình…) và chỉ ra chỗ cần sửa. Nhớ kiểm tra quyền ghi các thư mục ở mục [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống).
-
-**Câu 5: Cập nhật phiên bản có làm mất dữ liệu hay phần tôi đã sửa không?**
-
-→ `php artisan gp247:update` không xóa dữ liệu và giữ nguyên bản dịch, template bạn đã sửa. Chỉ các tùy chọn `--overwrite-lang` và `--publish=…` mới có thể ghi đè — sao lưu trước khi dùng.
-
-**Câu 6: Tôi sửa template mặc định, cập nhật có bị mất không?**
-
-→ Không, nếu bạn chỉ publish đúng file cần sửa bằng `gp247:template-publish GP247Front --file=...`. File bạn đã sửa được giữ nguyên; các file còn lại tự nhận bản mới từ package.
-
-**Câu 7: Đổi đường dẫn trang quản trị thế nào?**
-
-→ Sửa `GP247_ADMIN_PREFIX` trong `.env` (ví dụ `quan-tri`). Không đặt trùng tên một thư mục có sẵn trong `public/` (như `vendor`, `GP247`), nếu không trang sẽ báo lỗi 403.
-
-**Câu 8: Tôi có đổi được tiền tố tên bảng (`GP247_DB_PREFIX`) sau khi cài không?**
-
-→ Không. Tiền tố này phải chọn trước khi chạy `gp247:install`.
-
-**Câu 9: Tôi không dùng app di động, có nên tắt API không?**
-
-→ Có thể. Đặt `GP247_API_MODE=0` trong `.env`.
-
-**Câu 10: Cần hỏi thêm thì hỏi ở đâu?**
-
-→ Xem [tài liệu GP247](https://gp247.net/vi/docs), hỏi [DeepWiki](https://deepwiki.com/gp247net/s-cart), hoặc đăng câu hỏi ở [nhóm Facebook S-Cart](https://www.facebook.com/groups/scart.opensource).
-
----
-
-<sub>📅 **Cập nhật lần cuối:** 2026-11-08 · ✍️ **Tác giả (Author):** GP247</sub>

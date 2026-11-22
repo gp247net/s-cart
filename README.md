@@ -2,11 +2,9 @@
 
 <div align="center">
 
-# 🛒 S-Cart
+<img src="./public/s-cart/logo.png" alt="S-Cart" width="280">
 
-```bash
-composer create-project gp247/s-cart my-shop "^3.0"
-```
+`composer create-project gp247/s-cart my-shop`
 
 **Free, open-source e-commerce software built on GP247 and Laravel**
 
@@ -20,9 +18,35 @@ composer create-project gp247/s-cart my-shop "^3.0"
 
 ## Introduction
 
-S-Cart is **free, open-source** online-store software for businesses, individual sellers, developers and students. You get a complete online shop (products, cart, orders, customers, news) plus an admin panel, and you can extend it with plugins and templates. After reading this page you will be able to install S-Cart on your machine or server, and know how to update and customize it.
+S-Cart is **free, open-source** online-store software (MIT license) for store owners, businesses and developers. Once installed, you have a complete online shop (products, cart, orders, customers, content pages) plus an admin panel. All of S-Cart is free to use, modify and integrate into your own system; Pro plugins are optional add-ons for when a shop needs to grow, such as several stores or a marketplace with many sellers.
 
-**S-Cart 3.x tech stack:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 4 · MySQL / MariaDB
+S-Cart is built on four principles:
+
+| Principle | What you get |
+|---|---|
+| 🎯 **Solves the seller's real work** | SEO, backup & restore, role-based permissions and reports are built in from the first install, no plugin needed. Install and update with a few commands. |
+| 🌍 **Runs in many environments** | From shared hosting without cron to VPS and Docker. |
+| 🔐 **Secure** | One layer of permissions and activity logs shared by the admin panel, the API and AI agents; passwords and third-party keys are stored encrypted. |
+| 🧩 **Easy to customize** | Extend with plugins and templates, and override screens or logic without touching the original code — updates keep your changes. |
+
+After reading this page you will be able to install S-Cart on your machine or server, and know how to update and customize it.
+
+**S-Cart 3.x tech stack:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 3 · MySQL / MariaDB
+
+### S-Cart and GP247
+
+**S-Cart = GP247/core + GP247/front + GP247/shop + GP247/mcp**
+
+GP247 is an open-source ecosystem on Laravel for building business web applications. S-Cart is the e-commerce product built on it, made of four packages:
+
+| Package | Provides |
+|---|---|
+| [`gp247/core`](https://github.com/gp247net/core) | Core: admin panel, permissions, configuration, plugins & templates |
+| [`gp247/front`](https://github.com/gp247net/front) | Storefront, content (CMS) |
+| [`gp247/shop`](https://github.com/gp247net/shop) | Products, cart, orders, customers |
+| [`gp247/mcp`](https://github.com/gp247net/mcp) | MCP server for AI agents |
+
+You only install **S-Cart** — all four packages come with it; there is no separate GP247 install.
 
 ## ✨ What's in S-Cart
 
@@ -30,7 +54,7 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 |---|---|
 | 🛍️ **Commerce** | Products, cart, orders, customers |
 | 🌏 **International** | Multi-language, multi-currency |
-| 📰 **Content (CMS)** | Categories, news, content pages |
+| 📰 **Content (CMS)** | Categories, content pages; news (free News plugin) |
 | 💳 **Payment & shipping** | Payment plugins, shipping methods, discount codes, tax calculation |
 | 🔐 **Admin & security** | Role-based permissions (admin, manager, marketing…), activity log, CAPTCHA |
 | 📊 **Business tools** | Order processing, customer management, analytics & reports |
@@ -51,7 +75,7 @@ S-Cart is **free, open-source** online-store software for businesses, individual
 
 ## 🚀 Installation
 
-> 📘 **Full installation guide** — choosing a package set (S-Cart, GP247 CMS, core only), hosting without a command line, adding front/shop to an existing site, troubleshooting: [Installing GP247 and S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/install.md).
+> 📘 **Full installation guide** — choosing a package set (S-Cart, GP247 CMS, core only), hosting without a command line, adding front/shop to an existing site, troubleshooting: [Installing GP247 and S-Cart](https://gp247.net/en/docs/install-update/install.html).
 
 Pick **one** of three options:
 
@@ -71,12 +95,12 @@ Pick **one** of three options:
 
    The `PHP version` line must be **8.3 or newer**.
 
-   > ⚠️ On an older PHP, Composer does **not** fail — it silently installs a very old S-Cart 1.x. Always keep `"^3.0"` in the step 2 command so Composer fails loudly instead of installing the wrong version.
+   > ⚠️ On a PHP older than 8.3, Composer does **not** fail — it silently installs a very old S-Cart 1.x. Switch Composer to PHP 8.3 or newer before step 2.
 
 2. Create the project (replace `my-shop` with the folder name you want):
 
    ```bash
-   composer create-project gp247/s-cart my-shop "^3.0"
+   composer create-project gp247/s-cart my-shop
    cd my-shop
    ```
 
@@ -172,7 +196,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 🔄 Updating
 
-> 📘 **Full guide:** [Updating GP247 and S-Cart](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update.md) · site still on 2.x: [Upgrading to the 3.x line](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/upgrade.md).
+> 📘 **Full guide:** [Updating GP247 and S-Cart](https://gp247.net/en/docs/install-update/update.html) · site still on 2.x: [Upgrading to the 3.x line](https://gp247.net/en/docs/install-update/upgrade.html).
 
 1. **Back up** the database and the `app/GP247`, `public/GP247` folders before updating.
 2. Download the new code:
@@ -197,7 +221,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ Running `composer update` alone is **not enough** — always run step 3 too.
 
-Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [Updating GP247 and S-Cart — Advanced options](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update.md#advanced-options) carefully before using them.
+Advanced options (overwrite translations with `--overwrite-lang`, refresh assets/views with `--publish=…`) can **overwrite your customizations** — read the [Updating GP247 and S-Cart — Advanced options](https://gp247.net/en/docs/install-update/update.html) carefully before using them.
 
 ## 🎨 Customization & extension
 
@@ -255,7 +279,8 @@ my-shop/
 └── vendor/gp247/
     ├── core           ← core: admin, permissions, configuration
     ├── front          ← storefront, CMS
-    └── shop           ← products, cart, orders
+    ├── shop           ← products, cart, orders
+    └── mcp            ← MCP server for AI agents
 ```
 
 ## 🔧 Common environment variables
@@ -270,51 +295,3 @@ Set these in the `.env` file:
 | `GP247_ADMIN_LOG` | `1` | Log admin access |
 | `GP247_SEO_LANG` | `0` | Add the language code to storefront URLs (`/en/...`, `/vi/...`) |
 | `GP247_ENCRYPTION_KEY` | *(empty)* | Dedicated key for encrypting SMTP passwords, licenses… — see the notes in `.env.example` |
-
-## ❓ Q&A
-
-**Q1: Composer finished but then reported `Access denied for user 'root'` — what happened?**
-
-→ Composer ran on a PHP older than 8.3 and installed S-Cart 1.x by mistake. Delete the new folder, switch Composer to PHP 8.3+ (check with `composer diagnose`), then install again with `"^3.0"`.
-
-**Q2: Where is the admin panel and how do I log in?**
-
-→ `http://your-domain/gp247_admin`, user `admin` with the random password printed at the end of `gp247:install` — it is shown only
-once. Missed it on a freshly installed site with no data yet: run `php artisan gp247:install` again to get a new password. A site
-installed with an older version may still use `admin` / `admin` — change it right away.
-
-**Q3: How do I see which version I'm running?**
-
-→ Run `php artisan gp247:info`.
-
-**Q4: The site is broken or won't install — what should I check first?**
-
-→ Run `php artisan gp247:doctor` — it checks the environment (PHP, folder write permissions, configuration…) and points out what to fix. Also check the writable folders listed under [Requirements](#-requirements).
-
-**Q5: Will updating lose my data or my changes?**
-
-→ `php artisan gp247:update` deletes no data and keeps the translations and templates you edited. Only the `--overwrite-lang` and `--publish=…` options can overwrite them — back up before using them.
-
-**Q6: I edited the default template — will an update wipe my changes?**
-
-→ No, as long as you publish only the files you edit with `gp247:template-publish GP247Front --file=...`. Your edited files are kept; the rest pick up new versions from the package.
-
-**Q7: How do I change the admin path?**
-
-→ Set `GP247_ADMIN_PREFIX` in `.env` (e.g. `backoffice`). Don't use the name of an existing folder in `public/` (such as `vendor` or `GP247`), otherwise the page returns a 403 error.
-
-**Q8: Can I change the table prefix (`GP247_DB_PREFIX`) after installing?**
-
-→ No. Choose it before running `gp247:install`.
-
-**Q9: I don't use a mobile app — should I disable the API?**
-
-→ You can. Set `GP247_API_MODE=0` in `.env`.
-
-**Q10: Where can I ask for more help?**
-
-→ Read the [GP247 documentation](https://gp247.net/en/docs), ask [DeepWiki](https://deepwiki.com/gp247net/s-cart), or post in the [S-Cart Facebook group](https://www.facebook.com/groups/scart.opensource).
-
----
-
-<sub>📅 **Last updated:** 2026-11-08 · ✍️ **Author:** GP247</sub>

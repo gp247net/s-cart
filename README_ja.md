@@ -2,17 +2,15 @@
 
 <div align="center">
 
-# 🛒 S-Cart
+<img src="./public/s-cart/logo.png" alt="S-Cart" width="280">
 
-```bash
-composer create-project gp247/s-cart my-shop "^3.0"
-```
+`composer create-project gp247/s-cart my-shop`
 
 **GP247 と Laravel で構築された無料のオープンソース EC ソフトウェア**
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
 
-[🏠 ホーム](https://gp247.net) · [🚀 デモ](https://demo.s-cart.org) · [📚 ドキュメント](https://gp247.net/en/docs) · [🤖 AI エージェント用スキル](https://github.com/gp247net/gp247-skills) · [💬 Facebook グループ](https://www.facebook.com/groups/scart.opensource)
+[🏠 ホーム](https://gp247.net) · [🚀 デモ](https://demo.s-cart.org) · [📚 ドキュメント](https://gp247.net/ja/docs) · [🤖 AI エージェント用スキル](https://github.com/gp247net/gp247-skills) · [💬 Facebook グループ](https://www.facebook.com/groups/scart.opensource)
 
 <img src="https://static.gp247.net/page/sc-1.jpg" alt="S-Cart ストアフロント" width="49%"> <img src="https://static.gp247.net/page/sc-2.jpg" alt="S-Cart 管理画面" width="49%">
 
@@ -20,9 +18,35 @@ composer create-project gp247/s-cart my-shop "^3.0"
 
 ## 概要
 
-S-Cart は、企業、個人事業主、開発者、学生のための**無料・オープンソース**のネットショップ構築ソフトウェアです。商品、カート、注文、顧客、ニュースを備えた完成済みのオンラインストアと管理画面がすぐに使え、プラグインやテンプレートで機能を拡張できます。このページを読み終えると、S-Cart を手元のパソコンやサーバーにインストールし、アップデートやカスタマイズの方法がわかるようになります。
+S-Cart は、ストアオーナー、企業、開発者のための**無料・オープンソース**（MIT ライセンス）のネットショップ構築ソフトウェアです。インストールするだけで、商品、カート、注文、顧客、コンテンツページを備えた完成済みのオンラインストアと管理画面がすぐに使えます。S-Cart はすべて無料で利用・改変でき、自社システムにも組み込めます。Pro プラグインは、複数ストアや複数の販売者が出店するマーケットプレイスなど、ストアを拡張したいときの任意の追加機能です。
 
-**S-Cart 3.x の技術スタック：** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 4 · MySQL / MariaDB
+S-Cart は 4 つの原則に基づいて作られています：
+
+| 原則 | 得られること |
+|---|---|
+| 🎯 **販売者の実務に応える** | SEO、バックアップと復元、権限管理、レポートがインストール直後から使え、プラグインは不要です。インストールもアップデートも数個のコマンドで完了します。 |
+| 🌍 **さまざまな環境で動く** | cron のない共有ホスティングから VPS、Docker まで。 |
+| 🔐 **安全** | 管理画面、API、AI エージェントに共通の権限管理と操作ログ。パスワードや外部サービスのキーは暗号化して保存されます。 |
+| 🧩 **カスタマイズしやすい** | プラグインとテンプレートで拡張でき、元のコードに手を加えずに画面や処理をオーバーライドできます — アップデートしても編集した内容は失われません。 |
+
+このページを読み終えると、S-Cart を手元のパソコンやサーバーにインストールし、アップデートやカスタマイズの方法がわかるようになります。
+
+**S-Cart 3.x の技術スタック：** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 3 · MySQL / MariaDB
+
+### S-Cart と GP247
+
+**S-Cart = GP247/core + GP247/front + GP247/shop + GP247/mcp**
+
+GP247 は、業務向け Web アプリケーションを構築するための Laravel ベースのオープンソース・エコシステムです。S-Cart はその上に構築された EC 製品で、4 つのパッケージで構成されています：
+
+| パッケージ | 役割 |
+|---|---|
+| [`gp247/core`](https://github.com/gp247net/core) | コア：管理画面、権限管理、設定、プラグインとテンプレート |
+| [`gp247/front`](https://github.com/gp247net/front) | ストアフロント、コンテンツ（CMS） |
+| [`gp247/shop`](https://github.com/gp247net/shop) | 商品、カート、注文、顧客 |
+| [`gp247/mcp`](https://github.com/gp247net/mcp) | AI エージェント向けの MCP サーバー |
+
+インストールするのは **S-Cart** だけです — 4 つのパッケージはすべて一緒に入り、GP247 を別途インストールする必要はありません。
 
 ## ✨ S-Cart の機能
 
@@ -30,7 +54,7 @@ S-Cart は、企業、個人事業主、開発者、学生のための**無料�
 |---|---|
 | 🛍️ **販売** | 商品、カート、注文、顧客 |
 | 🌏 **多国対応** | 多言語、多通貨 |
-| 📰 **コンテンツ（CMS）** | カテゴリー、ニュース、コンテンツページ |
+| 📰 **コンテンツ（CMS）** | カテゴリー、コンテンツページ、ニュース（無料の News プラグイン） |
 | 💳 **決済と配送** | 決済プラグイン、配送方法、クーポンコード、税計算 |
 | 🔐 **管理とセキュリティ** | ロールによる権限管理（管理者、マネージャー、マーケティング…）、操作ログ、CAPTCHA |
 | 📊 **ビジネスツール** | 注文処理、顧客管理、統計とレポート |
@@ -51,7 +75,7 @@ S-Cart は、企業、個人事業主、開発者、学生のための**無料�
 
 ## 🚀 インストール
 
-> 📘 **インストールの詳しいガイド** — インストール構成の選び方（S-Cart、GP247 CMS、core のみ）、コマンドラインのないホスティング、既存サイトへの front/shop 追加、トラブルシューティング：[GP247 と S-Cart のインストール](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/install_ja.md)。
+> 📘 **インストールの詳しいガイド** — インストール構成の選び方（S-Cart、GP247 CMS、core のみ）、コマンドラインのないホスティング、既存サイトへの front/shop 追加、トラブルシューティング：[GP247 と S-Cart のインストール](https://gp247.net/ja/docs/install-update/install.html)。
 
 次の 3 つの方法から**いずれか 1 つ**を選んでください：
 
@@ -71,12 +95,12 @@ S-Cart は、企業、個人事業主、開発者、学生のための**無料�
 
    `PHP version` の行が **8.3 以上**である必要があります。
 
-   > ⚠️ PHP が古い場合、Composer は**エラーを出さず**、非常に古い S-Cart 1.x を黙ってインストールしてしまいます。誤ったバージョンがインストールされる代わりに Composer がはっきりエラーを出すよう、手順 2 のコマンドでは必ず `"^3.0"` を付けたままにしてください。
+   > ⚠️ PHP が 8.3 より古い場合、Composer は**エラーを出さず**、非常に古い S-Cart 1.x を黙ってインストールしてしまいます。手順 2 に進む前に、Composer を PHP 8.3 以上に切り替えてください。
 
 2. プロジェクトを作成します（`my-shop` は任意のディレクトリ名に置き換えてください）：
 
    ```bash
-   composer create-project gp247/s-cart my-shop "^3.0"
+   composer create-project gp247/s-cart my-shop
    cd my-shop
    ```
 
@@ -172,7 +196,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 🔄 バージョンアップデート
 
-> 📘 **詳しいガイド：**[GP247 と S-Cart の更新](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_ja.md) · 2.x 系のサイト：[3.x 系へのアップグレード](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/upgrade_ja.md)。
+> 📘 **詳しいガイド：**[GP247 と S-Cart の更新](https://gp247.net/ja/docs/install-update/update.html) · 2.x 系のサイト：[3.x 系へのアップグレード](https://gp247.net/ja/docs/install-update/upgrade.html)。
 
 1. アップデートの前に、データベースと `app/GP247`、`public/GP247` ディレクトリを**バックアップ**してください。
 2. 新しいソースコードを取得します：
@@ -197,7 +221,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 > ⚠️ `composer update` を実行するだけでは**不十分です** — 必ず手順 3 も実行してください。
 
-高度なオプション（`--overwrite-lang` による翻訳の上書き、`--publish=…` によるアセット／ビューの更新）は、**あなたのカスタマイズを上書きする**可能性があります — 使用する前に [GP247 と S-Cart の更新 — 上級者向けオプション](https://github.com/gp247net/gp247-docs/blob/main/install-upgrade/update_ja.md#上級者向けオプション) をよくお読みください。
+高度なオプション（`--overwrite-lang` による翻訳の上書き、`--publish=…` によるアセット／ビューの更新）は、**あなたのカスタマイズを上書きする**可能性があります — 使用する前に [GP247 と S-Cart の更新 — 上級者向けオプション](https://gp247.net/ja/docs/install-update/update.html) をよくお読みください。
 
 ## 🎨 カスタマイズと拡張
 
@@ -229,7 +253,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
    | `GP247\Core\Api\Controllers` | `App\GP247\Core\Api\Controllers` |
    | `GP247\Front\...` / `GP247\Shop\...` | `App\GP247\Front\...` / `App\GP247\Shop\...` |
 
-📘 詳細ドキュメント：[プラグインの作成](https://gp247.net/en/docs/user-guide-extension/create-new-plugin.html) · [テンプレートの作成](https://gp247.net/en/docs/user-guide-extension/create-new-template.html) · [CLI コマンド一覧](https://gp247.net/en/docs/system/gp247-system-command-line.html)
+📘 詳細ドキュメント：[プラグインの作成](https://gp247.net/ja/docs/user-guide-extension/create-new-plugin.html) · [テンプレートの作成](https://gp247.net/ja/docs/user-guide-extension/create-new-template.html) · [CLI コマンド一覧](https://gp247.net/en/docs/system/gp247-system-command-line.html)
 
 ## 📂 ディレクトリ構成
 
@@ -255,7 +279,8 @@ my-shop/
 └── vendor/gp247/
     ├── core           ← コア：管理画面、権限管理、設定
     ├── front          ← ストアフロント、CMS
-    └── shop           ← 商品、カート、注文
+    ├── shop           ← 商品、カート、注文
+    └── mcp            ← AI エージェント向けの MCP サーバー
 ```
 
 ## 🔧 よく使う環境変数
@@ -270,51 +295,3 @@ my-shop/
 | `GP247_ADMIN_LOG` | `1` | 管理画面へのアクセスログを記録する |
 | `GP247_SEO_LANG` | `0` | ストアの URL に言語コードを付ける（`/vi/...`、`/en/...`） |
 | `GP247_ENCRYPTION_KEY` | *（空）* | SMTP パスワードやライセンスなどを暗号化するための専用キー — `.env.example` の注記を参照 |
-
-## ❓ よくある質問（Q&A）
-
-**Q1：Composer でインストールが終わった後に `Access denied for user 'root'` と表示されました。どういうことですか？**
-
-→ Composer が 8.3 より古い PHP で動いていたため、誤って S-Cart 1.x がインストールされています。作成したディレクトリを削除し、Composer を PHP 8.3 以上に切り替えて（`composer diagnose` で確認）、`"^3.0"` を付けて再インストールしてください。
-
-**Q2：管理画面はどこにあり、何でログインしますか？**
-
-→ `http://your-domain/gp247_admin`、ユーザー `admin` と、`gp247:install` の最後に表示されたランダムなパスワードです — パスワードは
-一度だけ表示されます。インストールしたばかりでデータがないサイトで控え忘れた場合は、`php artisan gp247:install` をもう一度実行して
-新しいパスワードを受け取ります。旧バージョンでインストールしたサイトは `admin`／`admin` のままの場合があります — すぐに変更してください。
-
-**Q3：使っているバージョンを確認するにはどうすればよいですか？**
-
-→ `php artisan gp247:info` を実行してください。
-
-**Q4：サイトでエラーが出る、またはインストールできない場合、まず何を確認すればよいですか？**
-
-→ `php artisan gp247:doctor` を実行してください。環境（PHP、ディレクトリの書き込み権限、設定…）をチェックし、修正すべき箇所を示してくれます。[システム要件](#-システム要件) に記載したディレクトリの書き込み権限も忘れずに確認してください。
-
-**Q5：バージョンアップデートでデータや自分で編集した部分が失われることはありますか？**
-
-→ `php artisan gp247:update` はデータを削除せず、編集済みの翻訳やテンプレートもそのまま保持します。上書きする可能性があるのは `--overwrite-lang` と `--publish=…` オプションだけです — 使用する前にバックアップを取ってください。
-
-**Q6：デフォルトテンプレートを編集しましたが、アップデートで消えてしまいますか？**
-
-→ `gp247:template-publish GP247Front --file=...` で編集が必要なファイルだけを publish していれば、消えません。編集したファイルはそのまま保持され、残りのファイルはパッケージから自動で新しいバージョンになります。
-
-**Q7：管理画面のパスを変更するにはどうすればよいですか？**
-
-→ `.env` の `GP247_ADMIN_PREFIX` を変更します（例：`backoffice`）。`public/` に既にあるディレクトリ名（`vendor`、`GP247` など）と同じ名前にしないでください。同じにすると、ページが 403 エラーになります。
-
-**Q8：インストール後にテーブル名のプレフィックス（`GP247_DB_PREFIX`）を変更できますか？**
-
-→ できません。このプレフィックスは `gp247:install` を実行する前に決めておく必要があります。
-
-**Q9：モバイルアプリを使っていませんが、API は無効にしたほうがよいですか？**
-
-→ 無効にしてもかまいません。`.env` で `GP247_API_MODE=0` を設定してください。
-
-**Q10：ほかに質問がある場合はどこで聞けばよいですか？**
-
-→ [GP247 ドキュメント](https://gp247.net/en/docs) を読むか、[DeepWiki](https://deepwiki.com/gp247net/s-cart) に質問するか、[S-Cart の Facebook グループ](https://www.facebook.com/groups/scart.opensource) に質問を投稿してください。
-
----
-
-<sub>📅 **最終更新:** 2026-11-08 · ✍️ **作成者 (Author):** GP247</sub>
