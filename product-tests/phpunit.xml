@@ -13,6 +13,7 @@
          bootstrap="bootstrap.php"
          cacheDirectory="../.phpunit.cache"
          colors="true"
+         failOnEmptyTestSuite="true"
 >
     <testsuites>
         <testsuite name="Product">
