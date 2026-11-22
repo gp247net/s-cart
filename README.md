@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="./public/s-cart/logo.png" alt="S-Cart" width="280">
+<img src="https://raw.githubusercontent.com/gp247net/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
 
 `composer create-project gp247/s-cart my-shop`
 
