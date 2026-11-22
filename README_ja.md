@@ -8,7 +8,7 @@
 composer create-project gp247/s-cart my-shop "^3.0"
 ```
 
-**無料のオープンソース EC プラットフォーム — GP247 エコシステムと Laravel で構築**
+**GP247 と Laravel で構築された無料のオープンソース EC ソフトウェア**
 
 [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
 
