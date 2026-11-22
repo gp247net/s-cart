@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    S-Cart product tests: check an S-Cart that was just installed (with the sample
+    data option of gp247:install) or upgraded. Run from the S-Cart root:
+
+        vendor/bin/phpunit -c product-tests/phpunit.xml
+
+    Uses the database of .env, which must be reserved for tests (name ending with
+    _test or _testing, or named by GP247_TEST_DATABASE).
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="bootstrap.php"
+         cacheDirectory="../.phpunit.cache"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Product">
+            <directory>Feature</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+    </php>
+</phpunit>

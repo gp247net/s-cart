@@ -1,0 +1,162 @@
+# Checks that S-Cart installs cleanly and upgrades from the previous release, with the
+# platform packages Composer resolves today (the same thing `composer create-project`
+# gives a new user), for every supported PHP version and database.
+#
+# Least privilege: read-only token, no secrets, no pull_request_target, every
+# third-party action pinned to a full commit SHA (tag in the comment).
+
+name: product
+
+on:
+  push:
+    branches: [master]
+    tags: ['*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: product-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  clean-install:
+    name: Clean install · PHP ${{ matrix.php }} · ${{ matrix.db }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+        db: ['mysql:8.4', 'mariadb:11.4']
+    services:
+      database:
+        image: ${{ matrix.db }}
+        env:
+          # Throw-away credentials of a CI-only container — not a secret.
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: scart_test
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: scart_test
+        ports:
+          - 3306:3306
+    steps:
+      - name: Check out S-Cart
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_mysql, intl, gd, zip, bcmath, mbstring, fileinfo
+          coverage: none
+          tools: composer:v2
+
+      - name: Wait for the test database
+        run: |
+          for i in $(seq 1 60); do
+            php -r 'try { new PDO("mysql:host=127.0.0.1;port=3306;dbname=scart_test", "root", "root"); exit(0); } catch (Throwable $e) { exit(1); }' && exit 0
+            sleep 2
+          done
+          echo "::error::The test database did not accept connections within 120 seconds."
+          exit 1
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Configure the application
+        run: |
+          cp .env.example .env
+          sed -i -E '/^#? ?DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD)=/d' .env
+          printf 'DB_CONNECTION=mysql\nDB_HOST=127.0.0.1\nDB_PORT=3306\nDB_DATABASE=scart_test\nDB_USERNAME=root\nDB_PASSWORD=root\n' >> .env
+          php artisan key:generate --force
+
+      - name: Install S-Cart with sample data
+        run: php artisan gp247:install --force=1 --sample
+
+      - name: Run the product tests
+        run: vendor/bin/phpunit -c product-tests/phpunit.xml
+
+  upgrade:
+    name: Upgrade from the previous release · PHP 8.3 · mysql:8.4
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      database:
+        image: mysql:8.4
+        env:
+          # Throw-away credentials of a CI-only container — not a secret.
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: scart_test
+        ports:
+          - 3306:3306
+    steps:
+      - name: Check out S-Cart with its tags
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, intl, gd, zip, bcmath, mbstring, fileinfo
+          coverage: none
+          tools: composer:v2
+
+      - name: Find the previous release
+        id: previous
+        run: |
+          head=$(git rev-parse HEAD)
+          for tag in $(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$'); do
+            if [ "$(git rev-parse "$tag^{commit}")" != "$head" ] && git merge-base --is-ancestor "$tag" HEAD; then
+              echo "tag=$tag" >> "$GITHUB_OUTPUT"
+              echo "Previous release: $tag"
+              exit 0
+            fi
+          done
+          echo "::error::No earlier release tag is an ancestor of this commit, so there is nothing to upgrade from."
+          exit 1
+
+      - name: Wait for the test database
+        run: |
+          for i in $(seq 1 60); do
+            php -r 'try { new PDO("mysql:host=127.0.0.1;port=3306;dbname=scart_test", "root", "root"); exit(0); } catch (Throwable $e) { exit(1); }' && exit 0
+            sleep 2
+          done
+          echo "::error::The test database did not accept connections within 120 seconds."
+          exit 1
+
+      - name: Install the previous release at its minimum platform versions
+        env:
+          PREVIOUS: ${{ steps.previous.outputs.tag }}
+        run: |
+          git checkout --quiet "$PREVIOUS"
+          composer install --no-interaction --no-progress --prefer-dist
+          composer update gp247/core gp247/front gp247/shop gp247/mcp --prefer-lowest --no-interaction --no-progress
+          cp .env.example .env
+          sed -i -E '/^#? ?DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD)=/d' .env
+          printf 'DB_CONNECTION=mysql\nDB_HOST=127.0.0.1\nDB_PORT=3306\nDB_DATABASE=scart_test\nDB_USERNAME=root\nDB_PASSWORD=root\n' >> .env
+          php artisan key:generate --force
+          php artisan gp247:install --force=1 --sample
+
+      - name: Upgrade to this commit
+        run: |
+          # WHY: the install must not have changed files the repository tracks — a checkout
+          # would abort on them or carry them over silently.
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            git status --porcelain --untracked-files=no
+            echo "::error::The previous release's install changed tracked files."
+            exit 1
+          fi
+          git checkout --quiet "$GITHUB_SHA"
+          composer update --no-interaction --no-progress --prefer-dist
+          php artisan gp247:update --skip-pre-change --no-interaction
+
+      - name: Run the product tests
+        run: vendor/bin/phpunit -c product-tests/phpunit.xml
