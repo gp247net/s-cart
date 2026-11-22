@@ -31,13 +31,13 @@ S-Cart is built on four principles:
 
 After reading this page you will be able to install S-Cart on your machine or server, and know how to update and customize it.
 
-**S-Cart 3.x tech stack:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 3 · MySQL / MariaDB
+**S-Cart 3.x tech stack:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · Tailwind CSS 3 · MySQL / MariaDB
 
-### S-Cart and GP247
+### What S-Cart is made of
 
-**S-Cart = GP247/core + GP247/front + GP247/shop + GP247/mcp**
+**S-Cart = `gp247/core` + `gp247/front` + `gp247/shop` + `gp247/mcp`**
 
-GP247 is an open-source ecosystem on Laravel for building business web applications. S-Cart is the e-commerce product built on it, made of four packages:
+S-Cart is made of four packages:
 
 | Package | Provides |
 |---|---|
@@ -46,7 +46,7 @@ GP247 is an open-source ecosystem on Laravel for building business web applicati
 | [`gp247/shop`](https://github.com/gp247net/shop) | Products, cart, orders, customers |
 | [`gp247/mcp`](https://github.com/gp247net/mcp) | MCP server for AI agents |
 
-You only install **S-Cart** — all four packages come with it; there is no separate GP247 install.
+You only install **S-Cart** — all four packages come with it; there is nothing else to install.
 
 ## ✨ What's in S-Cart
 
@@ -257,7 +257,7 @@ Works for every controller (API included) in `GP247/Core`, `GP247/Front`, `GP247
 
 ## 📂 Folder structure
 
-`(+)` = folder created and managed by GP247.
+`(+)` = folder created and managed by S-Cart.
 
 ```text
 my-shop/

@@ -31,13 +31,13 @@ S-Cart は 4 つの原則に基づいて作られています：
 
 このページを読み終えると、S-Cart を手元のパソコンやサーバーにインストールし、アップデートやカスタマイズの方法がわかるようになります。
 
-**S-Cart 3.x の技術スタック：** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 3 · MySQL / MariaDB
+**S-Cart 3.x の技術スタック：** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · Tailwind CSS 3 · MySQL / MariaDB
 
-### S-Cart と GP247
+### S-Cart の構成
 
-**S-Cart = GP247/core + GP247/front + GP247/shop + GP247/mcp**
+**S-Cart = `gp247/core` + `gp247/front` + `gp247/shop` + `gp247/mcp`**
 
-GP247 は、業務向け Web アプリケーションを構築するための Laravel ベースのオープンソース・エコシステムです。S-Cart はその上に構築された EC 製品で、4 つのパッケージで構成されています：
+S-Cart は 4 つのパッケージで構成されています：
 
 | パッケージ | 役割 |
 |---|---|
@@ -46,7 +46,7 @@ GP247 は、業務向け Web アプリケーションを構築するための La
 | [`gp247/shop`](https://github.com/gp247net/shop) | 商品、カート、注文、顧客 |
 | [`gp247/mcp`](https://github.com/gp247net/mcp) | AI エージェント向けの MCP サーバー |
 
-インストールするのは **S-Cart** だけです — 4 つのパッケージはすべて一緒に入り、GP247 を別途インストールする必要はありません。
+インストールするのは **S-Cart** だけです — 4 つのパッケージはすべて一緒に入り、ほかに何かをインストールする必要はありません。
 
 ## ✨ S-Cart の機能
 
@@ -257,7 +257,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 
 ## 📂 ディレクトリ構成
 
-`(+)` = GP247 が作成・管理するディレクトリ。
+`(+)` = S-Cart が作成・管理するディレクトリ。
 
 ```text
 my-shop/

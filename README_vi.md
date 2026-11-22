@@ -31,13 +31,13 @@ S-Cart được xây dựng theo bốn nguyên tắc:
 
 Đọc xong trang này, bạn sẽ cài được S-Cart trên máy hoặc server của mình, biết cách cập nhật và tùy biến nó.
 
-**Công nghệ S-Cart 3.x:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · [GP247](https://github.com/gp247net) · Tailwind CSS 3 · MySQL / MariaDB
+**Công nghệ S-Cart 3.x:** PHP ≥ 8.3 · [Laravel 13](https://github.com/laravel/laravel) · Tailwind CSS 3 · MySQL / MariaDB
 
-### S-Cart và GP247
+### S-Cart gồm những gì
 
-**S-Cart = GP247/core + GP247/front + GP247/shop + GP247/mcp**
+**S-Cart = `gp247/core` + `gp247/front` + `gp247/shop` + `gp247/mcp`**
 
-GP247 là hệ sinh thái mã nguồn mở trên Laravel để xây dựng ứng dụng web cho doanh nghiệp. S-Cart là sản phẩm bán hàng trực tuyến dựng trên nền đó, gồm bốn package:
+S-Cart gồm bốn package:
 
 | Package | Đảm nhận |
 |---|---|
@@ -46,7 +46,7 @@ GP247 là hệ sinh thái mã nguồn mở trên Laravel để xây dựng ứng
 | [`gp247/shop`](https://github.com/gp247net/shop) | Sản phẩm, giỏ hàng, đơn hàng, khách hàng |
 | [`gp247/mcp`](https://github.com/gp247net/mcp) | MCP server cho AI agent |
 
-Bạn chỉ cần cài **S-Cart** — cả bốn package được cài kèm, không phải cài GP247 riêng.
+Bạn chỉ cần cài **S-Cart** — cả bốn package được cài kèm, không phải cài thêm gì khác.
 
 ## ✨ Có gì trong S-Cart
 
@@ -257,7 +257,7 @@ Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm m�
 
 ## 📂 Cấu trúc thư mục
 
-`(+)` = thư mục do GP247 tạo và quản lý.
+`(+)` = thư mục do S-Cart tạo và quản lý.
 
 ```text
 my-shop/
