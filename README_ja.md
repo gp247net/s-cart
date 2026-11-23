@@ -8,7 +8,7 @@
 
 **GP247 と Laravel で構築された無料のオープンソース EC ソフトウェア**
 
-[![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gp247net/s-cart)
+[![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247net/s-cart)
 
 [🏠 ホーム](https://gp247.net) · [🚀 デモ](https://demo.s-cart.org) · [📚 ドキュメント](https://gp247.net/ja/docs) · [🤖 AI エージェント用スキル](https://github.com/gp247net/gp247-skills) · [💬 Facebook グループ](https://www.facebook.com/groups/scart.opensource)
 
