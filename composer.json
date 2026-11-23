@@ -13,9 +13,9 @@
     ],
     "require": {
         "php": "^8.3",
-        "gp247/core": "^3.16.0",
-        "gp247/front": "^3.12.0",
-        "gp247/shop": "^3.13.0",
+        "gp247/core": "^3.18.0",
+        "gp247/front": "^3.14.2",
+        "gp247/shop": "^3.14.1",
         "gp247/mcp": "^2.1.1",
         "laravel/framework": "^13.8",
         "league/flysystem-sftp-v3": "^3.29",
