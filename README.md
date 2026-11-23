@@ -20,7 +20,7 @@
 
 S-Cart is **free, open-source** online-store software (MIT license) for store owners, businesses and developers. Once installed, you have a complete online shop (products, cart, orders, customers, content pages) plus an admin panel. All of S-Cart is free to use, modify and integrate into your own system; Pro plugins are optional add-ons for when a shop needs to grow, such as several stores or a marketplace with many sellers.
 
-> ℹ️ S-Cart 10.x (`s-cart/s-cart`) continues as S-Cart (`gp247/s-cart`), renumbered from 1.0 and now on the 3.x line.
+> ℹ️ The old S-Cart 10.x (`s-cart/s-cart`) continues as S-Cart (`gp247/s-cart`), renumbered from 1.0 and now on the 3.x line.
 
 S-Cart is built on four principles:
 

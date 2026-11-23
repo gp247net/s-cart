@@ -20,7 +20,7 @@
 
 S-Cart là phần mềm bán hàng trực tuyến **miễn phí, mã nguồn mở** (giấy phép MIT), dành cho chủ cửa hàng, doanh nghiệp và lập trình viên. Cài xong, bạn có ngay một cửa hàng trực tuyến hoàn chỉnh (sản phẩm, giỏ hàng, đơn hàng, khách hàng, trang nội dung) cùng trang quản trị. Toàn bộ S-Cart miễn phí để dùng, sửa và tích hợp vào hệ thống của bạn; plugin Pro là phần tùy chọn khi cửa hàng cần mở rộng, ví dụ nhiều cửa hàng hoặc sàn nhiều người bán.
 
-> ℹ️ S-Cart 10.x (`s-cart/s-cart`) được tiếp nối bằng S-Cart (`gp247/s-cart`), đánh số lại từ 1.0 và hiện ở dòng 3.x.
+> ℹ️ S-Cart cũ 10.x (`s-cart/s-cart`) được tiếp nối bằng S-Cart (`gp247/s-cart`), đánh số lại từ 1.0 và hiện ở dòng 3.x.
 
 S-Cart được xây dựng theo bốn nguyên tắc:
 
