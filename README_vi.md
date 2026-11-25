@@ -74,7 +74,7 @@ S-Cart có sẵn các cơ chế giúp doanh nghiệp xây dựng ISMS theo ISO/I
 - **Sao lưu mã hoá**, phục hồi từng phần
 - **Tự kiểm cấu hình** và **vá bảo mật kịp thời**
 
-> ISO/IEC 27001 chứng nhận tổ chức, không chứng nhận phần mềm — [tài liệu bảo mật](https://gp247.net/vi/docs/security/security-introduction.html).
+> ISO/IEC 27001 chứng nhận tổ chức, không chứng nhận phần mềm — [tài liệu bảo mật](https://gp247.net/vi/docs/security/security-iso27001.html).
 
 ## 🧰 Yêu cầu hệ thống
 

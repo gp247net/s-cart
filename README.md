@@ -74,7 +74,7 @@ S-Cart comes with the controls a business needs to build an ISMS under ISO/IEC 2
 - **Encrypted backups**, partial restore
 - **Configuration self-check** and **timely security fixes**
 
-> ISO/IEC 27001 certifies organizations, not software — [security docs](https://gp247.net/en/docs/security/security-introduction.html).
+> ISO/IEC 27001 certifies organizations, not software — [security docs](https://gp247.net/en/docs/security/security-iso27001.html).
 
 ## 🧰 Requirements
 

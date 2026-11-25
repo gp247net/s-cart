@@ -74,7 +74,7 @@ S-Cart には、ISO/IEC 27001 に基づく ISMS の構築と、顧客の個人�
 - **暗号化バックアップ**と部分復元
 - **設定の自己診断**と**迅速なセキュリティ修正**
 
-> ISO/IEC 27001 の認証対象は組織であり、ソフトウェアではありません — [セキュリティ文書](https://gp247.net/ja/docs/security/security-introduction.html)。
+> ISO/IEC 27001 の認証対象は組織であり、ソフトウェアではありません — [セキュリティ文書](https://gp247.net/ja/docs/security/security-iso27001.html)。
 
 ## 🧰 システム要件
 
