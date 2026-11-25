@@ -64,6 +64,18 @@ Bạn chỉ cần cài **S-Cart** — cả bốn package được cài kèm, kh�
 | 🧩 **Mở rộng** | Plugin theo mô hình HMVC, chợ plugin/template trực tuyến, API bảo mật cho app di động |
 | ⭐ **Plugin Pro** | [Multi-vendor](https://gp247.net/vi/product/multi-vendor-pro.html) (sàn nhiều người bán) · [Multi-store](https://gp247.net/vi/product/multi-store-pro.html) (nhiều cửa hàng) · [Quản lý thu chi](https://gp247.net/vi/product/plugin-inout-purchase-return.html) (nhập hàng, trả hàng, thu chi & công nợ) |
 
+## 🛡️ Bảo mật cho doanh nghiệp — hỗ trợ ISO/IEC 27001
+
+S-Cart có sẵn các cơ chế giúp doanh nghiệp xây dựng ISMS theo ISO/IEC 27001 và bảo vệ dữ liệu cá nhân của khách hàng:
+
+- **Phân quyền & nhật ký** cho trang quản trị, API và AI agent
+- **Mã hoá** mật khẩu và khoá bí mật; chính sách mật khẩu, xác thực hai lớp
+- **Dữ liệu cá nhân**: khách tự tải, tự xoá; tự dọn theo hạn lưu giữ
+- **Sao lưu mã hoá**, phục hồi từng phần
+- **Tự kiểm cấu hình** và **vá bảo mật kịp thời**
+
+> ISO/IEC 27001 chứng nhận tổ chức, không chứng nhận phần mềm — [tài liệu bảo mật](https://gp247.net/vi/docs/security/security-introduction.html).
+
 ## 🧰 Yêu cầu hệ thống
 
 | Thành phần | Yêu cầu |

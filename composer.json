@@ -2,7 +2,7 @@
     "name": "gp247/s-cart",
     "type": "project",
     "description": "S-Cart is free, open-source e-commerce software built on GP247 and Laravel.",
-    "keywords": ["Laravel ecommerce", "gp247", "SCart ecommerce", "SCart open source", "multi-store","multi-vendor", "multi-seller", "Free Shopping cart", "Laravel marketplace", "S-Cart"],
+    "keywords": ["Laravel ecommerce", "gp247", "SCart ecommerce", "SCart open source", "multi-store","multi-vendor", "multi-seller", "Free Shopping cart", "Laravel marketplace", "S-Cart", "iso27001", "data-privacy", "secure-ecommerce"],
     "homepage": "https://gp247.net",
     "license": "MIT",
     "authors": [

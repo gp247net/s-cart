@@ -64,6 +64,18 @@ You only install **S-Cart** — all four packages come with it; there is nothing
 | 🧩 **Extensibility** | HMVC plugins, online plugin/template marketplace, secured API for mobile apps |
 | ⭐ **Pro plugins** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html) (marketplace with many sellers) · [Multi-store](https://gp247.net/en/product/multi-store-pro.html) (several stores) · [InOut](https://gp247.net/en/product/plugin-inout-purchase-return.html) (purchases, returns, cash flow & debts) |
 
+## 🛡️ Security for businesses — ISO/IEC 27001 support
+
+S-Cart comes with the controls a business needs to build an ISMS under ISO/IEC 27001 and to protect its customers' personal data:
+
+- **Permissions & audit log** for the admin, the API and AI agents
+- **Encryption** of passwords and secret keys; password policy, two-factor authentication
+- **Personal data**: customers download and delete their own data; old data cleaned on a retention schedule
+- **Encrypted backups**, partial restore
+- **Configuration self-check** and **timely security fixes**
+
+> ISO/IEC 27001 certifies organizations, not software — [security docs](https://gp247.net/en/docs/security/security-introduction.html).
+
 ## 🧰 Requirements
 
 | Component | Requirement |

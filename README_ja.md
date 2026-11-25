@@ -64,6 +64,18 @@ S-Cart は 4 つのパッケージで構成されています：
 | 🧩 **拡張性** | HMVC モデルのプラグイン、オンラインのプラグイン／テンプレートマーケットプレイス、モバイルアプリ向けのセキュアな API |
 | ⭐ **Pro プラグイン** | [Multi-vendor](https://gp247.net/en/product/multi-vendor-pro.html)（複数の販売者が出店するマーケットプレイス）· [Multi-store](https://gp247.net/en/product/multi-store-pro.html)（複数ストア）· [入出金管理](https://gp247.net/en/product/plugin-inout-purchase-return.html)（仕入れ、返品、入出金と債権債務） |
 
+## 🛡️ 企業向けセキュリティ — ISO/IEC 27001（ISMS）対応を支援
+
+S-Cart には、ISO/IEC 27001 に基づく ISMS の構築と、顧客の個人情報の保護に役立つ仕組みが標準で備わっています。
+
+- 管理画面・API・AI エージェントの**権限管理と操作ログ**
+- パスワードと秘密鍵の**暗号化**、パスワードポリシー、二要素認証
+- **個人情報**：顧客自身によるダウンロードと削除、保存期間に応じた自動整理
+- **暗号化バックアップ**と部分復元
+- **設定の自己診断**と**迅速なセキュリティ修正**
+
+> ISO/IEC 27001 の認証対象は組織であり、ソフトウェアではありません — [セキュリティ文書](https://gp247.net/ja/docs/security/security-introduction.html)。
+
 ## 🧰 システム要件
 
 | 項目 | 要件 |
