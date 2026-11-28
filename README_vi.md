@@ -2,15 +2,15 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/gp247net/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
+<img src="https://raw.githubusercontent.com/gp247-official/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
 
 `composer create-project gp247/s-cart my-shop`
 
 **Phần mềm bán hàng trực tuyến mã nguồn mở, miễn phí, xây dựng trên GP247 và Laravel**
 
-[![Tests](https://github.com/gp247net/s-cart/actions/workflows/product.yml/badge.svg?branch=master)](https://github.com/gp247net/s-cart/actions/workflows/product.yml) [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247net/s-cart)
+[![Tests](https://github.com/gp247-official/s-cart/actions/workflows/product.yml/badge.svg?branch=master)](https://github.com/gp247-official/s-cart/actions/workflows/product.yml) [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247-official/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247-official/s-cart)
 
-[🏠 Trang chủ](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Tài liệu](https://gp247.net/vi/docs) · [🤖 Skill cho AI agent](https://github.com/gp247net/gp247-skills) · [💬 Nhóm Facebook](https://www.facebook.com/groups/scart.opensource)
+[🏠 Trang chủ](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Tài liệu](https://gp247.net/vi/docs) · [🤖 Skill cho AI agent](https://github.com/gp247-official/gp247-skills) · [💬 Nhóm Facebook](https://www.facebook.com/groups/scart.opensource)
 
 <img src="https://static.gp247.net/page/sc-1.jpg" alt="Giao diện cửa hàng S-Cart" width="49%"> <img src="https://static.gp247.net/page/sc-2.jpg" alt="Trang quản trị S-Cart" width="49%">
 
@@ -43,10 +43,10 @@ S-Cart gồm bốn package:
 
 | Package | Đảm nhận |
 |---|---|
-| [`gp247/core`](https://github.com/gp247net/core) | Lõi: trang quản trị, phân quyền, cấu hình, plugin & template |
-| [`gp247/front`](https://github.com/gp247net/front) | Giao diện cửa hàng, nội dung (CMS) |
-| [`gp247/shop`](https://github.com/gp247net/shop) | Sản phẩm, giỏ hàng, đơn hàng, khách hàng |
-| [`gp247/mcp`](https://github.com/gp247net/mcp) | MCP server cho AI agent |
+| [`gp247/core`](https://github.com/gp247-official/core) | Lõi: trang quản trị, phân quyền, cấu hình, plugin & template |
+| [`gp247/front`](https://github.com/gp247-official/front) | Giao diện cửa hàng, nội dung (CMS) |
+| [`gp247/shop`](https://github.com/gp247-official/shop) | Sản phẩm, giỏ hàng, đơn hàng, khách hàng |
+| [`gp247/mcp`](https://github.com/gp247-official/mcp) | MCP server cho AI agent |
 
 Bạn chỉ cần cài **S-Cart** — cả bốn package được cài kèm, không phải cài thêm gì khác.
 
@@ -160,7 +160,7 @@ Chọn **một** trong ba cách:
 ## Cách 2 — Git clone
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 composer install
@@ -180,7 +180,7 @@ Có hai file cấu hình **tách biệt** — luôn dùng đúng file cho đúng
 **Máy cá nhân (dev):**
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 docker compose up -d --build
@@ -194,7 +194,7 @@ Mở website tại <http://localhost:8000>.
 **Server thật (prod):**
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 # Sửa .env: APP_ENV=production, APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — xem DOCKER_vi.md
@@ -249,7 +249,7 @@ Tùy chọn nâng cao (ghi đè bản dịch bằng `--overwrite-lang`, làm m�
 | Đổi cấu hình upload file (lfm) | `php artisan vendor:publish --tag=config-lfm` |
 | Ghi đè hàm helper `gp247_*` | Khai báo tên hàm trong `config/gp247_functions_except.php`, rồi viết hàm mới trong `app/GP247/Helpers/*.php` |
 | Ghi đè controller | Xem [bên dưới](#ghi-đè-controller) |
-| Thêm route cho trang quản trị | Dùng hằng số `GP247_ADMIN_PREFIX` và `GP247_ADMIN_MIDDLEWARE` — xem [routes.php của core](https://github.com/gp247net/core/blob/master/src/routes.php) |
+| Thêm route cho trang quản trị | Dùng hằng số `GP247_ADMIN_PREFIX` và `GP247_ADMIN_MIDDLEWARE` — xem [routes.php của core](https://github.com/gp247-official/core/blob/master/src/routes.php) |
 
 > 💡 Template mặc định `GP247Front` được nạp **trực tiếp từ package**, nên file bạn chưa publish sẽ tự nhận bản mới khi cập nhật. Chỉ publish đúng file bạn cần sửa.
 

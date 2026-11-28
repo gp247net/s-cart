@@ -36,7 +36,7 @@ This guide sets up S-Cart with Docker from scratch, for anyone who wants to try 
 | Component | Requirement |
 |---|---|
 | Docker | Docker Desktop (Windows/Mac) or Docker Engine + Compose plugin (Linux) |
-| Source code | This repo on your machine/server: `git clone https://github.com/gp247net/s-cart.git` |
+| Source code | This repo on your machine/server: `git clone https://github.com/gp247-official/s-cart.git` |
 | Windows | Use WSL2; for the best speed, keep the project inside the WSL2 filesystem (e.g. `~/projects/s-cart`) rather than `/mnt/c/...` |
 
 ---

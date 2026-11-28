@@ -2,15 +2,15 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/gp247net/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
+<img src="https://raw.githubusercontent.com/gp247-official/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
 
 `composer create-project gp247/s-cart my-shop`
 
 **GP247 と Laravel で構築された無料のオープンソース EC ソフトウェア**
 
-[![Tests](https://github.com/gp247net/s-cart/actions/workflows/product.yml/badge.svg?branch=master)](https://github.com/gp247net/s-cart/actions/workflows/product.yml) [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247net/s-cart)
+[![Tests](https://github.com/gp247-official/s-cart/actions/workflows/product.yml/badge.svg?branch=master)](https://github.com/gp247-official/s-cart/actions/workflows/product.yml) [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247-official/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247-official/s-cart)
 
-[🏠 ホーム](https://gp247.net) · [🚀 デモ](https://demo.s-cart.org) · [📚 ドキュメント](https://gp247.net/ja/docs) · [🤖 AI エージェント用スキル](https://github.com/gp247net/gp247-skills) · [💬 Facebook グループ](https://www.facebook.com/groups/scart.opensource)
+[🏠 ホーム](https://gp247.net) · [🚀 デモ](https://demo.s-cart.org) · [📚 ドキュメント](https://gp247.net/ja/docs) · [🤖 AI エージェント用スキル](https://github.com/gp247-official/gp247-skills) · [💬 Facebook グループ](https://www.facebook.com/groups/scart.opensource)
 
 <img src="https://static.gp247.net/page/sc-1.jpg" alt="S-Cart ストアフロント" width="49%"> <img src="https://static.gp247.net/page/sc-2.jpg" alt="S-Cart 管理画面" width="49%">
 
@@ -43,10 +43,10 @@ S-Cart は 4 つのパッケージで構成されています：
 
 | パッケージ | 役割 |
 |---|---|
-| [`gp247/core`](https://github.com/gp247net/core) | コア：管理画面、権限管理、設定、プラグインとテンプレート |
-| [`gp247/front`](https://github.com/gp247net/front) | ストアフロント、コンテンツ（CMS） |
-| [`gp247/shop`](https://github.com/gp247net/shop) | 商品、カート、注文、顧客 |
-| [`gp247/mcp`](https://github.com/gp247net/mcp) | AI エージェント向けの MCP サーバー |
+| [`gp247/core`](https://github.com/gp247-official/core) | コア：管理画面、権限管理、設定、プラグインとテンプレート |
+| [`gp247/front`](https://github.com/gp247-official/front) | ストアフロント、コンテンツ（CMS） |
+| [`gp247/shop`](https://github.com/gp247-official/shop) | 商品、カート、注文、顧客 |
+| [`gp247/mcp`](https://github.com/gp247-official/mcp) | AI エージェント向けの MCP サーバー |
 
 インストールするのは **S-Cart** だけです — 4 つのパッケージはすべて一緒に入り、ほかに何かをインストールする必要はありません。
 
@@ -160,7 +160,7 @@ S-Cart には、ISO/IEC 27001 に基づく ISMS の構築と、顧客の個人�
 ## 方法 2 — Git clone
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 composer install
@@ -180,7 +180,7 @@ composer install
 **個人のパソコン（dev）：**
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 docker compose up -d --build
@@ -194,7 +194,7 @@ docker compose exec app php artisan gp247:shop-sample   # 任意
 **本番サーバー（prod）：**
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 # .env を編集：APP_ENV=production, APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — DOCKER.md を参照
@@ -249,7 +249,7 @@ docker compose -f docker-compose.prod.yml run --rm node   # build CSS/JS
 | ファイルアップロード設定（lfm）を変更する | `php artisan vendor:publish --tag=config-lfm` |
 | ヘルパー関数 `gp247_*` をオーバーライドする | `config/gp247_functions_except.php` に関数名を宣言し、`app/GP247/Helpers/*.php` に新しい関数を記述 |
 | コントローラーをオーバーライドする | [下記](#コントローラーのオーバーライド) を参照 |
-| 管理画面にルートを追加する | 定数 `GP247_ADMIN_PREFIX` と `GP247_ADMIN_MIDDLEWARE` を使用 — [core の routes.php](https://github.com/gp247net/core/blob/master/src/routes.php) を参照 |
+| 管理画面にルートを追加する | 定数 `GP247_ADMIN_PREFIX` と `GP247_ADMIN_MIDDLEWARE` を使用 — [core の routes.php](https://github.com/gp247-official/core/blob/master/src/routes.php) を参照 |
 
 > 💡 デフォルトテンプレート `GP247Front` は**パッケージから直接**読み込まれるため、publish していないファイルはアップデート時に自動で新しいバージョンになります。編集が必要なファイルだけを publish してください。
 

@@ -14,7 +14,7 @@ S-Cart is built from the packages `gp247/core`, `gp247/front`, `gp247/shop` and 
 those packages. To check a running site, compare the package versions shown by `php artisan gp247:info` with the
 recommended versions, then update with `composer update` and `php artisan gp247:update`.
 
-Recommended versions and how to update: [S-Cart releases and security](https://github.com/gp247net/gp247-docs/blob/main/release/release.md).
+Recommended versions and how to update: [S-Cart releases and security](https://github.com/gp247-official/gp247-docs/blob/main/release/release.md).
 
 ## Reporting a Vulnerability
 

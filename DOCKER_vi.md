@@ -36,7 +36,7 @@ Tài liệu này hướng dẫn dựng S-Cart bằng Docker từ đầu, dành c
 | Thành phần | Yêu cầu |
 |---|---|
 | Docker | Docker Desktop (Windows/Mac) hoặc Docker Engine + Compose plugin (Linux) |
-| Mã nguồn | Đã có repo này trên máy/server: `git clone https://github.com/gp247net/s-cart.git` |
+| Mã nguồn | Đã có repo này trên máy/server: `git clone https://github.com/gp247-official/s-cart.git` |
 | Windows | Nên dùng WSL2; để nhanh nhất, đặt project trong filesystem của WSL2 (vd `~/projects/s-cart`) thay vì `/mnt/c/...` |
 
 ---

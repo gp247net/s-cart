@@ -2,15 +2,15 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/gp247net/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
+<img src="https://raw.githubusercontent.com/gp247-official/s-cart/master/public/s-cart/logo.png" alt="S-Cart" width="280">
 
 `composer create-project gp247/s-cart my-shop`
 
 **Free, open-source e-commerce software built on GP247 and Laravel**
 
-[![Tests](https://github.com/gp247net/s-cart/actions/workflows/product.yml/badge.svg?branch=master)](https://github.com/gp247net/s-cart/actions/workflows/product.yml) [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247net/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247net/s-cart)
+[![Tests](https://github.com/gp247-official/s-cart/actions/workflows/product.yml/badge.svg?branch=master)](https://github.com/gp247-official/s-cart/actions/workflows/product.yml) [![Packagist Downloads](https://poser.pugx.org/gp247/s-cart/d/total)](https://packagist.org/packages/gp247/s-cart) [![Latest Stable Version](https://poser.pugx.org/gp247/s-cart/v/stable.svg)](https://github.com/gp247-official/s-cart/releases) [![License](https://poser.pugx.org/gp247/s-cart/license)](./LICENSE) [![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/gp247-official/s-cart)
 
-[🏠 Homepage](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Documentation](https://gp247.net/en/docs) · [🤖 AI agent skills](https://github.com/gp247net/gp247-skills) · [💬 Facebook group](https://www.facebook.com/groups/scart.opensource)
+[🏠 Homepage](https://gp247.net) · [🚀 Demo](https://demo.s-cart.org) · [📚 Documentation](https://gp247.net/en/docs) · [🤖 AI agent skills](https://github.com/gp247-official/gp247-skills) · [💬 Facebook group](https://www.facebook.com/groups/scart.opensource)
 
 <img src="https://static.gp247.net/page/sc-1.jpg" alt="S-Cart storefront" width="49%"> <img src="https://static.gp247.net/page/sc-2.jpg" alt="S-Cart admin dashboard" width="49%">
 
@@ -43,10 +43,10 @@ S-Cart is made of four packages:
 
 | Package | Provides |
 |---|---|
-| [`gp247/core`](https://github.com/gp247net/core) | Core: admin panel, permissions, configuration, plugins & templates |
-| [`gp247/front`](https://github.com/gp247net/front) | Storefront, content (CMS) |
-| [`gp247/shop`](https://github.com/gp247net/shop) | Products, cart, orders, customers |
-| [`gp247/mcp`](https://github.com/gp247net/mcp) | MCP server for AI agents |
+| [`gp247/core`](https://github.com/gp247-official/core) | Core: admin panel, permissions, configuration, plugins & templates |
+| [`gp247/front`](https://github.com/gp247-official/front) | Storefront, content (CMS) |
+| [`gp247/shop`](https://github.com/gp247-official/shop) | Products, cart, orders, customers |
+| [`gp247/mcp`](https://github.com/gp247-official/mcp) | MCP server for AI agents |
 
 You only install **S-Cart** — all four packages come with it; there is nothing else to install.
 
@@ -160,7 +160,7 @@ Pick **one** of three options:
 ## Option 2 — Git clone
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 composer install
@@ -180,7 +180,7 @@ There are two **separate** compose files — always use the right one for the en
 **Local machine (dev):**
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 docker compose up -d --build
@@ -194,7 +194,7 @@ Open the site at <http://localhost:8000>.
 **Real server (prod):**
 
 ```bash
-git clone https://github.com/gp247net/s-cart.git
+git clone https://github.com/gp247-official/s-cart.git
 cd s-cart
 cp .env.example .env
 # Edit .env: APP_ENV=production, APP_DEBUG=false, DB_*, SC_DOCKER_WWWUSER/SC_DOCKER_WWWGROUP — see DOCKER.md
@@ -249,7 +249,7 @@ Advanced options (overwrite translations with `--overwrite-lang`, refresh assets
 | Change the file-upload config (lfm) | `php artisan vendor:publish --tag=config-lfm` |
 | Override a `gp247_*` helper | List the function names in `config/gp247_functions_except.php`, then write the new functions in `app/GP247/Helpers/*.php` |
 | Override a controller | See [below](#override-a-controller) |
-| Add routes to the admin area | Use the `GP247_ADMIN_PREFIX` and `GP247_ADMIN_MIDDLEWARE` constants — see the [core routes.php](https://github.com/gp247net/core/blob/master/src/routes.php) |
+| Add routes to the admin area | Use the `GP247_ADMIN_PREFIX` and `GP247_ADMIN_MIDDLEWARE` constants — see the [core routes.php](https://github.com/gp247-official/core/blob/master/src/routes.php) |
 
 > 💡 The default `GP247Front` template is loaded **directly from the package**, so files you have not published pick up new versions automatically when you update. Publish only the files you need to edit.
 
